@@ -1,9 +1,9 @@
 {
   "dev": {
     "driver": "pg",
-    "user": "root",
-    "password": "root",
+    "user": "postgres",
+    "password": "admin",
     "host": "127.0.0.1",
-    "database": "clean_architecture"
+    "database": "red_rose"
   }
 }

@@ -9,7 +9,7 @@ import { IMailer } from "../interfaces/IMailer";
 import { Mailer } from "../external-libraries/mailer";
 import { IMessageBroker } from "../interfaces/IMessageBroker";
 import { MessageBroker } from "../external-libraries/messageBroker";
-import { ProductController } from "../controllers/ProductController";
+import { ProductController } from "../controllers/productController";
 
 const container = new Container();
 
@@ -27,14 +27,14 @@ container.bind<IMessageBroker>(INTERFACE_TYPE.MessageBroker).to(MessageBroker);
 
 container.bind(INTERFACE_TYPE.ProductController).to(ProductController);
 
-const router = express.Router();
+const route = express.Router();
 
 const controller = container.get<ProductController>(
   INTERFACE_TYPE.ProductController
 );
 
-router.post("/products", controller.onCreateProduct.bind(controller));
-router.get("/products", controller.onGetProducts.bind(controller));
-router.patch("/products/:id", controller.onUpdateStock.bind(controller));
+route.post("/products", controller.onCreateProduct.bind(controller));
+route.get("/products", controller.onGetProducts.bind(controller));
+route.patch("/products/:id", controller.onUpdateStock.bind(controller));
 
-export default router;
+export default route;

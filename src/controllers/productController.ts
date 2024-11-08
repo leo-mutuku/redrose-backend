@@ -40,9 +40,7 @@ export class ProductController {
     try {
       const id = parseInt(req.params.id);
       const stock = req.body.stock;
-
       const data = await this.interactor.updateStock(id, stock);
-
       return res.status(200).json(data);
     } catch (error) {
       next(error);

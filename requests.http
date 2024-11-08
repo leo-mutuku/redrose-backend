@@ -10,7 +10,7 @@ Content-Type: application/json
     }
 
 ### Get products
-GET http://localhost:9000/products
+GET http://localhost:9000/api/v1/products
 Content-Type: application/json
 
 ### Update Stock
