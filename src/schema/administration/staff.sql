@@ -6,5 +6,6 @@ CREATE TABLE staff(
     staff_national_id VARCHAR(255) NOT NULL UNIQUE,
     staff_department_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     is_active BOOLEAN NOT NULL,
     created_by VARCHAR(255)
 )
