@@ -5,5 +5,6 @@ CREATE TABLE vendors(
     vendor_email VARCHAR(255) ,
     vendor_balance NUMERIC(15,2 ) DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN NOT NULL,
     created_by VARCHAR(255)
 )
