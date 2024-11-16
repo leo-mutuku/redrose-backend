@@ -1,6 +1,6 @@
 export interface ISupplierInteractor {
-    createRole(input: any): Promise<any>;
-    getRole(id: number): Promise<any>;
-    updateRole(id: number, input: any): Promise<any>;
-    getRoles(limit: number, offset: number): Promise<any>;
+    createSupplier(input: any): Promise<any>;
+    getSupplier(id: number): Promise<any>;
+    updateSupplier(id: number, input: any): Promise<any>;
+    getSuppliers(limit: number, offset: number): Promise<any>;
 }
