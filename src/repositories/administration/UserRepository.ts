@@ -1,8 +1,10 @@
+import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { User } from "../../entities/administration/Users";
 import { IUserRepository } from "../../interfaces/administation/IUserRepository"
 import { Pool } from "pg";
 
+@injectable()
 export class UserRepository implements IUserRepository {
 
     private client: Pool

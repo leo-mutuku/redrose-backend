@@ -1,17 +1,24 @@
+import { inject, injectable } from "inversify";
 import { IUserInteractor } from "../../interfaces/administation/IUserInteractor";
 import { IUserRepository } from "../../interfaces/administation/IUserRepository";
+import { INTERFACE_TYPE } from "../../utils";
 
+
+@injectable()
 export class UserInteractor implements IUserInteractor {
 
     private repository: IUserRepository
 
-    constructor(repository: IUserRepository) {
+    constructor(@inject(INTERFACE_TYPE.UserRepository) repository: IUserRepository) {
         this.repository = repository
     }
 
     async createUser(input: any): Promise<any> {
         try {
             const result = await this.repository.createUser(input)
+
+            // do some business logic here
+            // send email and sms
             return result
         } catch (error) {
             throw error

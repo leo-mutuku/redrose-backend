@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { IUserInteractor } from "../../interfaces/administation/IUserInteractor";
+import { inject, injectable } from "inversify";
+import { INTERFACE_TYPE } from "../../utils";
 
+@injectable()
 export class UserController {
-
     private interactor: IUserInteractor
-
-    constructor(interactor: IUserInteractor) {
+    constructor(@inject(INTERFACE_TYPE.UserInteractor) interactor: IUserInteractor) {
         this.interactor = interactor
     }
-
     async onCreateUser(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body
