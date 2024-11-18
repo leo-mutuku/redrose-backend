@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
-import { IMailer } from "../interfaces/IMailer";
-import { IMessageBroker } from "../interfaces/IMessageBroker";
+import { IMailer } from "../interfaces/IMailerInteractor";
+import { IMessageBroker } from "../interfaces/IMessageBrokerInteractor";
 import { IProductInteractor } from "../interfaces/IProductInteractor";
 import { IProductRepository } from "../interfaces/IProductRepository";
 import { INTERFACE_TYPE } from "../utils";

@@ -1,4 +1,4 @@
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 
 export class SupplierController {
     async onCreateSupplier(req: Request, res: Response, next: NextFunction) {

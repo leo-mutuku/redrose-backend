@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { IMessageBroker } from "../interfaces/IMessageBroker";
+import { IMessageBroker } from "../interfaces/IMessageBrokerInteractor";
 
 @injectable()
 export class MessageBroker implements IMessageBroker {

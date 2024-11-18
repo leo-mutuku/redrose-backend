@@ -5,9 +5,9 @@ import { INTERFACE_TYPE } from "../utils";
 import { ProductRepository } from "../repositories/productRepository";
 import { IProductInteractor } from "../interfaces/IProductInteractor";
 import { ProductInteractor } from "../interactors/productInteractor";
-import { IMailer } from "../interfaces/IMailer";
+import { IMailer } from "../interfaces/IMailerInteractor";
 import { Mailer } from "../external-libraries/mailer";
-import { IMessageBroker } from "../interfaces/IMessageBroker";
+import { IMessageBroker } from "../interfaces/IMessageBrokerInteractor";
 import { MessageBroker } from "../external-libraries/messageBroker";
 import { ProductController } from "../controllers/productController";
 
