@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { IMailer } from "../interfaces/IMailer";
+import { IMailer } from "../interfaces/IMailerInteractor";
 
 @injectable()
 export class Mailer implements IMailer {
