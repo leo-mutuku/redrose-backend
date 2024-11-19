@@ -12,7 +12,7 @@ export class UserController {
     async onCreateUser(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body
-            console.log(body)
+
             const data = await this.interactor.createUser(body)
             res.status(201).json({ status: 'success', data: data, message: 'User created successfully' })
         } catch (error) {
