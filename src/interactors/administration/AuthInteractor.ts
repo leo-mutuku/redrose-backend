@@ -1,17 +1,44 @@
+import { injectable, inject } from "inversify";
 import { IAuthInteractor } from "../../interfaces/administation/IAuthInteractor";
+import { IAuthRepository } from "../../interfaces/administation/IAuthRepository";
+import { INTERFACE_TYPE } from "../../utils";
 
+@injectable()
 export class AuthInteractor implements IAuthInteractor {
-    login(input: any) {
-        throw new Error("Method not implemented.");
+    private repository: IAuthRepository;
+    constructor(@inject(INTERFACE_TYPE.AuthRepository) repository: IAuthRepository) {
+        this.repository = repository;
     }
-    register(input: any) {
-        throw new Error("Method not implemented.");
+    async login(input: any): Promise<any> {
+        try {
+            const result = await this.repository.login(input)
+            return result
+
+        } catch (error) {
+            throw new Error("Error logging in" + error);
+
+        }
     }
-    forgotPassword(input: any) {
-        throw new Error("Method not implemented.");
+    async forgotPassword(input: any): Promise<any> {
+        try {
+            const result = await this.repository.forgotPassword(input)
+            return result
+
+        } catch (error) {
+            throw new Error("Error logging in" + error);
+        }
     }
-    resetPassword(input: any) {
-        throw new Error("Method not implemented.");
+    async resetPassword(input: any): Promise<any> {
+        try {
+            const result = await this.repository.resetPassword(input)
+            return result
+
+        } catch (error) {
+            throw new Error("Error logging in" + error);
+
+        }
     }
+
 
 }
+

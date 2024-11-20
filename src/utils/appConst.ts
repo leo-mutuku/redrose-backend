@@ -5,11 +5,9 @@ export const INTERFACE_TYPE = {
   ProductInteractor: Symbol.for("ProductInteractor"),
   ProductController: Symbol.for("ProductController"),
   // auth
-  AUthRepository: Symbol.for("AuthRepository"),
+  AuthRepository: Symbol.for("AuthRepository"),
   AuthInteractor: Symbol.for("AuthInteractor"),
   AuthController: Symbol.for("AuthController"),
-
-
 
   // user
   UserRepository: Symbol.for("UserRepository"),
