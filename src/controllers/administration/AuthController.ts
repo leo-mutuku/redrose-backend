@@ -12,9 +12,15 @@ export class AuthController {
     }
 
     async onLogin(req: Request, res: Response, next: NextFunction) {
-        const body = req.body
-        const result = await this.authInteractor.login(body)
-        res.json({ status: "success", data: result, message: "Login successful" })
+        try {
+            const body = req.body
+            const result = await this.authInteractor.login(body)
+            res.json({ status: "success", data: result, message: "Login successful" })
+
+        } catch (error) {
+            next(error)
+
+        }
 
 
     }

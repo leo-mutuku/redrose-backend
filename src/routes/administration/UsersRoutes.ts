@@ -19,7 +19,7 @@ container.bind(INTERFACE_TYPE.UserController).to(UserController)
 const router = Router();
 const controller = container.get<UserController>(INTERFACE_TYPE.UserController)
 
-router.post("/createuser", controller.onCreateUser.bind(controller));
+router.post("/register", controller.onCreateUser.bind(controller));
 router.get("/getuser/:id", controller.onGetUser.bind(controller));
 router.get("/getusers", controller.onGetUsers.bind(controller));
 router.put("/:id", controller.onUpdateUser.bind(controller));
