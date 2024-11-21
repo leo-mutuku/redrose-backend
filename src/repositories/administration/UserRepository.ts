@@ -3,6 +3,8 @@ import { pgClient } from "../../dbConnection";
 import { User } from "../../entities/administration/Users";
 import { IUserRepository } from "../../interfaces/administation/IUserRepository"
 import { Pool } from "pg";
+import { AppError } from "../../utils/AppError";
+import bcrypt from "bcrypt";
 
 @injectable()
 export class UserRepository implements IUserRepository {
@@ -13,12 +15,15 @@ export class UserRepository implements IUserRepository {
     }
     async createUser({ username, first_name, last_name, password, ttl, phone }: User): Promise<User> {
         try {
+            const saltRounds = 10; // Number of hashing rounds
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+
             const query = `INSERT INTO users (username, first_name, last_name, password, ttl, phone) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
-            const values = [username, first_name, last_name, password, ttl, phone];
+            const values = [username, first_name, last_name, hashedPassword, ttl, phone];
             const result = await this.client.query(query, values);
             return result.rows[0];
         } catch (error) {
-            throw new Error('Error creating user ' + error)
+            throw new AppError('Error creating user ' + error)
         }
     }
 
