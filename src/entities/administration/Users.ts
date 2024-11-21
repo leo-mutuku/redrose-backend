@@ -7,4 +7,4 @@ export class User {
         public readonly ttl: number,
         public readonly phone: string
     ) { }
-}
+} 
