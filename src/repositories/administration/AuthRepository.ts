@@ -16,13 +16,24 @@ export class AuthRepository implements IAuthRepository {
             const query = "SELECT * FROM users WHERE username = $1 AND password = $2";
             const values = [username, password];
             const result = await this.client.query(query, values);
-            if (result.rows.length > 0) {
-                return result.rows[0];
-            } else {
+            if (result.rows.length === 0) {
+                // Throw operational error for invalid login
                 throw new AppError("Invalid username or password", 401);
             }
+            return result.rows[0];
         } catch (error) {
-            throw new AppError("Error logging in" + error);
+            // Re-throw unexpected errors with context
+            if (error instanceof AppError) {
+                throw error; // Re-throw operational AppErrors to be handled by middleware
+            }
+
+            // Wrap and propagate unexpected errors
+            const errorMessage = error instanceof Error ? error.message : "Unknown error";
+            throw new AppError(
+                `Error occurred during login: ${errorMessage}`,
+                500,
+                false // Mark as non-operational if it's an unexpected error
+            );
         }
     }
     async forgotPassword(username: string): Promise<Auth> {
