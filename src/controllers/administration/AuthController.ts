@@ -13,10 +13,21 @@ export class AuthController {
 
     async onLogin(req: Request, res: Response, next: NextFunction) {
         try {
-            const body = req.body
-            const result = await this.authInteractor.login(body)
-            res.json({ status: "success", data: result, message: "Login successful" })
+            const body = req.body;
+            const result = await this.authInteractor.login(body);
 
+            // Send token in the Authorization header
+            const token = result.token;
+
+            // Set the token in the Authorization header
+            res.setHeader("Authorization", `Bearer ${token}`);
+
+            // Return the result along with a success message
+            res.json({
+                status: "success",
+                data: result.result,
+                message: "Login successful"
+            });
         } catch (error) {
             next(error)
 

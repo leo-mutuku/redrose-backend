@@ -5,16 +5,18 @@ import { Pool } from "pg";
 import { pgClient } from "../../dbConnection";
 import { AppError } from "../../utils/AppError";
 
+
 @injectable()
 export class AuthRepository implements IAuthRepository {
     private client: Pool
     constructor() {
         this.client = pgClient()
     }
-    async login({ username, password }: Auth): Promise<Auth> {
+    async login({ username }: Auth): Promise<Auth> {
         try {
-            const query = "SELECT * FROM users WHERE username = $1 AND password = $2";
-            const values = [username, password];
+
+            const query = "SELECT * FROM users WHERE username = $1";
+            const values = [username];
             const result = await this.client.query(query, values);
             if (result.rows.length === 0) {
                 // Throw operational error for invalid login
