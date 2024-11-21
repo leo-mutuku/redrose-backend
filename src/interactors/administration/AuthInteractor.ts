@@ -31,7 +31,8 @@ export class AuthInteractor implements IAuthInteractor {
             process.env.JWT_SECRET!,                 // Secret key from environment
             { expiresIn: "1h" }                      // Token expiration
         );
-        return { result, token }
+        
+        return { ...result, token };
 
     }
     async forgotPassword(input: any): Promise<any> {

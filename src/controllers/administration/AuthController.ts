@@ -25,7 +25,7 @@ export class AuthController {
             // Return the result along with a success message
             res.json({
                 status: "success",
-                data: result.result,
+                data: result,
                 message: "Login successful"
             });
         } catch (error) {
