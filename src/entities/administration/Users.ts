@@ -6,6 +6,7 @@ export class User {
         public readonly first_name: string,
         public readonly last_name: string,
         public readonly password: string,
-        public readonly phone: string
+        public readonly phone: string,
+        public readonly is_active?: boolean,
     ) { }
 } 

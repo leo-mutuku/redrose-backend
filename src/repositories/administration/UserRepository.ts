@@ -48,7 +48,7 @@ export class UserRepository implements IUserRepository {
         try {
 
 
-            const query = `SELECT  user_id, username, first_name, last_name, created_by, 
+            const query = `SELECT  user_id, username, first_name, last_name, created_by,  is_active,
             TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at FROM users  WHERE user_id = $1`;
             const values = [id];
 
@@ -63,8 +63,10 @@ export class UserRepository implements IUserRepository {
     }
     async updateUser(id: number, user: User): Promise<User> {
         try {
-            const query = `UPDATE users SET username = $1, password = $2, ttl = $3, phone = $4 WHERE user_id = $5 RETURNING *`;
-            const values = [user.username, user.password, user.ttl, user.phone, id];
+            const query = `UPDATE users SET first_name = $1, last_name = $2, phone = $3, is_active=$4 WHERE user_id = $5 RETURNING 
+            user_id, username, first_name, last_name, created_by,  is_active,
+            TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
+            const values = [user.first_name, user.last_name, user.phone, user.is_active, id];
             const result = await this.client.query(query, values);
             return result.rows[0];
         } catch (error) {

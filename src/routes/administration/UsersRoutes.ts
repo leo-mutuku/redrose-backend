@@ -23,5 +23,6 @@ const controller = container.get<UserController>(INTERFACE_TYPE.UserController)
 router.post("/register", controller.onCreateUser.bind(controller));
 router.get("/getuser/:id", controller.onGetUser.bind(controller));
 router.get("/getusers", controller.onGetUsers.bind(controller));
+router.put("/updateuser/:id", controller.onUpdateUser.bind(controller));
 
 export default router;
