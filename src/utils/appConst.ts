@@ -1,3 +1,5 @@
+import { User } from "../entities/administration/Users";
+
 
 export const INTERFACE_TYPE = {
   // product test case
@@ -13,6 +15,35 @@ export const INTERFACE_TYPE = {
   UserRepository: Symbol.for("UserRepository"),
   UserInteractor: Symbol.for("UserInteractor"),
   UserController: Symbol.for("UserController"),
+
+  // roles
+  RoleRepository: Symbol.for("RoleRepository"),
+  RoleInteractor: Symbol.for("RoleInteractor"),
+  RoleController: Symbol.for("RoleController"),
+
+  // user roles
+  UserRoleRepository: Symbol.for("UserRoleRepository"),
+  UserRoleInteractor: Symbol.for("UserRoleInteractor"),
+  UserRoleController: Symbol.for("UserRoleController"),
+
+  // shift
+  ShiftRepository: Symbol.for("ShiftRepository"),
+  ShiftInteractor: Symbol.for("ShiftInteractor"),
+  ShiftController: Symbol.for("ShiftController"),
+
+  // Supplier
+  SupplierRepository: Symbol.for("SupplierRepository"),
+  SupplierInteractor: Symbol.for("SupplierInteractor"),
+  SupplierController: Symbol.for("SupplierController"),
+
+  // vendors
+  VendorRepository: Symbol.for("VendorRepository"),
+  VendorInteractor: Symbol.for("VendorInteractor"),
+  VendorController: Symbol.for("VendorController"),
+
+
+
+  // global
   Mailer: Symbol.for("Mailer"),
   MessageBroker: Symbol.for("MessageBroker"),
 };
