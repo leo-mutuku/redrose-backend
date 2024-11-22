@@ -34,7 +34,8 @@ export class UserRepository implements IUserRepository {
 
     async getUsers(limit: number, offset: number): Promise<User[]> {
         try {
-            const query = `SELECT * FROM users LIMIT $1 OFFSET $2`;
+            const query = `SELECT user_id, username, first_name, last_name, created_by, 
+            TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at FROM users WHERE is_active = true LIMIT $1 OFFSET $2`;
             const values = [limit, offset];
             const result = await this.client.query(query, values);
             return result.rows;
