@@ -18,8 +18,6 @@ export class StaffRepository implements IStaffRepository {
             VALUES ($1, $2,$3,$4) RETURNING *`
             const value = [first_name, last_name, phone, created_by]
 
-
-
         } catch (error) {
 
         }
