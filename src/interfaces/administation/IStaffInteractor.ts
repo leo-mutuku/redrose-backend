@@ -1,6 +1,6 @@
 export interface IStaffInteractor {
-    createStaff(input: any): Promise<any>;
-    getStaff(id: number): Promise<any>;
-    updateStaff(id: number, input: any): Promise<any>;
-    getStaffs(limit: number, offset: number): Promise<any>;
+    createStaff(input: any);
+    getStaff(id: number)
+    getStaffs(limit: number, offset: number);
+    updateStaff(id: number, input: any);
 }

@@ -1,6 +1,6 @@
 export interface IVendorInteractor {
-    createVendor(input: any): Promise<any>;
-    updateVendor(id: number, input: any): Promise<any>;
-    getVendor(id: number): Promise<any>;
-    getVendors(limit: number, offset: number): Promise<any>;
+    createVendor(input: any);
+    updateVendor(id: number, input: any);
+    getVendor(id: number);
+    getVendors(limit: number, offset: number);
 }
