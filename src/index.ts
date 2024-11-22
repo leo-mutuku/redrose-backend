@@ -7,9 +7,10 @@ import cors from "cors";
 const PORT = process.env.PORT || 9000;
 const app = express();
 app.use(express.json());
-// Use helmet to set various HTTP headers for security
-app.use(helmet());
 
+
+app.use(helmet());
+app.use(cors());
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   // Set CORS headers
