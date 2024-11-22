@@ -1,4 +1,8 @@
 import { IVendorRepository } from "../../interfaces/administation/IVendorRepository";
+import { injectable } from "inversify";
+import { pgClient } from "../../dbConnection";
+import { Pool } from "pg";
+import { AppError } from "../../utils/AppError";
 
 
 export class VendorRepository implements IVendorRepository {
