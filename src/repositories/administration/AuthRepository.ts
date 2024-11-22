@@ -15,7 +15,7 @@ export class AuthRepository implements IAuthRepository {
     async login({ username }: Auth): Promise<Auth> {
         try {
 
-            const query = "SELECT * FROM users WHERE username = $1";
+            const query = "SELECT user_id, username, first_name, last_name, created_by, TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at FROM users WHERE username = $1";
             const values = [username];
             const result = await this.client.query(query, values);
             if (result.rows.length === 0) {
@@ -40,7 +40,7 @@ export class AuthRepository implements IAuthRepository {
     }
     async forgotPassword(username: string): Promise<Auth> {
         try {
-            const query = "SELECT * FROM users WHERE user_name = $1";
+            const query = "SELECT user_id, username, first_name, last_name, created_by, TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at FROM users  FROM users WHERE user_name = $1";
             const values = [username];
             const result = await this.client.query(query, values);
             return result.rows[0];

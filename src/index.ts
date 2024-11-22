@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(helmet());
 
 
-app.use((req:Request, res:Response, next:NextFunction) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   // Set CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -22,7 +22,6 @@ app.use((req:Request, res:Response, next:NextFunction) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
   );
- 
   next();
 });
 
