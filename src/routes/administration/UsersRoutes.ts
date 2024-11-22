@@ -5,7 +5,8 @@ import { IUserRepository } from "../../interfaces/administation/IUserRepository"
 import { UserRepository } from "../../repositories/administration/UserRepository";
 import { IUserInteractor } from "../../interfaces/administation/IUserInteractor";
 import { UserInteractor } from "../../interactors/administration/UserInteractor";
-import { UserController } from "../../controllers/administration/UsersController";
+import { UserController } from "../../controllers/administration/usersController";
+
 
 
 const container = new Container
@@ -22,5 +23,5 @@ const controller = container.get<UserController>(INTERFACE_TYPE.UserController)
 router.post("/register", controller.onCreateUser.bind(controller));
 router.get("/getuser/:id", controller.onGetUser.bind(controller));
 router.get("/getusers", controller.onGetUsers.bind(controller));
-router.put("/:id", controller.onUpdateUser.bind(controller));
+
 export default router;

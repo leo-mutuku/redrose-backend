@@ -32,6 +32,7 @@ export class UserController {
     }
     async onGetUser(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log(req.params.id)
             const id = parseInt(req.params.id)
             const data = await this.interactor.getUser(id)
             res.status(200).json({ status: 'success', data: data, message: 'User fetched successfully' })
