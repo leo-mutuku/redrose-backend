@@ -4,12 +4,16 @@ import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
 import { IUserRoleRepository } from "../../interfaces/administation/IUserRoleRepository";
+import { User } from "../../entities/administration/Users";
 
 @injectable()
 export class UserRoleRepository implements IUserRoleRepository {
     private client: Pool
     constructor() {
         this.client = pgClient()
+    }
+    createUserRole(input: any): Promise<any> {
+        throw new Error("Method not implemented.");
     }
     async createuserRole(userRole: UserRole): Promise<UserRole> {
         try {
@@ -25,10 +29,17 @@ export class UserRoleRepository implements IUserRoleRepository {
 
         }
     }
-    async updateUserRole(id: number, input: any): Promise<any> {
+    async updateUserRole(id: number, userRole: UserRole): Promise<any> {
         try {
+            const query =
+                `UPDATE user_roles SET role_id = $1, user_id = $2 WHERE user_role_id = $3
+              RETURNING *`
+            const values = [userRole.role_id, userRole.user_id, id]
+            const result = await this.client.query(query, values)
+            return result.rows[0]
 
         } catch (error) {
+            throw new AppError("Error while updating shift: " + error, 400)
 
         }
     }
@@ -52,29 +63,31 @@ export class UserRoleRepository implements IUserRoleRepository {
         }
     }
 
-    async getRole(username: string): Promise<Shift> {
+    async getRole(id: number): Promise<UserRole> {
         try {
+            let query = `SELECT * FROM shifts WHERE shift_id = $1`
+            let values = [id]
+            const result = await this.client.query(query, values)
+            return result.rows[0]
 
         } catch (error) {
             throw new AppError("Error while getting shift: " + error, 400)
 
         }
     }
-    async getRoles(shift: Shift): Promise<Shift> {
+    async getRoles(limit: number, offset: number): Promise<User> {
         try {
+            let query = `SELECT * FROM shifts LIMIT $1 OFFSET $2`
+            let values = [limit, offset]
+            const result = await this.client.query(query, values)
+            return result.rows[0]
 
         } catch (error) {
             throw new AppError("Error while getting shift: " + error, 400)
 
         }
     }
-    updateRole(id: number, shift: Shift): Promise<Shift> {
-        try {
 
-        } catch (error) {
-            throw new AppError("Error while updating shift: " + error, 400)
 
-        }
-    }
 
 }   

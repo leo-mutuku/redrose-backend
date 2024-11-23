@@ -16,6 +16,11 @@ export const INTERFACE_TYPE = {
   UserInteractor: Symbol.for("UserInteractor"),
   UserController: Symbol.for("UserController"),
 
+  //staff
+  StaffRepository: Symbol.for("StaffRepository"),
+  StaffInteractor: Symbol.for("StaffInteractor"),
+  StaffController: Symbol.for("StaffController"),
+
   // roles
   RoleRepository: Symbol.for("RoleRepository"),
   RoleInteractor: Symbol.for("RoleInteractor"),

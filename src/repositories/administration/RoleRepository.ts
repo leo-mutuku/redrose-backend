@@ -40,7 +40,7 @@ export class RoleRepository implements IRoleRepository {
         }
 
     }
-    getRoles(staff: Role): Promise<Role> {
+    getRoles(limit: number, offset: number): Promise<Role> {
         throw new Error("Method not implemented.");
     }
     async updateRole(id: number, staff: Role): Promise<Role> {
