@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { IStaffInteractor } from "../../interfaces/administation/IStaffInteractor";
 
+@injectable()
 export class StaffController {
     private staffInteractor: IStaffInteractor
     constructor(@inject(INTERFACE_TYPE.StaffInteractor) staffInteractor: IStaffInteractor) {
@@ -31,7 +32,7 @@ export class StaffController {
     }
     async onGetStaff(req: Request, res: Response, next: NextFunction) {
         try {
-            const staffId = parseInt(req.params.staffId)
+            const staffId = parseInt(req.params.id)
             const staff = await this.staffInteractor.getStaff(staffId)
             res.status(200).json({ status: "success", data: staff, message: "Staff fetched successfully" })
         }
@@ -41,7 +42,7 @@ export class StaffController {
     }
     async onUpdateStaff(req: Request, res: Response, next: NextFunction) {
         try {
-            const staffId = parseInt(req.params.staffId)
+            const staffId = parseInt(req.params.id)
             const staff = req.body
             const updatedStaff = await this.staffInteractor.updateStaff(staffId, staff)
             res.status(200).json({ status: "success", data: updatedStaff, message: "Staff updated successfully" })

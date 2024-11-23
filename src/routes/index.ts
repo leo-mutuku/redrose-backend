@@ -9,6 +9,7 @@ import ShiftRoutes from "./administration/ShiftRoutes";
 import SupplierRoutes from "./administration/SuppliersRoutes"
 import UserRoleRoutes from "./administration/UserRoleRoutes"
 import VendorRoutes from "./administration/VendorsRoutes";
+import StaffRoutes from "./administration/StaffRoutes";
 
 
 const routers = express.Router();
@@ -22,5 +23,6 @@ routers.use("/shifts", ShiftRoutes);
 routers.use("/suppliers", SupplierRoutes);
 routers.use("/userroles", UserRoleRoutes);
 routers.use("/vendors", VendorRoutes);
+routers.use("/staff", StaffRoutes);
 
 export default routers;
