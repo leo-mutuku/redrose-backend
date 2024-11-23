@@ -13,22 +13,27 @@ export class ShiftRepository implements IShiftRepository {
     }
     async createShift(shift: Shift): Promise<Shift> {
         try {
-            const result = await this.client.query(`INSERT INTO shifts (shift_start, shift_end) VALUES ($1, $2) RETURNING *`, [shift.shift_start, shift.shift_end])
+            const result = await this.client.query(
+                `INSERT INTO shift (shift_start, shift_end, created_by)
+                 VALUES ($1, $2, $3) 
+                RETURNING *`,
+                [shift.shift_start, shift.shift_end, shift.created_by]
+            )
             return result.rows[0]
 
 
         } catch (error) {
-            throw new AppError("Error creating shift", 500)
+            throw new AppError("Error creating shift" + error, 500)
 
         }
     }
     async getShift(id: number): Promise<Shift> {
         try {
-            const result = await this.client.query(`SELECT * FROM shifts WHERE shift_id = $1`, [id])
+            const result = await this.client.query(`SELECT * FROM shift WHERE shift_id = $1`, [id])
             return result.rows[0]
 
         } catch (error) {
-            throw new AppError("Error getting shift", 500)
+            throw new AppError("Error getting shift" + error, 500)
 
         }
     }

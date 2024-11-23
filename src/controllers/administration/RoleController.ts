@@ -32,7 +32,7 @@ export class RoleController {
     }
     async onGetRole(req: Request, res: Response, next: NextFunction) {
         try {
-            const roleId = parseInt(req.params.roleId)
+            const roleId = parseInt(req.params.id)
             const role = await this.roleInteractor.getRole(roleId)
             res.status(200).json({ status: "success", data: role, message: "Role fetched successfully" })
         } catch (error) {

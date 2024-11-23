@@ -15,9 +15,9 @@ export class SupplierRepository implements ISupplierRepository {
     async createSupplier(supplier: Supplier): Promise<Supplier> {
         try {
             const query =
-                `INSERT INTO suppliers(supplier_name,phone) VALUES($1, $2, )
+                `INSERT INTO suppliers(supplier_name,phone, created_by) VALUES($1, $2, $3)
               RETURNING *`
-            const values = [supplier.supplier_name, supplier.phone,]
+            const values = [supplier.supplier_name, supplier.phone, supplier.created_by]
             const result = await this.client.query(query, values)
             return result.rows[0]
 

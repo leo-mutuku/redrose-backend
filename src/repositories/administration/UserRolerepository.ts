@@ -12,10 +12,7 @@ export class UserRoleRepository implements IUserRoleRepository {
     constructor() {
         this.client = pgClient()
     }
-    createUserRole(input: any): Promise<any> {
-        throw new Error("Method not implemented.");
-    }
-    async createuserRole(userRole: UserRole): Promise<UserRole> {
+    async createUserRole(userRole: UserRole): Promise<UserRole> {
         try {
             const query =
                 `INSERT INTO user_roles(role_id, user_id) VALUES($1, $2)
@@ -25,7 +22,7 @@ export class UserRoleRepository implements IUserRoleRepository {
             return result.rows[0]
 
         } catch (error) {
-            throw new AppError("Error while creating shift: " + error, 400)
+            throw new AppError("Error while creating user role: " + error, 400)
 
         }
     }
