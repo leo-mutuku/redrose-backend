@@ -1,19 +1,64 @@
 import { IUserRoleInteractor } from "../../interfaces/administation/IUserRoleInteractor";
+import { INTERFACE_TYPE } from "../../utils";
+import { AppError } from "../../utils/AppError";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class UserRoleInteractor implements IUserRoleInteractor {
-    getRoles(limit: number, offset: number): Promise<any> {
-        throw new Error("Method not implemented.");
+    private repository: IUserRoleInteractor;
+    constructor(@inject(INTERFACE_TYPE.UserRoleRepository) repository: IUserRoleInteractor) {
+        this.repository = repository;
     }
-    createUserRole(input: any): Promise<any> {
-        throw new Error("Method not implemented.");
+
+    async createUserRole(input: any) {
+        try {
+            const result = await this.repository.createUserRole(input)
+            return result
+
+        } catch (error) {
+            throw new AppError(
+                `Failed to create user role. Reason: ${(error as AppError).message}`,
+                (error as AppError).statusCode || 500
+            );
+
+        }
     }
-    getUserRole(id: number): Promise<any> {
-        throw new Error("Method not implemented.");
+    async getUserRole(id: number) {
+        try {
+            const result = await this.repository.getUserRole(id)
+            return result
+
+        } catch (error) {
+            throw new AppError(
+                `Failed to get user role. Reason: ${(error as AppError).message}`,
+                (error as AppError).statusCode || 500
+            );
+
+        }
     }
-    updateUserRole(id: number, input: any): Promise<any> {
-        throw new Error("Method not implemented.");
+    async updateUserRole(id: number, input: any) {
+        try {
+            const result = await this.repository.updateUserRole(id, input)
+            return result
+        }
+        catch (error) {
+            throw new AppError(
+                `Failed to update user role. Reason: ${(error as AppError).message}`,
+                (error as AppError).statusCode || 500
+            );
+        }
     }
-    getUserRoles(limit: number, offset: number): Promise<any> {
-        throw new Error("Method not implemented.");
+    async getUserRoles(limit: number, offset: number) {
+        try {
+            const result = await this.repository.getUserRoles(limit, offset)
+            return result
+        }
+        catch (error) {
+            throw new AppError(
+                `Failed to get user roles. Reason: ${(error as AppError).message}`,
+                (error as AppError).statusCode || 500
+            );
+        }
     }
+
 }
