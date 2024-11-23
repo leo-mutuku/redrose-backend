@@ -21,13 +21,13 @@ C:\Program Files\PostgreSQL\15\bin>
 -- Drop the current database
 -- Note: The -U postgres -h localhost -p 5432 is the connection details for the database server
 -- Note: The redrose is the name of the database you want to restore
-C:\Program Files\PostgreSQL\15\bin> dropdb -U postgres -h localhost -p 5432 redrose
+C:\Program Files\PostgreSQL\15\bin> dropdb -U postgres -h localhost -p 5432 red_rose
 
 ### Step 3
 -- Restore the database from the backup file
 -- Note: The -U postgres -h localhost -p 5432 is the connection details for the database server
 -- Note: The red_rose is the name of the database you want to restore
-C:\Program Files\PostgreSQL\15\bin>pg_restore -U postgres -d postgres -v -F t "C:\Backup\red_rose.tar"
+C:\Program Files\PostgreSQL\15\bin>>pg_restore -U postgres -d postgres -v -F t D:\Felex\personal\redrose-backend\red_rose.tar
 
 
 
