@@ -14,7 +14,7 @@ export class UserRepository implements IUserRepository {
     constructor() {
         this.client = pgClient()
     }
-    async createUser({ username, first_name, last_name, password, ttl, phone }: User): Promise<User> {
+    async createUser({ username, first_name, last_name, password, ttl, phone, roles }: User): Promise<User> {
         try {
             const saltRounds = 10; // Number of hashing rounds
             const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -22,10 +22,28 @@ export class UserRepository implements IUserRepository {
             const query = `INSERT INTO users (username, first_name, last_name, password, ttl, phone)
              VALUES ($1, $2, $3, $4, $5, $6) RETURNING 
             user_id, username, first_name, last_name, created_by, 
-            TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at FROM users `;
+            TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at  `;
+
             const values = [username, first_name, last_name, hashedPassword, ttl, phone];
             const result = await this.client.query(query, values);
-            return result.rows[0];
+            // create user roles
+            const user_id = parseInt(result.rows[0].user_id)
+            for (let role of roles ?? []) {
+                try {
+                    const query2 = `
+                        INSERT INTO user_roles (user_id, role_id) 
+                        VALUES ($1, $2)
+                        RETURNING user_id, role_id;
+                    `;
+                    const values2 = [user_id, role];
+                    const result2 = await this.client.query(query2, values2);
+                    console.log("Inserted:", result2.rows[0]); // Optional logging
+                } catch (error) {
+                    throw new AppError('Error creating user role ' + error, 500);
+                }
+            }
+
+            return { ...result.rows[0], roles };
         } catch (error) {
             throw new AppError('Error creating user ' + error)
         }

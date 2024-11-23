@@ -26,7 +26,7 @@ export class UserInteractor implements IUserInteractor {
             if (error instanceof AppError) {
 
                 // Handle a specific error type if applicable
-                throw new AppError('Error occured at the interactor', 500);
+                throw new AppError('Error occured at the interactor' + error, 500);
             }
             throw new Error('Failed to create user. Please try again later.');
         }
