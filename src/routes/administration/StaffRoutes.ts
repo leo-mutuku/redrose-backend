@@ -5,7 +5,8 @@ import { IStaffRepository } from "../../interfaces/administation/IStaffRepositor
 import { StaffRepository } from "../../repositories/administration/StaffRepository";
 import { IStaffInteractor } from "../../interfaces/administation/IStaffInteractor";
 import { StaffInteractor } from "../../interactors/administration/StaffInteractor";
-import { StaffController } from "../../controllers/administration/StaffController";
+import { StaffController } from "../../controllers/administration/staffController";
+
 
 const container = new Container();
 container.bind<IStaffRepository>(INTERFACE_TYPE.StaffRepository).to(StaffRepository);
