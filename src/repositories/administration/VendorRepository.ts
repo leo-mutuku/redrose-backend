@@ -3,6 +3,7 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
+import { Vendor } from "../../entities/administration/Vendors";
 
 @injectable()
 export class VendorRepository implements IVendorRepository {
@@ -10,10 +11,11 @@ export class VendorRepository implements IVendorRepository {
     constructor() {
         this.client = pgClient()
     }
-    async createVendor(input: any): Promise<any> {
+    async createVendor(vendor: Vendor): Promise<any> {
         try {
-            const query = `INSERT INTO vendors(vendor_name,vendor_address,vendor_phone,vendor_email) VALUES($1,$2,$3,$4) RETURNING *`
-            const values = [input.vendor_name, input.vendor_address, input.vendor_phone, input.vendor_email]
+            const query = `INSERT INTO vendors(vendor_name,phone, created_by) 
+            VALUES($1,$2, $3) RETURNING *`
+            const values = [vendor.vendor_name, vendor.phone, vendor.created_by]
             const result = await this.client.query(query, values)
             return result.rows[0]
 

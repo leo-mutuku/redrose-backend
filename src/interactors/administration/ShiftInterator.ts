@@ -18,14 +18,14 @@ export class ShiftInteractor implements IShiftInteractor {
             return result
         } catch (error) {
             throw new AppError(
-                `Failed to create shift. Reason: ${(error as AppError).message}`,
+                `Failed to create shift. Reason: ` + error,
                 (error as AppError).statusCode || 500
             );
         }
     }
     async getShift(id: number): Promise<any> {
         try {
-            const result = await this.repository
+            const result = await this.repository.getShift(id)
             return result
 
         } catch (error) {

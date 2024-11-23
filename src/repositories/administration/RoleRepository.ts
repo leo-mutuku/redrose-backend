@@ -15,10 +15,12 @@ export class RoleRepository implements IRoleRepository {
 
     async createRole(role: Role): Promise<Role> {
         try {
+
             const query =
-                `INSERT INTO roles(role_name,role_description) VALUES($1, $2)
+                `INSERT INTO roles(role_name,role_description, created_by)
+                 VALUES($1, $2, $3)
               RETURNING *`
-            const values = [role.role_name, role.description]
+            const values = [role.role_name, role.role_description, role.created_by]
             const result = await this.client.query(query, values)
             return result.rows[0]
 
@@ -43,12 +45,12 @@ export class RoleRepository implements IRoleRepository {
     getRoles(limit: number, offset: number): Promise<Role> {
         throw new Error("Method not implemented.");
     }
-    async updateRole(id: number, staff: Role): Promise<Role> {
+    async updateRole(id: number, role: Role): Promise<Role> {
         try {
             const query =
                 `UPDATE roles SET role_name = $1, role_description = $2 WHERE role_id = $3
               RETURNING *`
-            const values = [staff.role_name, staff.description, id]
+            const values = [role.role_name, role.role_description, id]
             const result = await this.client.query(query, values)
             return result.rows[0]
 
