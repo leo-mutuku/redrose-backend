@@ -37,7 +37,7 @@ export class UserRepository implements IUserRepository {
                     `;
                     const values2 = [user_id, role];
                     const result2 = await this.client.query(query2, values2);
-                    console.log("Inserted:", result2.rows[0]); // Optional logging
+
                 } catch (error) {
                     throw new AppError('Error creating user role ' + error, 500);
                 }
