@@ -19,8 +19,9 @@ export class AuthInteractor implements IAuthInteractor {
         }
         // Compare provided password with the hashed password
         let resultPassword = result.password ? result.password : ""
-        console.log(resultPassword)
-        const isPasswordValid = bcrypt.compare(input.password, resultPassword);
+
+        const isPasswordValid = await bcrypt.compare(input.password, resultPassword);
+        // Check if the password is valid
         if (!isPasswordValid) {
             throw new AppError("Invalid username or password", 401);
         }
@@ -31,7 +32,7 @@ export class AuthInteractor implements IAuthInteractor {
             process.env.JWT_SECRET!,                 // Secret key from environment
             { expiresIn: "1h" }                      // Token expiration
         );
-        
+
         return { ...result, token };
 
     }
