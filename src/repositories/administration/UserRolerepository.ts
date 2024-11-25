@@ -67,7 +67,7 @@ export class UserRoleRepository implements IUserRoleRepository {
 
         }
     }
-    async getUserRoles(limit: number, offset: number): Promise<any> {
+    async unassignRoles(id: number, input: number): Promise<any> {
         try {
 
         } catch (error) {

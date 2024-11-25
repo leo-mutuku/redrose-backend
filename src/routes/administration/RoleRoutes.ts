@@ -18,7 +18,7 @@ const controller = container.get<RoleController>(INTERFACE_TYPE.RoleController);
 router.post('/createrole', controller.onCreateRole.bind(controller));
 router.get('/getroles', controller.onGetRoles.bind(controller));
 router.get('/getrole/:id', controller.onGetRole.bind(controller));
-router.put('/updateRole/:id', controller.onUpdateRole.bind(controller));
+router.patch('/updateRole/:id', controller.onUpdateRole.bind(controller));
 
 
 export default router;

@@ -48,14 +48,14 @@ export class UserRoleInteractor implements IUserRoleInteractor {
             );
         }
     }
-    async getUserRoles(limit: number, offset: number) {
+    async unassignRoles(limit: number, offset: number) {
         try {
-            const result = await this.repository.getUserRoles(limit, offset)
+            const result = await this.repository.unassignRoles(limit, offset)
             return result
         }
         catch (error) {
             throw new AppError(
-                `Failed to get user roles. Reason: ${(error as AppError).message}`,
+                `Failed to unassign roles : ${(error as AppError).message}`,
                 (error as AppError).statusCode || 500
             );
         }

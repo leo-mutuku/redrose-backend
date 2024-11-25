@@ -74,7 +74,6 @@ export class UserRepository implements IUserRepository {
             const roles = await this.client.query(`SELECT role_id FROM user_roles WHERE user_id = $1`, [id]);
             const user_roles = roles.rows.map((row: any) => row.role_name);
             return { ...result.rows[0], user_roles };
-
         } catch (error) {
             throw new AppError('Error fetching user ' + error)
         }
