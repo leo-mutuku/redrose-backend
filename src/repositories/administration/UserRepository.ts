@@ -96,6 +96,9 @@ export class UserRepository implements IUserRepository {
                 values.push(value);
             });
 
+            // update roles  check if role exist in user_roles table
+
+
             // Ensure at least one field to update
             if (setClauses.length === 0) {
                 throw new Error('No fields to update');
