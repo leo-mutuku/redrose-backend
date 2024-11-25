@@ -71,7 +71,6 @@ export class UserRepository implements IUserRepository {
             const values = [id];
 
             const result = await this.client.query(query, values);
-            console.log(result.rows[0])
             return result.rows[0];
 
         } catch (error) {
@@ -81,14 +80,45 @@ export class UserRepository implements IUserRepository {
     }
     async updateUser(id: number, user: User): Promise<User> {
         try {
-            const query = `UPDATE users SET first_name = $1, last_name = $2, phone = $3, is_active=$4 WHERE user_id = $5 RETURNING 
-            user_id, username, first_name, last_name, created_by,  is_active,
-            TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
-            const values = [user.first_name, user.last_name, user.phone, user.is_active, id];
+            // Initialize query parts
+            let query = `UPDATE users SET `;
+            const values: any[] = [];
+            let setClauses: string[] = [];
+
+            // Prevent updating user_id
+            if ('user_id' in user) {
+                throw new AppError('Updating user_id is not allowed');
+            }
+
+            // Dynamically build the SET clause and values array
+            Object.entries(user).forEach(([key, value], index) => {
+                setClauses.push(`${key} = $${index + 1}`);
+                values.push(value);
+            });
+
+            // Ensure at least one field to update
+            if (setClauses.length === 0) {
+                throw new Error('No fields to update');
+            }
+
+            // Add WHERE clause and RETURNING statement
+            query += setClauses.join(', ');
+            query += ` WHERE user_id = $${values.length + 1} RETURNING 
+                user_id, username, first_name, last_name, created_by, is_active,
+                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
+
+            // Add user ID to the values array
+            values.push(id);
+
+            // Execute the query
             const result = await this.client.query(query, values);
+            if (result.rows.length === 0) {
+                throw new AppError('User not found', 400);
+            }
+
             return result.rows[0];
         } catch (error) {
-            throw new Error('Error updating user ' + error)
+            throw new AppError('Error updating user ' + error, 400)
         }
     }
 
