@@ -9,22 +9,24 @@ export class UserRoleController {
     constructor(@inject(INTERFACE_TYPE.UserRoleInteractor) userRoleInteractor: IUserRoleInteractor) {
         this.userRoleInteractor = userRoleInteractor
     }
-    async onCreateUserRole(req: Request, res: Response, next: NextFunction) {
+    async onAssignUserRoles(req: Request, res: Response, next: NextFunction) {
         try {
+            const id = parseInt(req.params.id)
             const body = req.body
-            const data = await this.userRoleInteractor.createUserRole(body)
-            res.status(201).json({ status: 'success', data: data, message: 'UserRole created successfully' });
+            const data = await this.userRoleInteractor.assignUserRoles(id, body)
+            res.status(201).json({ status: 'success', data: data, message: 'User roles assigned successfully' });
         }
         catch (error) {
             next(error)
         }
     }
-    async onGetUserRoles(req: Request, res: Response, next: NextFunction) {
+    async onUnassignUserRoles(req: Request, res: Response, next: NextFunction) {
         try {
-            const offset = parseInt(req.query.offset as string) || 0
-            const limit = parseInt(req.query.limit as string) || 10
-            const data = await this.userRoleInteractor.getUserRoles(limit, offset)
-            res.status(200).json({ status: 'success', data: data, message: 'UserRoles fetched successfully' });
+
+            const id = parseInt(req.params.id)
+            const body = req.body
+            const data = await this.userRoleInteractor.assignUserRoles(id, body)
+            res.status(200).json({ status: 'success', data: data, message: 'User roles unassigned successfully' });
         }
         catch (error) {
             next(error)

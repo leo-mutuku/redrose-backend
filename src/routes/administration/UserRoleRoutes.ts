@@ -15,10 +15,7 @@ container.bind<UserRoleController>(INTERFACE_TYPE.UserRoleController).to(UserRol
 
 const router = Router();
 const controller = container.get<UserRoleController>(INTERFACE_TYPE.UserRoleController)
-router.post("/createuserrole", controller.onCreateUserRole.bind(controller))
-router.get("/getuserrole/:id", controller.onGetUserRole.bind(controller))
-router.get("/getuserroles", controller.onGetUserRoles.bind(controller))
-router.put("/updateuserrole", controller.onUpdateUserRole.bind(controller))
-
+router.patch("/assignroles/:id", controller.onAssignUserRoles.bind(controller))
+router.patch("/unassignroles/:id", controller.onUnassignUserRoles.bind(controller))
 
 export default router;

@@ -41,7 +41,7 @@ export class RoleController {
     }
     async onUpdateRole(req: Request, res: Response, next: NextFunction) {
         try {
-            const roleId = parseInt(req.params.roleId)
+            const roleId = parseInt(req.params.id)
             const role = req.body
             const updatedRole = await this.roleInteractor.updateRole(roleId, role)
             res.status(200).json({ status: "success", data: updatedRole, message: "Role updated successfully" })
