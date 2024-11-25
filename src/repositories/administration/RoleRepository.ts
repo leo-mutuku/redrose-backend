@@ -42,8 +42,17 @@ export class RoleRepository implements IRoleRepository {
         }
 
     }
-    getRoles(limit: number, offset: number): Promise<Role> {
-        throw new Error("Method not implemented.");
+    async getRoles(limit: number, offset: number): Promise<Role[]> {
+        try {
+            const query =
+                `SELECT * FROM roles LIMIT $1 OFFSET $2`
+            const values = [limit, offset]
+            const result = await this.client.query(query, values)
+            return result.rows
+        } catch (error) {
+            throw new AppError("Error while getting roles: " + error, 400)
+
+        }
     }
     async updateRole(id: number, role: Role): Promise<Role> {
         try {

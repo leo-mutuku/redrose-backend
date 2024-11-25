@@ -14,7 +14,6 @@ export class AuthRepository implements IAuthRepository {
     }
     async login({ username }: Auth): Promise<Auth> {
         try {
-
             const query = "SELECT user_id, username, first_name, last_name, created_by,password, TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at FROM users WHERE username = $1";
             const values = [username];
             const result = await this.client.query(query, values);
