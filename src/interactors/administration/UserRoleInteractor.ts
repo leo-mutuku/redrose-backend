@@ -10,9 +10,9 @@ export class UserRoleInteractor implements IUserRoleInteractor {
         this.repository = repository;
     }
 
-    async createUserRole(input: any) {
+    async assignUserRoles(id: number, input: any) {
         try {
-            const result = await this.repository.createUserRole(input)
+            const result = await this.repository.assignUserRoles(id, input)
             return result
 
         } catch (error) {

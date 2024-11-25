@@ -9,10 +9,11 @@ export class UserRoleController {
     constructor(@inject(INTERFACE_TYPE.UserRoleInteractor) userRoleInteractor: IUserRoleInteractor) {
         this.userRoleInteractor = userRoleInteractor
     }
-    async onCreateUserRole(req: Request, res: Response, next: NextFunction) {
+    async onAssignUserRoles(req: Request, res: Response, next: NextFunction) {
         try {
+            const id = parseInt(req.params.id)
             const body = req.body
-            const data = await this.userRoleInteractor.createUserRole(body)
+            const data = await this.userRoleInteractor.assignUserRoles(id, body)
             res.status(201).json({ status: 'success', data: data, message: 'UserRole created successfully' });
         }
         catch (error) {
