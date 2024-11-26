@@ -12,7 +12,8 @@ export class UserRoleController {
     async onAssignUserRoles(req: Request, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id)
-            const body = req.body
+            const body = req.body.roles
+
             const data = await this.userRoleInteractor.assignUserRoles(id, body)
             res.status(201).json({ status: 'success', data: data, message: 'User roles assigned successfully' });
         }
@@ -23,9 +24,10 @@ export class UserRoleController {
     async onUnassignUserRoles(req: Request, res: Response, next: NextFunction) {
         try {
 
+
             const id = parseInt(req.params.id)
-            const body = req.body
-            const data = await this.userRoleInteractor.assignUserRoles(id, body)
+            const body = req.body.roles
+            const data = await this.userRoleInteractor.unassignRoles(id, body)
             res.status(200).json({ status: 'success', data: data, message: 'User roles unassigned successfully' });
         }
         catch (error) {
