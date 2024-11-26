@@ -16,7 +16,7 @@ container.bind<VendorController>(INTERFACE_TYPE.VendorController).to(VendorContr
 const router = Router();
 const controller = container.get<VendorController>(INTERFACE_TYPE.VendorController)
 router.post("/createvendor", controller.onCreateVendor.bind(controller))
-router.get("/getvendor:/id", controller.onGetVendor.bind(controller))
+router.get("/getvendor/:id", controller.onGetVendor.bind(controller))
 router.get("/getvendors", controller.onGetVendors.bind(controller))
 router.put("/updatevendor", controller.onUpdateVendor.bind(controller))
 
