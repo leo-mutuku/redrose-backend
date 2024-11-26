@@ -1,5 +1,3 @@
-import { User } from "../entities/administration/Users";
-
 
 export const INTERFACE_TYPE = {
   // product test case
@@ -51,4 +49,9 @@ export const INTERFACE_TYPE = {
   // global
   Mailer: Symbol.for("Mailer"),
   MessageBroker: Symbol.for("MessageBroker"),
+
+  // sms
+  SMSExternalLibrary: Symbol.for("SMSExternalLibrary"),
+  SMSInteractor: Symbol.for("SMSInteractor"),
+  SMSController: Symbol.for("SMSController"),
 };
