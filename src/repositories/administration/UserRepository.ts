@@ -73,25 +73,27 @@ export class UserRepository implements IUserRepository {
             const result = await this.client.query(query, values);
             const roles = await this.client.query(`SELECT role_id  FROM user_roles WHERE user_id = $1`, [id]);
             const user_roles = roles.rows.map((row: any) => row.role_id);
-            let role_names: string[] = []; ``
+
+            let role_array: any[] = [];
             for (let role of user_roles) {
                 const role_name_result = await this.client.query(
-                    `SELECT role_name FROM roles WHERE role_id = $1`,
+                    `SELECT role_name, role_id FROM roles WHERE role_id = $1`,
                     [role]
                 );
 
                 // Check if the query returned a result
                 if (role_name_result.rows.length > 0) {
-                    const x: string = role_name_result.rows[0].role_name;
-                    console.log(x)
-                    role_names.push(x);
+                    const name: string = role_name_result.rows[0].role_name;
+                    const id: number = role_name_result.rows[0].role_id;
+                    role_array.push({ name, id });
+                    console.log(role_array);
                 } else {
                     console.warn(`Role with role_id ${role} does not exist.`);
-                    role_names.push("null"); // Add a placeholder if needed
+
                 }
             }
 
-            return { ...result.rows[0], roles: role_names };
+            return { ...result.rows[0], roles: role_array };
         } catch (error) {
             throw new AppError('Error fetching user ' + error)
         }
