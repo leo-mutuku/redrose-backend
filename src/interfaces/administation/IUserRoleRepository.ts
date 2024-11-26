@@ -1,6 +1,6 @@
 export interface IUserRoleRepository {
-    assignUserRoles(id: number, input: any): Promise<any>;
+    assignUserRoles(id: number, roles: number[]): Promise<any>;
     updateUserRole(id: number, input: any): Promise<any>;
     getUserRole(id: number): Promise<any>;
-    unassignRoles(id: number, input: any): Promise<any>;
+    unassignRoles(id: number, roles: number[]): Promise<any>;
 }

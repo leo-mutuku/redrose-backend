@@ -48,9 +48,9 @@ export class UserRoleInteractor implements IUserRoleInteractor {
             );
         }
     }
-    async unassignRoles(limit: number, offset: number) {
+    async unassignRoles(id: number, roles: number[]) {
         try {
-            const result = await this.repository.unassignRoles(limit, offset)
+            const result = await this.repository.unassignRoles(id, roles)
             return result
         }
         catch (error) {
