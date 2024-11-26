@@ -26,13 +26,13 @@ export class SupplierRepository implements ISupplierRepository {
 
         }
     }
-    async getSuppliers(limit: number, offset: number): Promise<Supplier> {
+    async getSuppliers(limit: number, offset: number): Promise<Supplier[]> {
         try {
             const query =
                 `SELECT * FROM suppliers LIMIT $1 OFFSET $2`
             const values = [limit, offset]
             const result = await this.client.query(query, values)
-            return result.rows[0]
+            return result.rows
 
         } catch (error) {
             throw new AppError("Error while getting suppliers: " + error, 400)
