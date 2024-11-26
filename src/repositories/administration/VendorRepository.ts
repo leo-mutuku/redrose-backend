@@ -5,6 +5,13 @@ import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
 import { Vendor } from "../../entities/administration/Vendors";
 
+interface VendorInput {
+    vendor_name?: string;
+    vendor_address?: string;
+    vendor_phone?: string;
+    vendor_email?: string;
+}
+
 @injectable()
 export class VendorRepository implements IVendorRepository {
     private client: Pool
@@ -26,11 +33,52 @@ export class VendorRepository implements IVendorRepository {
     }
     async updateVendor(id: number, input: any): Promise<any> {
         try {
-            const query = `UPDATE vendors SET vendor_name = $1, vendor_address = $2, vendor_phone = $3, vendor_email = $4 WHERE vendor_id = $5 RETURNING *`
-            const values = [input.vendor_name, input.vendor_address, input.vendor_phone, input.vendor_email, id]
-            const result = await this.client.query(query, values)
-            return result.rows[0]
+            // Step 1: Fetch the existing vendor details from the database
+            const existingQuery = 'SELECT * FROM vendors WHERE vendor_id = $1';
+            const existingResult = await this.client.query(existingQuery, [id]);
 
+            if (existingResult.rows.length === 0) {
+                throw new AppError('Vendor not found', 404);
+            }
+
+            const existingData = existingResult.rows[0];
+
+            // Step 2: Compare input values with existing values
+            const updates: string[] = [];
+            const values: any[] = [];
+            let index = 1; // Positional parameter index for PostgreSQL ($1, $2, ...)
+
+            for (const key in input) {
+                if (Object.prototype.hasOwnProperty.call(input, key)) {
+                    const value = input[key as keyof VendorInput];
+
+                    // Check if the value is different from the existing value
+                    if (value !== undefined && value !== existingData[key]) {
+                        updates.push(`${key} = $${index}`);
+                        values.push(value);
+                        index++;
+                    }
+                }
+            }
+
+            // Step 3: If no fields have changed, throw an error
+            if (updates.length === 0) {
+                throw new AppError('No fields were changed', 400);
+            }
+
+            // Step 4: Construct and execute the UPDATE query
+            const updateQuery = `
+                UPDATE vendors
+                SET ${updates.join(', ')}
+                WHERE vendor_id = $${index}
+                RETURNING *;
+            `;
+            values.push(id); // Add the vendor_id as the last parameter
+
+            const result = await this.client.query(updateQuery, values);
+
+            // Step 5: Return the updated record
+            return result.rows[0];
         } catch (error) {
             throw new AppError("Error while updating vendor: " + error, 400)
 

@@ -18,7 +18,7 @@ const controller = container.get<VendorController>(INTERFACE_TYPE.VendorControll
 router.post("/createvendor", controller.onCreateVendor.bind(controller))
 router.get("/getvendor/:id", controller.onGetVendor.bind(controller))
 router.get("/getvendors", controller.onGetVendors.bind(controller))
-router.put("/updatevendor", controller.onUpdateVendor.bind(controller))
+router.patch("/updatevendor/:id", controller.onUpdateVendor.bind(controller))
 
 
 export default router;
