@@ -18,6 +18,6 @@ const controller = container.get<SupplierController>(INTERFACE_TYPE.SupplierCont
 router.post("/createsupplier", controller.onCreateSupplier.bind(controller))
 router.get("/getsupplier/:id", controller.onGetSupplier.bind(controller))
 router.get("/getsuppliers", controller.onGetSuppliers.bind(controller))
-router.put("/updatesupplier", controller.onUpdateSupplier.bind(controller))
+router.patch("/updatesupplier/:id", controller.onUpdateSupplier.bind(controller))
 
 export default router;
