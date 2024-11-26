@@ -37,12 +37,16 @@ export class ShiftRepository implements IShiftRepository {
 
         }
     }
-    async getShifts(limit: number, offset: number): Promise<Shift> {
+    async getShifts(limit: number, offset: number): Promise<Shift[]> {
         try {
-            const result = await this.client.query(`SELECT * FROM shifts WHERE shift_start = $1 AND shift_end = $2`, [limit, offset])
-            return result.rows[0]
+            console.log(limit, offset)
+            const result = await this.client.query(
+                `SELECT * FROM shift  Limit $1  OFFSET $2`,
+                [limit, offset])
+            console.log(result.rows)
+            return result.rows
         } catch (error) {
-            throw new AppError("Error getting shifts", 500)
+            throw new AppError("Error getting shifts" + error, 500)
         }
     }
     async updateShift(id: number, shift: Shift): Promise<Shift> {
