@@ -74,9 +74,7 @@ export class VendorRepository implements IVendorRepository {
                 RETURNING *;
             `;
             values.push(id); // Add the vendor_id as the last parameter
-
             const result = await this.client.query(updateQuery, values);
-
             // Step 5: Return the updated record
             return result.rows[0];
         } catch (error) {
