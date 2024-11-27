@@ -1,4 +1,4 @@
-import { SMSRepository } from "../repositories/SMSRepository";
+
 
 export const INTERFACE_TYPE = {
   // product test case
@@ -45,6 +45,39 @@ export const INTERFACE_TYPE = {
   VendorInteractor: Symbol.for("VendorInteractor"),
   VendorController: Symbol.for("VendorController"),
 
+
+
+  // finance module
+
+  // Account
+  AccountController: Symbol.for("AccountController"),
+  AccountRepository: Symbol.for("AccountRepository"),
+  AccountInteractor: Symbol.for("AccountInteractor"),
+
+  //GLACCount
+  GLAccountRepository: Symbol.for("GLAccountRepository"),
+  GLAccountInteractor: Symbol.for("GLAccountInteractor"),
+  GLAccountController: Symbol.for("GLAccountController"),
+
+  //Bank
+  BankRepository: Symbol.for("BankRepository"),
+  BankInteractor: Symbol.for("BankInteractor"),
+  BankController: Symbol.for("BankController"),
+
+  //CashAccount
+  CashAccountRepository: Symbol.for("CashAccountRepository"),
+  CashAccountInteractor: Symbol.for("CashAccountInteractor"),
+  CashAccountController: Symbol.for("CashAccountController"),
+
+  //FundTransfer
+  FundTransferRepository: Symbol.for("FundTransferRepository"),
+  FundTransferInteractor: Symbol.for("FundTransferInteractor"),
+  FundTransferController: Symbol.for("FundTransferController"),
+
+  //MpesaTill
+  MpesaTillRepository: Symbol.for("MpesaTillRepository"),
+  MpesaTillInteractor: Symbol.for("MpesaTillInteractor"),
+  MpesaTillController: Symbol.for("MpesaTillController"),
 
 
   // global

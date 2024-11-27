@@ -10,9 +10,6 @@ import { ISMSRepository } from "../../interfaces/ISMSRepository";
 import { SMSRepository } from "../../repositories/SMSRepository";
 
 
-
-
-
 const container = new Container();
 
 container.bind<ISMSLibrary>(INTERFACE_TYPE.SMSExternalLibrary).to(SMSService);
