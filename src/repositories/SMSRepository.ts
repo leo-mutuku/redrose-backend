@@ -38,8 +38,8 @@ export class SMSRepository implements ISMSRepository {
                     throw new Error(`Table ${table} is not supported.`)
                 }
             }
-
-            return phoneNumbers;
+            const uniquePhoneNumbers = Array.from(new Set(phoneNumbers));
+            return uniquePhoneNumbers;
         } catch (error) {
             throw new AppError("Failed to get phone numbers" + error, 500);
 
