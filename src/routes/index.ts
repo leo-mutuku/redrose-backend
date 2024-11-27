@@ -10,6 +10,7 @@ import SupplierRoutes from "./administration/SuppliersRoutes"
 import UserRoleRoutes from "./administration/UserRoleRoutes"
 import VendorRoutes from "./administration/VendorsRoutes";
 import StaffRoutes from "./administration/StaffRoutes";
+import SMSRoutes from "./administration/SMSRoutes";
 
 
 const routers = express.Router();
@@ -24,5 +25,6 @@ routers.use("/suppliers", SupplierRoutes);
 routers.use("/userroles", UserRoleRoutes);
 routers.use("/vendors", VendorRoutes);
 routers.use("/staff", StaffRoutes);
+routers.use("/sms", SMSRoutes);
 
 export default routers;
