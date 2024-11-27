@@ -11,10 +11,15 @@ export class SMSController {
     }
     async sendBulky(req: Request, res: Response, next: NextFunction) {
         try {
-            const { to, message } = req.body;
-            await this.smsInteractor.sendBulky(to, message);
+            const { target, message } = req.body;
+            const result = await this.smsInteractor.sendBulky(target, message);
+            return res.status(200).json({
+                status: 'success',
+                data: result,
+                message: "SMS sent successfully",
+            });
         } catch (error) {
-            throw error;
+            next(error);
         }
     }
 
@@ -22,8 +27,10 @@ export class SMSController {
         try {
 
             const { to, message } = req.body;
-            await this.smsInteractor.sendSingle(to, message);
+            const result = await this.smsInteractor.sendSingle(to, message);
             return res.status(200).json({
+                status: 'success',
+                data: result,
                 message: "SMS sent successfully",
             });
         } catch (error) {

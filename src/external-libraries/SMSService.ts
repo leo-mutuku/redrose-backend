@@ -2,8 +2,10 @@ import { injectable } from "inversify";
 import { ISMSLibrary } from "../interfaces/ISMSLibrary";
 import { AppError } from "../utils/AppError";
 
+
+
 @injectable()
-export class SmsService implements ISMSLibrary {
+export class SMSService implements ISMSLibrary {
     private readonly apiKey: string;
     private readonly senderId: string;
     private readonly apiUrlBulky: string;
@@ -16,6 +18,10 @@ export class SmsService implements ISMSLibrary {
         this.apiUrlBulky = process.env.SMS_BULK_URL || "";
         this.shortCode = process.env.SMS_SHORTCODE || "";
         this.apiUrlSingle = process.env.SMS_URL || "";
+
+        if (!this.apiKey || !this.senderId || !this.apiUrlBulky || !this.shortCode || !this.apiUrlSingle) {
+            throw new AppError("SMS configuration is missing", 500);
+        }
     }
 
     private getHeaders(): Headers {
@@ -24,15 +30,36 @@ export class SmsService implements ISMSLibrary {
         return headers;
     }
 
-    async sendBulky(to: string, message: string): Promise<any> {
+    async sendBulky(to: any, message: string): Promise<any> {
         try {
+
+
+            if (!to.length) {
+                throw new AppError("We could not get phone from your query, ensure phone numbers exist in the contact groups")
+            }
+
+            let count: number = to.length
+            const smslist: { apikey: string, partnerID: string, message: string, shortcode: string, mobile: string }[] = [];
+
+            for (const phone of to) {
+                smslist.push({
+                    apikey: this.apiKey,
+                    partnerID: this.senderId,
+                    message,
+                    shortcode: this.shortCode,
+                    mobile: phone,
+                });
+            }
+
+
+
             const payload = {
-                apikey: this.apiKey,
-                partnerID: this.senderId,
-                shortcode: this.shortCode,
-                mobile: to,
-                message: message,
+                count,
+                smslist,
             };
+
+            console.log(payload)
+
 
             const requestOptions = {
                 method: "POST",
@@ -44,6 +71,8 @@ export class SmsService implements ISMSLibrary {
             if (!response.ok) {
                 throw new Error(`Failed to send bulky SMS. Status: ${response.status}`);
             }
+
+            //console.log(await response.json())
 
             const result = await response.json();
             return result;
@@ -69,12 +98,15 @@ export class SmsService implements ISMSLibrary {
             };
 
             const response = await fetch(this.apiUrlSingle, requestOptions);
+
             if (!response.ok) {
                 throw new Error(`Failed to send single SMS. Status: ${response.status}`);
             }
 
             const result = await response.json();
-            return result;
+
+            console.log(result.responses);
+            return result.responses;
         } catch (error) {
             throw new AppError("Failed to send single SMS: " + error, 500);
         }

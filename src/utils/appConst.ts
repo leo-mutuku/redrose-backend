@@ -1,3 +1,4 @@
+import { SMSRepository } from "../repositories/SMSRepository";
 
 export const INTERFACE_TYPE = {
   // product test case
@@ -52,6 +53,7 @@ export const INTERFACE_TYPE = {
 
   // sms
   SMSExternalLibrary: Symbol.for("SMSExternalLibrary"),
+  SMSRepository: Symbol.for("SMSRepository"),
   SMSInteractor: Symbol.for("SMSInteractor"),
   SMSController: Symbol.for("SMSController"),
 };
