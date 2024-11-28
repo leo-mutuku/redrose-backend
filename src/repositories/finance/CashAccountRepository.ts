@@ -61,22 +61,20 @@ export class CashAccountRepository implements ICashAccountRepository {
             const updatedFields: string[] = [];
             const values: any[] = [];
 
-            // Check if cash_account_name has changed
+            // Dynamically add placeholders
             if (input.cash_account_name && input.cash_account_name !== currentCashAccount.cash_account_name) {
-                updatedFields.push("cash_account_name = $1");
+                updatedFields.push(`cash_account_name = $${values.length + 1}`);
                 values.push(input.cash_account_name);
             }
 
-            // Check if balance has changed
             const parsedBalance = parseFloat(input.balance);
             if (!isNaN(parsedBalance) && parsedBalance !== currentCashAccount.balance) {
-                updatedFields.push("balance = $2");
+                updatedFields.push(`balance = $${values.length + 1}`);
                 values.push(parsedBalance);
             }
 
-            // Check if created_by has changed
             if (input.created_by && input.created_by !== currentCashAccount.created_by) {
-                updatedFields.push("created_by = $3");
+                updatedFields.push(`created_by = $${values.length + 1}`);
                 values.push(input.created_by);
             }
 
@@ -104,6 +102,7 @@ export class CashAccountRepository implements ICashAccountRepository {
             throw new AppError("Failed to update cash account: " + error, 500);
         }
     }
+
 
 
 

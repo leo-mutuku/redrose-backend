@@ -69,15 +69,14 @@ export class GLAccountRepository implements IGLAccountRepository {
             const updatedFields: string[] = [];
             const values: any[] = [];
 
-            // Check if gl_account_name has changed
+            // Dynamically track placeholder indices
             if (input.gl_account_name && input.gl_account_name !== currentAccount.gl_account_name) {
-                updatedFields.push("gl_account_name = $1");
+                updatedFields.push(`gl_account_name = $${values.length + 1}`);
                 values.push(input.gl_account_name);
             }
 
-            // Check if balance has changed
             if (input.balance !== undefined && input.balance !== currentAccount.balance) {
-                updatedFields.push("balance = $2");
+                updatedFields.push(`balance = $${values.length + 1}`);
                 values.push(input.balance);
             }
 
@@ -104,6 +103,7 @@ export class GLAccountRepository implements IGLAccountRepository {
             throw new AppError("Failed to update GL account: " + error, 500);
         }
     }
+
 
 
     async getAllGLAccounts(limit: number, offset: number): Promise<any> {

@@ -45,6 +45,7 @@ export class AccountRepository implements IAccountRepository {
 
     async updateAccount(id: number, input: any): Promise<any> {
         try {
+
             // First, fetch the current account details
             const currentAccountQuery = `
                 SELECT * FROM accounts WHERE account_id = $1;
@@ -68,7 +69,8 @@ export class AccountRepository implements IAccountRepository {
             }
 
             // Check if balance has changed
-            if (input.balance !== undefined && input.balance !== currentAccount.balance) {
+
+            if (input.balance !== undefined && parseFloat(input.balance) !== currentAccount.balance) {
                 updatedFields.push("balance = $2");
                 values.push(input.balance);
             }
