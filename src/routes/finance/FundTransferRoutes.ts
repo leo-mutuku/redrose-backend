@@ -20,9 +20,9 @@ const router = Router();
 const controller = container.get<FundTransferController>(INTERFACE_TYPE.FundTransferController);
 
 // Define routes for fund transfer operations
-router.post("/create", controller.onCreateFundTransfer.bind(controller));
+router.post("/create", controller.onInitiateFundTransfer.bind(controller));
 router.get("/gettransfer/:id", controller.onGetFundTransfer.bind(controller));
-router.get("/gettransfers", controller.onGetFundTransfers.bind(controller));
+router.get("/gettransfers", controller.onGetAllFundTransfers.bind(controller));
 router.patch("/updatetransfer/:id", controller.onUpdateFundTransfer.bind(controller));
 router.delete("/deletetransfer/:id", controller.onDeleteFundTransfer.bind(controller));
 

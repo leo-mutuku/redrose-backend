@@ -6,6 +6,7 @@ import { IGLAccountInteractor } from "../../interfaces/finance/IGLAccountInterac
 import { GLAccountInteractor } from "../../interactors/finance/GLAccountInteractor";
 import { GLAccountController } from "../../controllers/finance/GLAccountController";
 import { GLAccountRepository } from "../../repositories/finance/GLAccountRepository";
+;
 
 // Create the Inversify container
 const container = new Container();

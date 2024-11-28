@@ -25,7 +25,7 @@ export class GLAccountController {
 
     async onGetGLAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const glAccountId = req.params.id;
+            const glAccountId = parseInt(req.params.id);
             const glAccount = await this.glAccountInteractor.getGLAccountById(glAccountId);
             res.status(200).json({ success: true, data: glAccount });
         } catch (error) {
@@ -35,7 +35,9 @@ export class GLAccountController {
 
     async onGetGLAccounts(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const glAccounts = await this.glAccountInteractor.getAllGLAccounts();
+            const limit = parseInt(req.query.limit as string) || 20;
+            const offset = parseInt(req.query.offset as string) || 0;
+            const glAccounts = await this.glAccountInteractor.getAllGLAccounts(limit, offset);
             res.status(200).json({ success: true, data: glAccounts });
         } catch (error) {
             next(error);
@@ -44,7 +46,7 @@ export class GLAccountController {
 
     async onUpdateGLAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const glAccountId = req.params.id;
+            const glAccountId = parseInt(req.params.id);
             const updateData = req.body;
             const updatedGLAccount = await this.glAccountInteractor.updateGLAccount(glAccountId, updateData);
             res.status(200).json({ success: true, data: updatedGLAccount });
@@ -55,7 +57,7 @@ export class GLAccountController {
 
     async onDeleteGLAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const glAccountId = req.params.id;
+            const glAccountId = parseInt(req.params.id);
             await this.glAccountInteractor.deleteGLAccount(glAccountId);
             res.status(200).json({ success: true, message: "GL Account deleted successfully" });
         } catch (error) {

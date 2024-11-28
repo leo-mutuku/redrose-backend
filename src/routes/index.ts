@@ -13,6 +13,15 @@ import StaffRoutes from "./administration/StaffRoutes";
 import SMSRoutes from "./administration/SMSRoutes";
 
 
+// import finance routes
+import AccountsRoutes from "./finance/AccountsRoutes"
+import BanksRoutes from "./finance/BankRoutes"
+import CashAccountRoutes from "./finance/CashAccountRoutes"
+import FundTransferRoutes from "./finance/FundTransferRoutes"
+import MpesaTillRoutes from "./finance/MpesaTillRoutes"
+import GLAccountRoutes from "./finance/GLAccountRoutes"
+
+
 const routers = express.Router();
 // Use the JWT verification middleware for all routes
 routers.use(verifyJWT);
@@ -26,5 +35,15 @@ routers.use("/userroles", UserRoleRoutes);
 routers.use("/vendors", VendorRoutes);
 routers.use("/staff", StaffRoutes);
 routers.use("/sms", SMSRoutes);
+
+
+// finance routes
+routers.use("/accounts", AccountsRoutes)
+routers.use("/banks", BanksRoutes)
+routers.use("/cash-accounts", CashAccountRoutes)
+routers.use("/fund-transfers", FundTransferRoutes)
+routers.use("/mpesa-tills", MpesaTillRoutes)
+routers.use("/gl-accounts", GLAccountRoutes)
+
 
 export default routers;
