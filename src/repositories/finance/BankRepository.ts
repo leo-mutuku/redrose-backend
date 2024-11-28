@@ -16,11 +16,11 @@ export class BankRepository implements IBankRepository {
     async createBank(input: any): Promise<Bank> {
         try {
             const query = `
-                INSERT INTO banks (bank_name, balance, created_by)
-                VALUES ($1, $2, $3)
+                INSERT INTO banks (bank_name, balance,bank_number created_by)
+                VALUES ($1, $2, $3, $4)
                 RETURNING *;
             `;
-            const values = [input.bank_name, input.balance, input.created_by];
+            const values = [input.bank_name, input.bank_number, input.balance, input.created_by];
             const result = await this.client.query(query, values);
             return result.rows[0];
         } catch (error) {
@@ -64,6 +64,12 @@ export class BankRepository implements IBankRepository {
             if (input.bank_name && input.bank_name !== currentBank.bank_name) {
                 updatedFields.push(`bank_name = $${values.length + 1}`);
                 values.push(input.bank_name);
+            }
+
+            // bank_number
+            if (input.bank_number && input.bank_number !== currentBank.bank_number) {
+                updatedFields.push(`bank_number = $${values.length + 1}`);
+                values.push(input.bank_number);
             }
 
             if (input.balance !== undefined && parseFloat(input.balance) !== currentBank.balance) {
