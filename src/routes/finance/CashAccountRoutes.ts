@@ -20,7 +20,7 @@ const router = Router();
 const controller = container.get<CashAccountController>(INTERFACE_TYPE.CashAccountController);
 
 // Define routes for cash account operations
-router.post("/create", controller.onCreateCashAccount.bind(controller));
+router.post("/createcashaccounts", controller.onCreateCashAccount.bind(controller));
 router.get("/getcashaccount/:id", controller.onGetCashAccount.bind(controller));
 router.get("/getcashaccounts", controller.onGetCashAccounts.bind(controller));
 router.patch("/updatecashaccount/:id", controller.onUpdateCashAccount.bind(controller));

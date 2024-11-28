@@ -16,11 +16,11 @@ export class BankRepository implements IBankRepository {
     async createBank(input: any): Promise<Bank> {
         try {
             const query = `
-                INSERT INTO banks (name, branch, swift_code)
+                INSERT INTO banks (bank_name, balance, created_by)
                 VALUES ($1, $2, $3)
                 RETURNING *;
             `;
-            const values = [input.name, input.branch, input.swift_code];
+            const values = [input.bank_name, input.balance, input.created_by];
             const result = await this.client.query(query, values);
             return result.rows[0];
         } catch (error) {
@@ -31,7 +31,7 @@ export class BankRepository implements IBankRepository {
     async getBankById(id: number): Promise<Bank> {
         try {
             const query = `
-                SELECT * FROM banks WHERE id = $1;
+                SELECT * FROM banks WHERE bank_id = $1;
             `;
             const result = await this.client.query(query, [id]);
             if (result.rows.length === 0) {
@@ -45,22 +45,65 @@ export class BankRepository implements IBankRepository {
 
     async updateBank(id: number, input: any): Promise<Bank> {
         try {
-            const query = `
-                UPDATE banks
-                SET name = $1, branch = $2, swift_code = $3
-                WHERE id = $4
-                RETURNING *;
+            // Step 1: Fetch the current bank details
+            const currentBankQuery = `
+                SELECT * FROM banks WHERE bank_id = $1;
             `;
-            const values = [input.name, input.branch, input.swift_code, id];
-            const result = await this.client.query(query, values);
-            if (result.rows.length === 0) {
+            const currentBankResult = await this.client.query(currentBankQuery, [id]);
+
+            if (currentBankResult.rows.length === 0) {
                 throw new AppError(`Bank with id ${id} not found`, 404);
             }
+
+            const currentBank = currentBankResult.rows[0];
+
+            // Step 2: Track changes and prepare the update fields
+            const updatedFields: string[] = [];
+            const values: any[] = [];
+
+            // Check if bank_name has changed
+            if (input.bank_name && input.bank_name !== currentBank.bank_name) {
+                updatedFields.push("bank_name = $1");
+                values.push(input.bank_name);
+            }
+
+            // Check if balance has changed
+            if (input.balance !== undefined && input.balance !== currentBank.balance) {
+                updatedFields.push("balance = $2");
+                values.push(input.balance);
+            }
+
+            // Check if created_by has changed
+            if (input.created_by && input.created_by !== currentBank.created_by) {
+                updatedFields.push("created_by = $3");
+                values.push(input.created_by);
+            }
+
+            // If no fields have changed, throw an error
+            if (updatedFields.length === 0) {
+                throw new AppError("No changes detected to update bank.", 400);
+            }
+
+            // Step 3: Build the dynamic query for the update
+            const query = `
+                UPDATE banks
+                SET ${updatedFields.join(", ")}
+                WHERE bank_id = $${values.length + 1}
+                RETURNING *;
+            `;
+
+            // Step 4: Add the id to the values array
+            values.push(id);
+
+            // Execute the query
+            const result = await this.client.query(query, values);
+
             return result.rows[0];
         } catch (error) {
             throw new AppError("Failed to update bank: " + error, 500);
         }
     }
+
 
     async getAllBanks(limit: number, offset: number): Promise<Bank[]> {
         try {

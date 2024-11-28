@@ -18,7 +18,7 @@ container.bind(INTERFACE_TYPE.AccountController).to(AccountController);
 const router = Router();
 const controller = container.get<AccountController>(INTERFACE_TYPE.AccountController);
 
-router.post("/create", controller.onCreateAccount.bind(controller));
+router.post("/createaccount", controller.onCreateAccount.bind(controller));
 router.get("/getaccount/:id", controller.onGetAccount.bind(controller));
 router.get("/getaccounts", controller.onGetAccounts.bind(controller));
 router.patch("/updateaccount/:id", controller.onUpdateAccount.bind(controller));

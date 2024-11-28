@@ -21,10 +21,10 @@ const router = Router();
 const controller = container.get<GLAccountController>(INTERFACE_TYPE.GLAccountController);
 
 // Define routes for General Ledger (GL) accounts
-router.post("/create", controller.onCreateGLAccount.bind(controller));
-router.get("/getaccount/:id", controller.onGetGLAccount.bind(controller));
-router.get("/getaccounts", controller.onGetGLAccounts.bind(controller));
-router.patch("/updateaccount/:id", controller.onUpdateGLAccount.bind(controller));
+router.post("/createglaccount", controller.onCreateGLAccount.bind(controller));
+router.get("/getglaccount/:id", controller.onGetGLAccount.bind(controller));
+router.get("/getglaccounts", controller.onGetGLAccounts.bind(controller));
+router.patch("/updateglaccount/:id", controller.onUpdateGLAccount.bind(controller));
 router.delete("/deleteaccount/:id", controller.onDeleteGLAccount.bind(controller));
 
 export default router;

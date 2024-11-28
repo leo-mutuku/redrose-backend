@@ -40,10 +40,10 @@ routers.use("/sms", SMSRoutes);
 // finance routes
 routers.use("/accounts", AccountsRoutes)
 routers.use("/banks", BanksRoutes)
-routers.use("/cash-accounts", CashAccountRoutes)
-routers.use("/fund-transfers", FundTransferRoutes)
-routers.use("/mpesa-tills", MpesaTillRoutes)
-routers.use("/gl-accounts", GLAccountRoutes)
+routers.use("/cashaccounts", CashAccountRoutes)
+routers.use("/fundtransfers", FundTransferRoutes)
+routers.use("/mpesatills", MpesaTillRoutes)
+routers.use("/glaccounts", GLAccountRoutes)
 
 
 export default routers;
