@@ -27,8 +27,8 @@ export class AccountController {
 
     async onGetAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.params.id;
-            const account = await this.accountInteractor.getAccountById(accountId);
+            const account_id = parseInt(req.params.id);
+            const account = await this.accountInteractor.getAccountById(account_id);
             res.status(200).json({ success: true, data: account });
         } catch (error) {
             next(error)
@@ -37,7 +37,9 @@ export class AccountController {
 
     async onGetAccounts(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accounts = await this.accountInteractor.getAllAccounts();
+            const limit = parseInt(req.query.limit as string) || 20;
+            const offset = parseInt(req.query.offset as string) || 0;
+            const accounts = await this.accountInteractor.getAllAccounts(limit, offset);
             res.status(200).json({ success: true, data: accounts });
         } catch (error) {
             next(error)
@@ -46,9 +48,9 @@ export class AccountController {
 
     async onUpdateAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.params.id;
+            const account_id = parseInt(req.params.id);
             const updateData = req.body;
-            const updatedAccount = await this.accountInteractor.updateAccount(accountId, updateData);
+            const updatedAccount = await this.accountInteractor.updateAccount(account_id, updateData);
             res.status(200).json({ success: true, data: updatedAccount });
         } catch (error) {
             next(error)
@@ -57,8 +59,8 @@ export class AccountController {
 
     async onDeleteAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.params.id;
-            await this.accountInteractor.deleteAccount(accountId);
+            const account_id = parseInt(req.params.id);
+            await this.accountInteractor.deleteAccount(account_id);
             res.status(200).json({ success: true, message: "Account deleted successfully" });
         } catch (error) {
             next(error)

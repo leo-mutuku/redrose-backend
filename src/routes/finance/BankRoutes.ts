@@ -20,7 +20,7 @@ const router = Router();
 const controller = container.get<BankController>(INTERFACE_TYPE.BankController);
 
 // Define routes for bank operations
-router.post("/create", controller.onCreateBank.bind(controller));
+router.post("/createbank", controller.onCreateBank.bind(controller));
 router.get("/getbank/:id", controller.onGetBank.bind(controller));
 router.get("/getbanks", controller.onGetBanks.bind(controller));
 router.patch("/updatebank/:id", controller.onUpdateBank.bind(controller));

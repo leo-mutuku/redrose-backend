@@ -25,7 +25,7 @@ export class FundTransferController {
 
     async onGetFundTransfer(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const transferId = req.params.id;
+            const transferId = parseInt(req.params.id);
             const transferDetails = await this.fundTransferInteractor.getFundTransferById(transferId);
             res.status(200).json({ success: true, data: transferDetails });
         } catch (error) {
@@ -35,7 +35,9 @@ export class FundTransferController {
 
     async onGetAllFundTransfers(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const fundTransfers = await this.fundTransferInteractor.getAllFundTransfers();
+            const limit = parseInt(req.query.limit as string) || 20;
+            const offset = parseInt(req.query.offset as string) || 0;
+            const fundTransfers = await this.fundTransferInteractor.getAllFundTransfers(limit, offset);
             res.status(200).json({ success: true, data: fundTransfers });
         } catch (error) {
             next(error);
@@ -44,7 +46,7 @@ export class FundTransferController {
 
     async onUpdateFundTransfer(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const transferId = req.params.id;
+            const transferId = parseInt(req.params.id);
             const updateData = req.body;
             const updatedTransfer = await this.fundTransferInteractor.updateFundTransfer(transferId, updateData);
             res.status(200).json({ success: true, data: updatedTransfer });
@@ -55,7 +57,7 @@ export class FundTransferController {
 
     async onDeleteFundTransfer(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const transferId = req.params.id;
+            const transferId = parseInt(req.params.id);
             await this.fundTransferInteractor.deleteFundTransfer(transferId);
             res.status(200).json({ success: true, message: "Fund transfer deleted successfully" });
         } catch (error) {

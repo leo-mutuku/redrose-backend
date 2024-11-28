@@ -25,7 +25,7 @@ export class CashAccountController {
 
     async onGetCashAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const cashAccountId = req.params.id;
+            const cashAccountId = parseInt(req.params.id);
             const cashAccount = await this.cashAccountInteractor.getCashAccountById(cashAccountId);
             res.status(200).json({ success: true, data: cashAccount });
         } catch (error) {
@@ -35,7 +35,9 @@ export class CashAccountController {
 
     async onGetCashAccounts(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const cashAccounts = await this.cashAccountInteractor.getAllCashAccounts();
+            const limit = parseInt(req.query.limit as string) || 20;
+            const offset = parseInt(req.query.offset as string) || 0;
+            const cashAccounts = await this.cashAccountInteractor.getAllCashAccounts(limit, offset);
             res.status(200).json({ success: true, data: cashAccounts });
         } catch (error) {
             next(error);
@@ -44,7 +46,7 @@ export class CashAccountController {
 
     async onUpdateCashAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const cashAccountId = req.params.id;
+            const cashAccountId = parseInt(req.params.id);
             const updateData = req.body;
             const updatedCashAccount = await this.cashAccountInteractor.updateCashAccount(cashAccountId, updateData);
             res.status(200).json({ success: true, data: updatedCashAccount });
@@ -55,7 +57,7 @@ export class CashAccountController {
 
     async onDeleteCashAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const cashAccountId = req.params.id;
+            const cashAccountId = parseInt(req.params.id);
             await this.cashAccountInteractor.deleteCashAccount(cashAccountId);
             res.status(200).json({ success: true, message: "Cash account deleted successfully" });
         } catch (error) {
