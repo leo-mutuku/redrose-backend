@@ -80,6 +80,48 @@ export const INTERFACE_TYPE = {
   MpesaTillController: Symbol.for("MpesaTillController"),
 
 
+  // --------------------Store
+
+  // item register
+  ItemRegisterRepository: Symbol.for("ItemRegisterRepository"),
+  ItemRegisterInteractor: Symbol.for("ItemRegisterInteractor"),
+  ItemRegisterController: Symbol.for("ItemRegisterController"),
+
+  // item tracking
+  ItemTrackingRepository: Symbol.for("ItemTrackingRepository"),
+  ItemTrackingInteractor: Symbol.for("ItemTrackingInteractor"),
+  ItemTrackingController: Symbol.for("ItemTrackingController"),
+
+  //Stock take headers
+  StockTakeHeaderRepository: Symbol.for("StockTakeHeaderRepository"),
+  StockTakeHeaderInteractor: Symbol.for("StockTakeHeaderInteractor"),
+  StockTakeHeaderController: Symbol.for("StockTakeHeaderController"),
+
+  //Stock take lines
+  StockTakeLineRepository: Symbol.for("StockTakeLineRepository"),
+  StockTakeLineInteractor: Symbol.for("StockTakeLineInteractor"),
+  StockTakeLineController: Symbol.for("StockTakeLineController"),
+
+
+  //Store Items
+  StoreItemRepository: Symbol.for("StoreItemRepository"),
+  StoreItemInteractor: Symbol.for("StoreItemInteractor"),
+  StoreItemController: Symbol.for("StoreItemController"),
+
+  //Store register
+  StoreRegisterRepository: Symbol.for("StoreRegisterRepository"),
+  StoreRegisterInteractor: Symbol.for("StoreRegisterInteractor"),
+  StoreRegisterController: Symbol.for("StoreRegisterController"),
+
+  // Units
+  UnitRepository: Symbol.for("UnitRepository"),
+  UnitInteractor: Symbol.for("UnitInteractor"),
+  UnitController: Symbol.for("UnitController"),
+
+
+  // --------------------------------global
+
+
   // global
   Mailer: Symbol.for("Mailer"),
   MessageBroker: Symbol.for("MessageBroker"),
