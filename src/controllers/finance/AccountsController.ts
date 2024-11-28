@@ -48,6 +48,7 @@ export class AccountController {
 
     async onUpdateAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            console.log("req.body", req.body)
             const account_id = parseInt(req.params.id);
             const updateData = req.body;
             const updatedAccount = await this.accountInteractor.updateAccount(account_id, updateData);

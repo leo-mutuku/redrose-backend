@@ -42,7 +42,6 @@ export class BankRepository implements IBankRepository {
             throw new AppError("Failed to get bank: " + error, 500);
         }
     }
-
     async updateBank(id: number, input: any): Promise<Bank> {
         try {
             // Step 1: Fetch the current bank details
@@ -61,25 +60,22 @@ export class BankRepository implements IBankRepository {
             const updatedFields: string[] = [];
             const values: any[] = [];
 
-            // Check if bank_name has changed
+            // Dynamically add placeholders
             if (input.bank_name && input.bank_name !== currentBank.bank_name) {
-                updatedFields.push("bank_name = $1");
+                updatedFields.push(`bank_name = $${values.length + 1}`);
                 values.push(input.bank_name);
             }
 
-            // Check if balance has changed
-            if (input.balance !== undefined && input.balance !== currentBank.balance) {
-                updatedFields.push("balance = $2");
+            if (input.balance !== undefined && parseFloat(input.balance) !== currentBank.balance) {
+                updatedFields.push(`balance = $${values.length + 1}`);
                 values.push(input.balance);
             }
 
-            // Check if created_by has changed
             if (input.created_by && input.created_by !== currentBank.created_by) {
-                updatedFields.push("created_by = $3");
+                updatedFields.push(`created_by = $${values.length + 1}`);
                 values.push(input.created_by);
             }
 
-            // If no fields have changed, throw an error
             if (updatedFields.length === 0) {
                 throw new AppError("No changes detected to update bank.", 400);
             }
@@ -103,6 +99,7 @@ export class BankRepository implements IBankRepository {
             throw new AppError("Failed to update bank: " + error, 500);
         }
     }
+
 
 
     async getAllBanks(limit: number, offset: number): Promise<Bank[]> {
