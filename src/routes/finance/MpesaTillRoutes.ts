@@ -20,7 +20,7 @@ const router = Router();
 const controller = container.get<MpesaTillController>(INTERFACE_TYPE.MpesaTillController);
 
 // Define routes for Mpesa Till operations
-router.post("/create", controller.onCreateMpesaTill.bind(controller));
+router.post("/creatempesatill", controller.onCreateMpesaTill.bind(controller));
 router.get("/gettill/:id", controller.onGetMpesaTill.bind(controller));
 router.get("/gettills", controller.onGetMpesaTills.bind(controller));
 router.patch("/updatetill/:id", controller.onUpdateMpesaTill.bind(controller));
