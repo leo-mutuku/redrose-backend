@@ -1,4 +1,4 @@
-export class Menuregister {
+export class MenuSetup {
     constructor(
 
     ) { }

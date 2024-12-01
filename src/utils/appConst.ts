@@ -131,4 +131,11 @@ export const INTERFACE_TYPE = {
   SMSRepository: Symbol.for("SMSRepository"),
   SMSInteractor: Symbol.for("SMSInteractor"),
   SMSController: Symbol.for("SMSController"),
+
+  //pos print
+  POSPrintController: Symbol.for("POSPrintController"),
+  POSPrintInteractor: Symbol.for("POSPrintInteractor"),
+  POSPrintRepository: Symbol.for("POSPrintRepository"),
+  POSPrinterExternalLibrary: Symbol.for("POSPrinterExternalLibrary"),
+
 };
