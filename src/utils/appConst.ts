@@ -102,6 +102,11 @@ export const INTERFACE_TYPE = {
   StockTakeLineInteractor: Symbol.for("StockTakeLineInteractor"),
   StockTakeLineController: Symbol.for("StockTakeLineController"),
 
+  // Store issue
+  StoreIssueRepository: Symbol.for("StoreIssueRepository"),
+  StoreIssueInteractor: Symbol.for("StoreIssueInteractor"),
+  StoreIssueController: Symbol.for("StoreIssueController"),
+
 
   //Store Items
   StoreItemRepository: Symbol.for("StoreItemRepository"),
