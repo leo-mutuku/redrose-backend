@@ -3,7 +3,7 @@ import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
 
 import { IStoreRegisterInteractor } from "../../interfaces/store/IStoreRegisterInteractor";
-import { IStoreRegisterRepository } from "../../interfaces/store/IStoreRegisterrepository";
+import { IStoreRegisterRepository } from "../../interfaces/store/IStoreRegisterRepository";
 
 @injectable()
 export class StoreRegisterInteractor implements IStoreRegisterInteractor {

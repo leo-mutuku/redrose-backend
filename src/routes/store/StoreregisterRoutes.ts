@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { IStoreRegisterRepository } from "../../interfaces/store/IStoreRegisterrepository";
-import { StoreRegisterRepository } from "../../repositories/store/StoreregisterRepository";
 import { StoreRegisterInteractor } from "../../interactors/store/StoreregisterInteractor";
 import { IStoreRegisterInteractor } from "../../interfaces/store/IStoreRegisterInteractor";
 import { StoreRegisterController } from "../../controllers/store/StoreregisterController";
+import { IStoreRegisterRepository } from "../../interfaces/store/IStoreRegisterRepository";
+import { StoreRegisterRepository } from "../../repositories/store/StoreregisterRepository";
+
 
 // Initialize Inversify container
 const container = new Container();

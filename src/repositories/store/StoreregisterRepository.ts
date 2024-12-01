@@ -3,7 +3,8 @@ import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
 import { StoreRegister } from "../../entities/store/StoreRegister";  // Adjust the import based on your actual entity
-import { IStoreRegisterRepository } from "../../interfaces/store/IStoreRegisterrepository";
+import { IStoreRegisterRepository } from "../../interfaces/store/IStoreRegisterRepository";
+
 
 
 @injectable()
