@@ -22,6 +22,11 @@ import MpesaTillRoutes from "./finance/MpesaTillRoutes"
 import GLAccountRoutes from "./finance/GLAccountRoutes"
 
 
+// store routes 
+import UnitRoutes from "./store/UnitsRoutes"
+
+
+
 // POS printer
 //import POSPrinterRoutes from "./sales/PrintPos"
 
@@ -49,6 +54,9 @@ routers.use("/fundtransfers", FundTransferRoutes)
 routers.use("/mpesatills", MpesaTillRoutes)
 routers.use("/glaccounts", GLAccountRoutes)
 
+
+//store routes
+routers.use("/unit", UnitRoutes)
 
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)

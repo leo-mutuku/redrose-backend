@@ -1,4 +1,4 @@
-export class Units {
+export class Unit {
     constructor(
         public readonly unit_id: number,
         public readonly standard_unit_name: string,
