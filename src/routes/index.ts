@@ -22,6 +22,15 @@ import MpesaTillRoutes from "./finance/MpesaTillRoutes"
 import GLAccountRoutes from "./finance/GLAccountRoutes"
 
 
+// store routes 
+import UnitRoutes from "./store/UnitsRoutes"
+
+
+
+// POS printer
+//import POSPrinterRoutes from "./sales/PrintPos"
+
+
 const routers = express.Router();
 // Use the JWT verification middleware for all routes
 routers.use(verifyJWT);
@@ -44,6 +53,13 @@ routers.use("/cashaccounts", CashAccountRoutes)
 routers.use("/fundtransfers", FundTransferRoutes)
 routers.use("/mpesatills", MpesaTillRoutes)
 routers.use("/glaccounts", GLAccountRoutes)
+
+
+//store routes
+routers.use("/unit", UnitRoutes)
+
+// POS printer
+//routers.use("/posprinter", POSPrinterRoutes)
 
 
 export default routers;
