@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { StoreRegisterController } from "../../controllers/store/StoreRegisterController";
-import { IStoreRegisterRepository } from "../../interfaces/store/IStoreRegisterRepository";
+import { IStoreRegisterRepository } from "../../interfaces/store/IStoreRegisterrepository";
+import { StoreRegisterRepository } from "../../repositories/store/StoreregisterRepository";
+import { StoreRegisterInteractor } from "../../interactors/store/StoreregisterInteractor";
 import { IStoreRegisterInteractor } from "../../interfaces/store/IStoreRegisterInteractor";
-import { StoreRegisterRepository } from "../../repositories/store/StoreRegisterRepository";
-import { StoreRegisterInteractor } from "../../interactors/store/StoreRegisterInteractor";
+import { StoreRegisterController } from "../../controllers/store/StoreregisterController";
 
 // Initialize Inversify container
 const container = new Container();
@@ -22,10 +22,10 @@ const router = Router();
 const controller = container.get<StoreRegisterController>(INTERFACE_TYPE.StoreRegisterController);
 
 // Define the routes and bind controller methods
-router.post("/createregister", controller.onCreateRegister.bind(controller));
-router.get("/getregister/:id", controller.onGetRegister.bind(controller));
-router.get("/getregisters", controller.onGetRegisters.bind(controller));
-router.patch("/updateregister/:id", controller.onUpdateRegister.bind(controller));
+router.post("/createstore", controller.onCreateRegister.bind(controller));
+router.get("/getstore/:id", controller.onGetRegister.bind(controller));
+router.get("/getstores", controller.onGetRegisters.bind(controller));
+router.patch("/updatestore/:id", controller.onUpdateRegister.bind(controller));
 
 // Export the configured router
 export default router;
