@@ -35,10 +35,10 @@ export class UnitRepository implements IUnitRepository {
     async getUnits(limit: number, offset: number): Promise<Unit[]> {
         try {
             const query = `
-                SELECT unit_id, name, description,
+                SELECT unit_id,
+                standard_unit_name, standard_unit_value,other_unit_name,other_unit_value,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM units
-                WHERE is_active = true
+                FROM item_unit
                 LIMIT $1 OFFSET $2
             `;
             const values = [limit, offset];
@@ -53,9 +53,10 @@ export class UnitRepository implements IUnitRepository {
     async getUnit(id: number): Promise<Unit> {
         try {
             const query = `
-                SELECT unit_id, name, description,
+                SELECT unit_id,
+                standard_unit_name, standard_unit_value,other_unit_name,other_unit_value,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM units
+                FROM item_unit
                 WHERE unit_id = $1
             `;
             const values = [id];
@@ -73,7 +74,7 @@ export class UnitRepository implements IUnitRepository {
 
     async updateUnit(id: number, unit: Partial<Unit>): Promise<Unit> {
         try {
-            let query = `UPDATE units SET `;
+            let query = `UPDATE item_unit SET `;
             const values: any[] = [];
             let setClauses: string[] = [];
 
@@ -89,7 +90,8 @@ export class UnitRepository implements IUnitRepository {
 
             query += setClauses.join(', ');
             query += ` WHERE unit_id = $${values.length + 1} RETURNING 
-                unit_id, name, description,
+                unit_id, 
+                standard_unit_name, standard_unit_value,other_unit_name,other_unit_value,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
             values.push(id);
