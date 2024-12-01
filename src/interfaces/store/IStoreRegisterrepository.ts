@@ -1,4 +1,4 @@
-export interface IStoreRegisterInteractor {
+export interface IStoreRegisterRepository {
     createRegister(input: any): Promise<any>;
     getRegister(id: number): Promise<any>;
     updateRegister(id: number, input: any): Promise<any>;
