@@ -118,6 +118,11 @@ export const INTERFACE_TYPE = {
   UnitInteractor: Symbol.for("UnitInteractor"),
   UnitController: Symbol.for("UnitController"),
 
+  // Item category
+  ItemCategoryRepository: Symbol.for("ItemCategoryRepository"),
+  ItemCategoryInteractor: Symbol.for("ItemCategoryInteractor"),
+  ItemCategoryController: Symbol.for("ItemCategoryController"),
+
 
   // --------------------------------global
 
