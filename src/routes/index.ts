@@ -26,6 +26,7 @@ import GLAccountRoutes from "./finance/GLAccountRoutes"
 import UnitRoutes from "./store/UnitsRoutes"
 import ItemcategoryRoutes from "./store/ItemCategoryRoutes"
 import StoreRegisterRoutes from "./store/StoreregisterRoutes"
+import ItemRegisterRoutes from "./store/ItemRegisterRoutes"
 
 
 
@@ -61,6 +62,7 @@ routers.use("/glaccounts", GLAccountRoutes)
 routers.use("/unit", UnitRoutes)
 routers.use("/itemcategory", ItemcategoryRoutes)
 routers.use("/storeregister", StoreRegisterRoutes)
+routers.use("/itemregister", ItemRegisterRoutes)
 
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)
