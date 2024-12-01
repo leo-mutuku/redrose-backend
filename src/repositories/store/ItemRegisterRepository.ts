@@ -123,7 +123,6 @@ LIMIT 20 OFFSET 0
                 (SELECT first_name || ' ' || last_name AS fullname 
                  FROM users 
                  WHERE user_id = item_register.created_by) AS created_by_name`;
-
             values.push(id);
 
             const result = await this.client.query(query, values);

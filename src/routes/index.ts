@@ -27,6 +27,7 @@ import UnitRoutes from "./store/UnitsRoutes"
 import ItemcategoryRoutes from "./store/ItemCategoryRoutes"
 import StoreRegisterRoutes from "./store/StoreregisterRoutes"
 import ItemRegisterRoutes from "./store/ItemRegisterRoutes"
+import StoreItemRoutes from "./store/StoreItemRoutes"
 
 
 
@@ -63,6 +64,7 @@ routers.use("/unit", UnitRoutes)
 routers.use("/itemcategory", ItemcategoryRoutes)
 routers.use("/storeregister", StoreRegisterRoutes)
 routers.use("/itemregister", ItemRegisterRoutes)
+routers.use("/storeitem", StoreItemRoutes)
 
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)
