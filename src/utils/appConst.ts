@@ -129,6 +129,95 @@ export const INTERFACE_TYPE = {
   ItemCategoryController: Symbol.for("ItemCategoryController"),
 
 
+  // kichen 
+  // Menu register
+  MenuRegisterRepository: Symbol.for("MenuRegisterRepository"),
+  MenuRegisterInteractor: Symbol.for("MenuRegisterInteractor"),
+  MenuRegisterController: Symbol.for("MenuRegisterController"),
+
+  // Menu item
+  MenuItemRepository: Symbol.for("MenuItemRepository"),
+  MenuItemInteractor: Symbol.for("MenuItemInteractor"),
+  MenuItemController: Symbol.for("MenuItemController"),
+
+  // Menu Category
+  MenuCategoryRepository: Symbol.for("MenuCategoryRepository"),
+  MenuCategoryInteractor: Symbol.for("MenuCategoryInteractor"),
+  MenuCategoryController: Symbol.for("MenuCategoryController"),
+
+  // Kichen Statition
+  KitchenStationRepository: Symbol.for("KitchenStationRepository"),
+  KitchenStationInteractor: Symbol.for("KitchenStationInteractor"),
+  KitchenStationController: Symbol.for("KitchenStationController"),
+
+  // Kitchen Setup
+  KitchenSetupRepository: Symbol.for("KitchenSetupRepository"),
+  KitchenSetupInteractor: Symbol.for("KitchenSetupInteractor"),
+  KitchenSetupController: Symbol.for("KitchenSetupController"),
+
+  //Food Processing
+  FoodProcessingRepository: Symbol.for("FoodProcessingRepository"),
+  FoodProcessingInteractor: Symbol.for("FoodProcessingInteractor"),
+  FoodProcessingController: Symbol.for("FoodProcessingController"),
+
+  // Kitchen stock take
+  KitchenStockTakeRepository: Symbol.for("KitchenStockTakeRepository"),
+  KitchenStockTakeInteractor: Symbol.for("KitchenStockTakeInteractor"),
+  KitchenStockTakeController: Symbol.for("KitchenStockTakeController"),
+
+
+
+  // ---------------------------------Purchases
+  //Purchase order
+  PurchaseOrderRepository: Symbol.for("PurchaseOrderRepository"),
+  PurchaseOrderInteractor: Symbol.for("PurchaseOrderInteractor"),
+  PurchaseOrderController: Symbol.for("PurchaseOrderController"),
+
+  //Purchase Requisition
+  PurchaseRequisitionRepository: Symbol.for("PurchaseRequisitionRepository"),
+  PurchaseRequisitionInteractor: Symbol.for("PurchaseRequisitionInteractor"),
+  PurchaseRequisitionController: Symbol.for("PurchaseRequisitionController"),
+
+  // ----------------------------------Sales
+  //Sales order
+  SalesOrderRepository: Symbol.for("SalesOrderRepository"),
+  SalesOrderInteractor: Symbol.for("SalesOrderInteractor"),
+  SalesOrderController: Symbol.for("SalesOrderController"),
+
+  //Sales order clearance
+  SalesOrderClearanceRepository: Symbol.for("SalesOrderClearanceRepository"),
+  SalesOrderClearanceInteractor: Symbol.for("SalesOrderClearanceInteractor"),
+  SalesOrderClearanceController: Symbol.for("SalesOrderClearanceController"),
+
+  // cashier Register
+  CashierRegisterRepository: Symbol.for("CashierRegisterRepository"),
+  CashierRegisterInteractor: Symbol.for("CashierRegisterInteractor"),
+  CashierRegisterController: Symbol.for("CashierRegisterController"),
+
+  // WaitStaff Register
+  WaitStaffRegisterRepository: Symbol.for("WaitStaffRegisterRepository"),
+  WaitStaffRegisterInteractor: Symbol.for("WaitStaffRegisterInteractor"),
+  WaitStaffRegisterController: Symbol.for("WaitStaffRegisterController"),
+
+  // --------------------------Payments
+  // VendorSupplierPayyment
+  VendorSupplierPaymentRepository: Symbol.for("VendorSupplierPaymentRepository"),
+  VendorSupplierPaymentInteractor: Symbol.for("VendorSupplierPaymentInteractor"),
+  VendorSupplierPaymentController: Symbol.for("VendorSupplierPaymentController"),
+
+  //------------------------------Payroll
+  // Payroll Setup
+  PayrollSetupRepository: Symbol.for("PayrollSetupRepository"),
+  PayrollSetupInteractor: Symbol.for("PayrollSetupInteractor"),
+  PayrollSetupController: Symbol.for("PayrollSetupController"),
+
+  // Payroll Entries
+  PayrollEntriesRepository: Symbol.for("PayrollEntriesRepository"),
+  PayrollEntriesInteractor: Symbol.for("PayrollEntriesInteractor"),
+  PayrollEntriesController: Symbol.for("PayrollEntriesController"),
+
+
+
   // --------------------------------global
 
 
