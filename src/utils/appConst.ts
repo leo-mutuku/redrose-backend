@@ -199,6 +199,19 @@ export const INTERFACE_TYPE = {
   WaitStaffRegisterInteractor: Symbol.for("WaitStaffRegisterInteractor"),
   WaitStaffRegisterController: Symbol.for("WaitStaffRegisterController"),
 
+  // Bill Out
+  BillOutRepository: Symbol.for("BillOutRepository"),
+  BillOutInteractor: Symbol.for("BillOutInteractor"),
+  BillOutController: Symbol.for("BillOutController"),
+
+  // Order Cancellation
+  OrderCancellationRepository: Symbol.for("OrderCancellationRepository"),
+  OrderCancellationInteractor: Symbol.for("OrderCancellationInteractor"),
+  OrderCancellationController: Symbol.for("OrderCancellationController"),
+
+
+  //
+
   // --------------------------Payments
   // VendorSupplierPayyment
   VendorSupplierPaymentRepository: Symbol.for("VendorSupplierPaymentRepository"),
