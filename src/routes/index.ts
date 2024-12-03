@@ -31,6 +31,12 @@ import StoreItemRoutes from "./store/StoreItemRoutes"
 import StoreIssueRoutes from "./store/StoreIssueRoutes"
 
 
+// ktchen
+import MenuUnitRoutes from "./kitchen/MenuUnitRoutes"
+import MenuCategory from "./kitchen/MenuCategoryRoutes"
+import MenuRegister from "./kitchen/MenuRegisterRoutes"
+
+
 
 // POS printer
 //import POSPrinterRoutes from "./sales/PrintPos"
@@ -67,6 +73,12 @@ routers.use("/storeregister", StoreRegisterRoutes)
 routers.use("/itemregister", ItemRegisterRoutes)
 routers.use("/storeitem", StoreItemRoutes)
 routers.use("/storeissue", StoreIssueRoutes)
+
+
+// ktchen
+routers.use("/menuunit", MenuUnitRoutes)
+routers.use("/menucategory", MenuCategory)
+routers.use("/menuregister", MenuRegister)
 
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)

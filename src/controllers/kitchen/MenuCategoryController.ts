@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { IMenuCategoryInteractor } from "../../interfaces/store/IMenuCategoryInteractor";
+import { IMenuCategoryInteractor } from "../../interfaces/kitchen/IMenuCategoryInteractor";
 
 @injectable()
 export class MenuCategoryController {

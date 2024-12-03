@@ -2,8 +2,8 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { MenuCategory } from "../../entities/kitchen/MenuCategory";
 import { IMenuCategoryRepository } from "../../interfaces/kitchen/IMenuCategoryRepository";
+import { MenuCategory } from "../../entities/kitchen/Menucategory";
 
 @injectable()
 export class MenuCategoryRepository implements IMenuCategoryRepository {
@@ -13,15 +13,15 @@ export class MenuCategoryRepository implements IMenuCategoryRepository {
         this.client = pgClient();
     }
 
-    async createMenuCategory({ category_name, description }: MenuCategory): Promise<MenuCategory> {
+    async createMenuCategory({ category_name, description, category_abbr }: MenuCategory): Promise<MenuCategory> {
         try {
             const query = `
-                INSERT INTO menu_category (category_name, description)
-                VALUES ($1, $2)
-                RETURNING menu_category_id, category_name, description,
+                INSERT INTO menu_category (category_name, description, category_abbr)
+                VALUES ($1, $2, $3)
+                RETURNING menu_category_id, category_name, description,category_abbr,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [category_name, description];
+            const values = [category_name, description, category_abbr];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
@@ -33,7 +33,7 @@ export class MenuCategoryRepository implements IMenuCategoryRepository {
     async getMenuCategories(limit: number, offset: number): Promise<MenuCategory[]> {
         try {
             const query = `
-                SELECT menu_category_id, category_name, description,
+                SELECT menu_category_id, category_name, description,category_abbr,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM menu_category
                 LIMIT $1 OFFSET $2
@@ -50,7 +50,7 @@ export class MenuCategoryRepository implements IMenuCategoryRepository {
     async getMenuCategory(id: number): Promise<MenuCategory> {
         try {
             const query = `
-                SELECT menu_category_id, category_name, description,
+                SELECT menu_category_id, category_name, description,category_abbr,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM menu_category
                 WHERE menu_category_id = $1
@@ -86,7 +86,7 @@ export class MenuCategoryRepository implements IMenuCategoryRepository {
 
             query += setClauses.join(', ');
             query += ` WHERE menu_category_id = $${values.length + 1} RETURNING 
-                menu_category_id, category_name, description,
+                menu_category_id, category_name, description,category_abbr,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
             values.push(id);

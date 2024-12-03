@@ -2,8 +2,8 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { MenuUnit } from "../../entities/kitchen/MenuUnit";
 import { IMenuUnitRepository } from "../../interfaces/kitchen/IMenuUnitRepository";
+import { MenuUnit } from "../../entities/kitchen/MenuUnit";
 
 @injectable()
 export class MenuUnitRepository implements IMenuUnitRepository {
@@ -13,15 +13,15 @@ export class MenuUnitRepository implements IMenuUnitRepository {
         this.client = pgClient();
     }
 
-    async createMenuUnit({ menu_id, unit_id, unit_value }: MenuUnit): Promise<MenuUnit> {
+    async createMenuUnit({ unit_name, unit_abbr, value }: MenuUnit): Promise<MenuUnit> {
         try {
             const query = `
-                INSERT INTO menu_unit (menu_id, unit_id, unit_value)
+                INSERT INTO menu_unit (unit_name, unit_abbr, value)
                 VALUES ($1, $2, $3)
-                RETURNING menu_unit_id, menu_id, unit_id, unit_value,
+                RETURNING menu_unit_id, unit_name, unit_abbr, value,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [menu_id, unit_id, unit_value];
+            const values = [unit_name, unit_abbr, value];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
@@ -33,7 +33,7 @@ export class MenuUnitRepository implements IMenuUnitRepository {
     async getMenuUnits(limit: number, offset: number): Promise<MenuUnit[]> {
         try {
             const query = `
-                SELECT menu_unit_id, menu_id, unit_id, unit_value,
+                SELECT menu_unit_id,unit_name, unit_abbr, value,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM menu_unit
                 LIMIT $1 OFFSET $2
@@ -50,7 +50,7 @@ export class MenuUnitRepository implements IMenuUnitRepository {
     async getMenuUnit(id: number): Promise<MenuUnit> {
         try {
             const query = `
-                SELECT menu_unit_id, menu_id, unit_id, unit_value,
+                SELECT menu_unit_id, unit_name, unit_abbr, value,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM menu_unit
                 WHERE menu_unit_id = $1
@@ -86,7 +86,7 @@ export class MenuUnitRepository implements IMenuUnitRepository {
 
             query += setClauses.join(', ');
             query += ` WHERE menu_unit_id = $${values.length + 1} RETURNING 
-                menu_unit_id, menu_id, unit_id, unit_value,
+                menu_unit_id, unit_name, unit_abbr, value,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
             values.push(id);

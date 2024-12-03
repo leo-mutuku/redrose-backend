@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { IMenuRegisterInteractor } from "../../interfaces/store/IMenuRegisterInteractor";
-
+import { IMenuRegisterInteractor } from "../../interfaces/kitchen/IMenuRegisterInteractor";
 @injectable()
 export class MenuRegisterController {
     private interactor: IMenuRegisterInteractor;
@@ -21,7 +20,6 @@ export class MenuRegisterController {
             next(error);
         }
     }
-
     async onGetMenuRegisters(req: Request, res: Response, next: NextFunction) {
         try {
             const offset = parseInt(req.query.offset as string) || 0;
@@ -33,7 +31,6 @@ export class MenuRegisterController {
             next(error);
         }
     }
-
     async onGetMenuRegister(req: Request, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id);
@@ -43,7 +40,6 @@ export class MenuRegisterController {
             next(error);
         }
     }
-
     async onUpdateMenuRegister(req: Request, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id);
