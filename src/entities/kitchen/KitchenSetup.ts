@@ -1,4 +1,4 @@
-export class MenuSetup {
+export class KitchenSetup {
     constructor(
 
     ) { }

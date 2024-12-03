@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { IKitchenSetupInteractor } from "../../interfaces/store/IKitchenSetupInteractor";
+import { IKitchenSetupInteractor } from "../../interfaces/kitchen/IKitchenSetupInteractor";
 
 @injectable()
 export class KitchenSetupController {

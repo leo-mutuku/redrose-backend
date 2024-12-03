@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { FoodProcessingRepository } from "../../repositories/store/FoodProcessingRepository";
-import { FoodProcessingInteractor } from "../../interactors/store/FoodProcessingInteractor";
-import { FoodProcessingController } from "../../controllers/store/FoodProcessingController";
-import { IFoodProcessingRepository } from "../../interfaces/store/IFoodProcessingRepository";
-import { IFoodProcessingInteractor } from "../../interfaces/store/IFoodProcessingInteractor";
+import { FoodProcessingRepository } from "../../repositories/kitchen/FoodProcessingRepository";
+import { FoodProcessingInteractor } from "../../interactors/kitchen/FoodProcessingInteractor";
+import { FoodProcessingController } from "../../controllers/kitchen/FoodProcessingController";
+import { IFoodProcessingRepository } from "../../interfaces/kitchen/IFoodProcessingRepository";
+import { IFoodProcessingInteractor } from "../../interfaces/kitchen/IFoodProcessingInteractor";
 
 // Initialize Inversify container
 const container = new Container();

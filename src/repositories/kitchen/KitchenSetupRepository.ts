@@ -2,8 +2,9 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { KitchenSetup } from "../../entities/kitchen/KitchenSetup";
+
 import { IKitchenSetupRepository } from "../../interfaces/kitchen/IKitchenSetupRepository";
+import { KitchenSetup } from "../../entities/kitchen/KitchenSetup";
 
 @injectable()
 export class KitchenSetupRepository implements IKitchenSetupRepository {
@@ -13,7 +14,7 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
         this.client = pgClient();
     }
 
-    async createKitchenSetup({ setup_name, setup_description }: KitchenSetup): Promise<KitchenSetup> {
+    async createKitchenSetup({ }: KitchenSetup): Promise<KitchenSetup> {
         try {
             const query = `
                 INSERT INTO kitchen_setup (setup_name, setup_description)
@@ -21,7 +22,7 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
                 RETURNING kitchen_setup_id, setup_name, setup_description,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [setup_name, setup_description];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

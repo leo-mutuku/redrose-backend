@@ -13,7 +13,7 @@ export class KitchenStationRepository implements IKitchenStationRepository {
         this.client = pgClient();
     }
 
-    async createKitchenStation({ station_name, description }: KitchenStation): Promise<KitchenStation> {
+    async createKitchenStation({ }: KitchenStation): Promise<KitchenStation> {
         try {
             const query = `
                 INSERT INTO kitchen_station (station_name, description)
@@ -21,7 +21,7 @@ export class KitchenStationRepository implements IKitchenStationRepository {
                 RETURNING kitchen_station_id, station_name, description,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [station_name, description];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
