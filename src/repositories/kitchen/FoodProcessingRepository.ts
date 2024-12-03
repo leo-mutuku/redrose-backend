@@ -2,40 +2,47 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { KitchenSetup } from "../../entities/kitchen/KitchenSetup";
-import { IKitchenSetupRepository } from "../../interfaces/kitchen/IKitchenSetupRepository";
+
+import { IFoodProcessingRepository } from "../../interfaces/kitchen/IFoodProcessingRepository";
+import { FoodProcessing } from "../../entities/kitchen/FoodProcessing";
 
 @injectable()
-export class KitchenSetupRepository implements IKitchenSetupRepository {
+export class FoodProcessingRepository implements IFoodProcessingRepository {
     private client: Pool;
 
     constructor() {
         this.client = pgClient();
     }
 
-    async createKitchenSetup({ setup_name, setup_description }: KitchenSetup): Promise<KitchenSetup> {
+    async createFoodProcessing(): Promise<FoodProcessing> {
         try {
             const query = `
-                INSERT INTO kitchen_setup (setup_name, setup_description)
-                VALUES ($1, $2)
-                RETURNING kitchen_setup_id, setup_name, setup_description,
+                INSERT INTO food_processing (process_name, description, start_date, end_date)
+                VALUES ($1, $2, $3, $4)
+                RETURNING process_id, process_name, description, 
+                TO_CHAR(start_date, 'DD/MM/YYYY') AS start_date, 
+                TO_CHAR(end_date, 'DD/MM/YYYY') AS end_date, 
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [setup_name, setup_description];
+            const values = [
+
+            ];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
         } catch (error) {
-            throw new AppError('Error creating kitchen setup: ' + error, 500);
+            throw new AppError('Error creating food processing entry: ' + error, 500);
         }
     }
 
-    async getKitchenSetups(limit: number, offset: number): Promise<KitchenSetup[]> {
+    async getFoodProcessings(limit: number, offset: number): Promise<FoodProcessing[]> {
         try {
             const query = `
-                SELECT kitchen_setup_id, setup_name, setup_description,
+                SELECT process_id, process_name, description, 
+                TO_CHAR(start_date, 'DD/MM/YYYY') AS start_date, 
+                TO_CHAR(end_date, 'DD/MM/YYYY') AS end_date,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM kitchen_setup
+                FROM food_processing
                 LIMIT $1 OFFSET $2
             `;
             const values = [limit, offset];
@@ -43,39 +50,41 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
 
             return result.rows;
         } catch (error) {
-            throw new AppError('Error fetching kitchen setups: ' + error, 500);
+            throw new AppError('Error fetching food processing entries: ' + error, 500);
         }
     }
 
-    async getKitchenSetup(id: number): Promise<KitchenSetup> {
+    async getFoodProcessing(id: number): Promise<FoodProcessing> {
         try {
             const query = `
-                SELECT kitchen_setup_id, setup_name, setup_description,
+                SELECT process_id, process_name, description, 
+                TO_CHAR(start_date, 'DD/MM/YYYY') AS start_date, 
+                TO_CHAR(end_date, 'DD/MM/YYYY') AS end_date,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM kitchen_setup
-                WHERE kitchen_setup_id = $1
+                FROM food_processing
+                WHERE process_id = $1
             `;
             const values = [id];
             const result = await this.client.query(query, values);
 
             if (result.rows.length === 0) {
-                throw new AppError('Kitchen setup not found', 404);
+                throw new AppError('Food processing entry not found', 404);
             }
 
             return result.rows[0];
         } catch (error) {
-            throw new AppError('Error fetching kitchen setup: ' + error, 500);
+            throw new AppError('Error fetching food processing entry: ' + error, 500);
         }
     }
 
-    async updateKitchenSetup(id: number, kitchenSetup: Partial<KitchenSetup>): Promise<KitchenSetup> {
+    async updateFoodProcessing(id: number, foodProcessing: Partial<FoodProcessing>): Promise<FoodProcessing> {
         try {
-            let query = `UPDATE kitchen_setup SET `;
+            let query = `UPDATE food_processing SET `;
             const values: any[] = [];
             let setClauses: string[] = [];
 
             // Dynamically build the SET clause and values array
-            Object.entries(kitchenSetup).forEach(([key, value], index) => {
+            Object.entries(foodProcessing).forEach(([key, value], index) => {
                 setClauses.push(`${key} = $${index + 1}`);
                 values.push(value);
             });
@@ -85,20 +94,22 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
             }
 
             query += setClauses.join(', ');
-            query += ` WHERE kitchen_setup_id = $${values.length + 1} RETURNING 
-                kitchen_setup_id, setup_name, setup_description,
+            query += ` WHERE process_id = $${values.length + 1} RETURNING 
+                process_id, process_name, description, 
+                TO_CHAR(start_date, 'DD/MM/YYYY') AS start_date, 
+                TO_CHAR(end_date, 'DD/MM/YYYY') AS end_date,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
             values.push(id);
 
             const result = await this.client.query(query, values);
             if (result.rows.length === 0) {
-                throw new AppError('Kitchen setup not found', 404);
+                throw new AppError('Food processing entry not found', 404);
             }
 
             return result.rows[0];
         } catch (error) {
-            throw new AppError('Error updating kitchen setup: ' + error, 500);
+            throw new AppError('Error updating food processing entry: ' + error, 500);
         }
     }
 }

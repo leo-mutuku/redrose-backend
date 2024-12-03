@@ -36,6 +36,10 @@ import MenuUnitRoutes from "./kitchen/MenuUnitRoutes"
 import MenuCategory from "./kitchen/MenuCategoryRoutes"
 import MenuRegister from "./kitchen/MenuRegisterRoutes"
 import MenuItemRoutes from "./kitchen/MenuItemRoutes"
+import KitchenStationRoutes from "./kitchen/KitchenStationRoutes"
+import KitchenSetupRoutes from "./kitchen/KitchenSetupRoutes"
+import FoodProcessingRoutes from "./kitchen/FoodProcessingRoutes"
+
 
 
 
@@ -81,6 +85,28 @@ routers.use("/menuunit", MenuUnitRoutes)
 routers.use("/menucategory", MenuCategory)
 routers.use("/menuregister", MenuRegister)
 routers.use("/menuitem", MenuItemRoutes)
+routers.use("/kitchenstation", KitchenStationRoutes)
+routers.use("/kitchensetup", KitchenSetupRoutes)
+routers.use("/foodprocessing", FoodProcessingRoutes)
+
+
+//purchase
+
+
+
+
+//sales
+
+
+
+
+
+//payment
+
+
+
+
+//payroll
 
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)

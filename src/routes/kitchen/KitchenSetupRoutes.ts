@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { KitchenStationRepository } from "../../repositories/store/KitchenStationRepository";
-import { KitchenStationInteractor } from "../../interactors/store/KitchenStationInteractor";
-import { KitchenStationController } from "../../controllers/store/KitchenStationController";
-import { IKitchenStationRepository } from "../../interfaces/store/IKitchenStationRepository";
-import { IKitchenStationInteractor } from "../../interfaces/store/IKitchenStationInteractor";
+import { KitchenStationRepository } from "../../repositories/kitchen/KitchenStationRepository";
+import { KitchenStationInteractor } from "../../interactors/kitchen/KitchenStationInteractor";
+import { KitchenStationController } from "../../controllers/kitchen/KitchenStationController";
+import { IKitchenStationRepository } from "../../interfaces/kitchen/IKitchenStationRepository";
+import { IKitchenStationInteractor } from "../../interfaces/kitchen/IKitchenStationInteractor";
 
 // Initialize Inversify container
 const container = new Container();
