@@ -1,13 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Users = void 0;
-class Users {
-    constructor(user_id, username, password, ttl, phone) {
+exports.User = void 0;
+class User {
+    constructor(user_id, ttl, username, first_name, last_name, password, phone, is_active, roles) {
         this.user_id = user_id;
-        this.username = username;
-        this.password = password;
         this.ttl = ttl;
+        this.username = username;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.password = password;
         this.phone = phone;
+        this.is_active = is_active;
+        this.roles = roles;
     }
 }
-exports.Users = Users;
+exports.User = User;

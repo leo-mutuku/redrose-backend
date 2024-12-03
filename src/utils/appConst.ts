@@ -199,10 +199,10 @@ export const INTERFACE_TYPE = {
   WaitStaffRegisterInteractor: Symbol.for("WaitStaffRegisterInteractor"),
   WaitStaffRegisterController: Symbol.for("WaitStaffRegisterController"),
 
-  // Bill Out
-  BillOutRepository: Symbol.for("BillOutRepository"),
-  BillOutInteractor: Symbol.for("BillOutInteractor"),
-  BillOutController: Symbol.for("BillOutController"),
+  // Voided Bill
+  VoidedBillRepository: Symbol.for("VoidedBillRepository"),
+  VoidedBillInteractor: Symbol.for("VoidedBillInteractor"),
+  VoidedBillController: Symbol.for("VoidedBillController"),
 
   // Order Cancellation
   OrderCancellationRepository: Symbol.for("OrderCancellationRepository"),
