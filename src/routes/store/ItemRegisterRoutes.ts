@@ -5,7 +5,7 @@ import { IItemRegisterRepository } from "../../interfaces/store/IItemRegisterRep
 import { IItemRegisterInteractor } from "../../interfaces/store/IItemRegisterInteractor";
 import { ItemRegisterInteractor } from "../../interactors/store/ItemRegisterInteractor";
 import { ItemRegisterRepository } from "../../repositories/store/ItemRegisterRepository";
-import { ItemRegisterController } from "../../controllers/store/ItemregisterController";
+import { ItemRegisterController } from "../../controllers/store/ItemRegisterController";
 
 // Initialize Inversify container
 const container = new Container();

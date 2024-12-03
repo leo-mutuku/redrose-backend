@@ -5,7 +5,7 @@ import { StoreRegisterInteractor } from "../../interactors/store/StoreregisterIn
 import { IStoreRegisterInteractor } from "../../interfaces/store/IStoreRegisterInteractor";
 import { StoreRegisterController } from "../../controllers/store/StoreregisterController";
 import { IStoreRegisterRepository } from "../../interfaces/store/IStoreRegisterRepository";
-import { StoreRegisterRepository } from "../../repositories/store/StoreregisterRepository";
+import { StoreRegisterRepository } from "../../repositories/store/StoreRegisterRepository";
 
 
 // Initialize Inversify container

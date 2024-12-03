@@ -10,7 +10,7 @@ exports.Mailer = void 0;
 const inversify_1 = require("inversify");
 let Mailer = class Mailer {
     SendEmail(to, product) {
-        // send grid implementation
+        // node mailer implimentation
         console.log("sending email");
         return true;
     }

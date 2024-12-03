@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Role = void 0;
 class Role {
-    constructor(role_id, role_name, role_code, description) {
-        this.role_id = role_id;
+    constructor(role_name, role_description, created_by, role_id) {
         this.role_name = role_name;
-        this.role_code = role_code;
-        this.description = description;
+        this.role_description = role_description;
+        this.created_by = created_by;
+        this.role_id = role_id;
     }
 }
 exports.Role = Role;
