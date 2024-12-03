@@ -13,15 +13,15 @@ export class MenuRegisterRepository implements IMenuRegisterRepository {
         this.client = pgClient();
     }
 
-    async createMenuRegister({ menu_id, register_name, register_value }: MenuRegister): Promise<MenuRegister> {
+    async createMenuRegister({ name, description, created_by }: MenuRegister): Promise<MenuRegister> {
         try {
             const query = `
                 INSERT INTO menu_register (menu_id, register_name, register_value)
                 VALUES ($1, $2, $3)
-                RETURNING menu_register_id, menu_id, register_name, register_value,
+                RETURNING menu_register_id, name, description, created_by,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [menu_id, register_name, register_value];
+            const values = [name, description, created_by];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

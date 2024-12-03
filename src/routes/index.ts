@@ -34,6 +34,7 @@ import StoreIssueRoutes from "./store/StoreIssueRoutes"
 // ktchen
 import MenuUnitRoutes from "./kitchen/MenuUnitRoutes"
 import MenuCategory from "./kitchen/MenuCategoryRoutes"
+import MenuRegister from "./kitchen/MenuRegisterRoutes"
 
 
 
@@ -77,6 +78,7 @@ routers.use("/storeissue", StoreIssueRoutes)
 // ktchen
 routers.use("/menuunit", MenuUnitRoutes)
 routers.use("/menucategory", MenuCategory)
+routers.use("/Menuregister", MenuRegister)
 
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)
