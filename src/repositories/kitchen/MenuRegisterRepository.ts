@@ -16,7 +16,7 @@ export class MenuRegisterRepository implements IMenuRegisterRepository {
     async createMenuRegister({ name, description, created_by }: MenuRegister): Promise<MenuRegister> {
         try {
             const query = `
-                INSERT INTO menu_register (menu_id, register_name, register_value)
+                INSERT INTO menu_register (name, description, created_by )
                 VALUES ($1, $2, $3)
                 RETURNING menu_register_id, name, description, created_by,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
@@ -33,7 +33,7 @@ export class MenuRegisterRepository implements IMenuRegisterRepository {
     async getMenuRegisters(limit: number, offset: number): Promise<MenuRegister[]> {
         try {
             const query = `
-                SELECT menu_register_id, menu_id, register_name, register_value,
+                SELECT menu_register_id, name, description, created_by,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM menu_register
                 LIMIT $1 OFFSET $2
@@ -50,7 +50,7 @@ export class MenuRegisterRepository implements IMenuRegisterRepository {
     async getMenuRegister(id: number): Promise<MenuRegister> {
         try {
             const query = `
-                SELECT menu_register_id, menu_id, register_name, register_value,
+                SELECT menu_register_id, name, description, created_by,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM menu_register
                 WHERE menu_register_id = $1
@@ -86,7 +86,7 @@ export class MenuRegisterRepository implements IMenuRegisterRepository {
 
             query += setClauses.join(', ');
             query += ` WHERE menu_register_id = $${values.length + 1} RETURNING 
-                menu_register_id, menu_id, register_name, register_value,
+                menu_register_id,name, description, created_by ,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
             values.push(id);
