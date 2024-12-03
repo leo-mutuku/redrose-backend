@@ -29,7 +29,6 @@ export class MenuUnitRepository implements IMenuUnitRepository {
             throw new AppError('Error creating menu unit: ' + error, 500);
         }
     }
-
     async getMenuUnits(limit: number, offset: number): Promise<MenuUnit[]> {
         try {
             const query = `
@@ -79,18 +78,14 @@ export class MenuUnitRepository implements IMenuUnitRepository {
                 setClauses.push(`${key} = $${index + 1}`);
                 values.push(value);
             });
-
             if (setClauses.length === 0) {
                 throw new AppError('No fields to update', 400);
             }
-
             query += setClauses.join(', ');
             query += ` WHERE menu_unit_id = $${values.length + 1} RETURNING 
                 menu_unit_id, unit_name, unit_abbr, value,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
-
             values.push(id);
-
             const result = await this.client.query(query, values);
             if (result.rows.length === 0) {
                 throw new AppError('Menu unit not found', 404);
