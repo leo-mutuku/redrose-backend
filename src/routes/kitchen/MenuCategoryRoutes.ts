@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { MenuCategoryRepository } from "../../repositories/store/MenuCategoryRepository";
-import { MenuCategoryInteractor } from "../../interactors/store/MenuCategoryInteractor";
-import { MenuCategoryController } from "../../controllers/store/MenuCategoryController";
-import { IMenuCategoryRepository } from "../../interfaces/store/IMenuCategoryRepository";
-import { IMenuCategoryInteractor } from "../../interfaces/store/IMenuCategoryInteractor";
+import { MenuCategoryRepository } from "../../repositories/kitchen/MenuCategoryRepository";
+import { MenuCategoryInteractor } from "../../interactors/kitchen/MenuCategoryInteractor";
+import { MenuCategoryController } from "../../controllers/kitchen/MenuCategoryController";
+import { IMenuCategoryRepository } from "../../interfaces/kitchen/IMenuCategoryRepository";
+import { IMenuCategoryInteractor } from "../../interfaces/kitchen/IMenuCategoryInteractor";
 
 // Initialize Inversify container
 const container = new Container();

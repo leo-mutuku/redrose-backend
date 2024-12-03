@@ -1,25 +1,26 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { MenuUnitsRepository } from "../../repositories/store/MenuUnitsRepository";
-import { MenuUnitsInteractor } from "../../interactors/store/MenuUnitsInteractor";
-import { MenuUnitsController } from "../../controllers/store/MenuUnitsController";
-import { IMenuUnitsRepository } from "../../interfaces/store/IMenuUnitsRepository";
-import { IMenuUnitsInteractor } from "../../interfaces/store/IMenuUnitsInteractor";
+import { MenuUnitRepository } from "../../repositories/kitchen/MenuUnitReposity";
+import { IMenuUnitRepository } from "../../interfaces/kitchen/IMenuUnitRepository";
+import { IMenuUnitInteractor } from "../../interfaces/kitchen/ImenuUnitInteractor";
+import { MenuUnitInteractor } from "../../interactors/kitchen/MenuUnitInteractor";
+import { MenuUnitController } from "../../controllers/kitchen/MenuUnitController";
+
 
 // Initialize Inversify container
 const container = new Container();
 
 // Bind MenuUnits-related interfaces to their implementations
-container.bind<IMenuUnitsRepository>(INTERFACE_TYPE.MenuUnitsRepository).to(MenuUnitsRepository);
-container.bind<IMenuUnitsInteractor>(INTERFACE_TYPE.MenuUnitsInteractor).to(MenuUnitsInteractor);
-container.bind(INTERFACE_TYPE.MenuUnitsController).to(MenuUnitsController);
+container.bind<IMenuUnitRepository>(INTERFACE_TYPE.MenuUnitRepository).to(MenuUnitRepository);
+container.bind<IMenuUnitInteractor>(INTERFACE_TYPE.MenuUnitInteractor).to(MenuUnitInteractor);
+container.bind(INTERFACE_TYPE.MenuUnitController).to(MenuUnitController);
 
 // Create the router instance
 const router = Router();
 
 // Get the controller instance
-const controller = container.get<MenuUnitsController>(INTERFACE_TYPE.MenuUnitsController);
+const controller = container.get<MenuUnitController>(INTERFACE_TYPE.MenuUnitController);
 
 // Define the routes and bind controller methods
 router.post("/createmenuunit", controller.onCreateMenuUnit.bind(controller));

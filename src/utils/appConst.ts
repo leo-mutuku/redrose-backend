@@ -130,6 +130,11 @@ export const INTERFACE_TYPE = {
 
 
   // kichen 
+
+  // menu units
+  MenuUnitRepository: Symbol.for("MenuUnitRepository"),
+  MenuUnitInteractor: Symbol.for("MenuUnitInteractor"),
+  MenuUnitController: Symbol.for("MenuUnitController"),
   // Menu register
   MenuRegisterRepository: Symbol.for("MenuRegisterRepository"),
   MenuRegisterInteractor: Symbol.for("MenuRegisterInteractor"),
