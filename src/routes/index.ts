@@ -35,6 +35,7 @@ import StoreIssueRoutes from "./store/StoreIssueRoutes"
 import MenuUnitRoutes from "./kitchen/MenuUnitRoutes"
 import MenuCategory from "./kitchen/MenuCategoryRoutes"
 import MenuRegister from "./kitchen/MenuRegisterRoutes"
+import MenuItemRoutes from "./kitchen/MenuItemRoutes"
 
 
 
@@ -79,6 +80,7 @@ routers.use("/storeissue", StoreIssueRoutes)
 routers.use("/menuunit", MenuUnitRoutes)
 routers.use("/menucategory", MenuCategory)
 routers.use("/menuregister", MenuRegister)
+routers.use("/menuitem", MenuItemRoutes)
 
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)

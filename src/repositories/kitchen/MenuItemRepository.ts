@@ -13,15 +13,15 @@ export class MenuItemRepository implements IMenuItemRepository {
         this.client = pgClient();
     }
 
-    async createMenuItem({ menu_id, item_name, item_description, item_price }: MenuItem): Promise<MenuItem> {
+    async createMenuItem({ menu_register_id, quantity, price, menu_category_id, available }: MenuItem): Promise<MenuItem> {
         try {
             const query = `
-                INSERT INTO menu_item (menu_id, item_name, item_description, item_price)
+                INSERT INTO menu_item (menu_register_id, quantity, price, menu_category_id)
                 VALUES ($1, $2, $3, $4)
-                RETURNING menu_item_id, menu_id, item_name, item_description, item_price,
+                RETURNING menu_item_id, menu_register_id, quantity, price, menu_category_id, available,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [menu_id, item_name, item_description, item_price];
+            const values = [menu_register_id, quantity, price, menu_category_id];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
@@ -33,7 +33,7 @@ export class MenuItemRepository implements IMenuItemRepository {
     async getMenuItems(limit: number, offset: number): Promise<MenuItem[]> {
         try {
             const query = `
-                SELECT menu_item_id, menu_id, item_name, item_description, item_price,
+                SELECT menu_item_id,menu_register_id, quantity, price, menu_category_id, available,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM menu_item
                 LIMIT $1 OFFSET $2
@@ -50,7 +50,7 @@ export class MenuItemRepository implements IMenuItemRepository {
     async getMenuItem(id: number): Promise<MenuItem> {
         try {
             const query = `
-                SELECT menu_item_id, menu_id, item_name, item_description, item_price,
+                SELECT menu_item_id,menu_register_id, quantity, price, menu_category_id, available,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM menu_item
                 WHERE menu_item_id = $1
@@ -86,7 +86,7 @@ export class MenuItemRepository implements IMenuItemRepository {
 
             query += setClauses.join(', ');
             query += ` WHERE menu_item_id = $${values.length + 1} RETURNING 
-                menu_item_id, menu_id, item_name, item_description, item_price,
+                 quantity, price, menu_category_id, available
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
             values.push(id);

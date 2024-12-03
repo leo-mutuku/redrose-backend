@@ -1,21 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { IMenuItemRegisterInteractor } from "../../interfaces/store/IMenuItemRegisterInteractor";
+import { IMenuItemInteractor } from "../../interfaces/kitchen/IMenuItemInteractor";
+
 
 @injectable()
-export class MenuItemRegisterController {
-    private interactor: IMenuItemRegisterInteractor;
+export class MenuItemController {
+    private interactor: IMenuItemInteractor;
 
-    constructor(@inject(INTERFACE_TYPE.MenuItemRegisterInteractor) interactor: IMenuItemRegisterInteractor) {
+    constructor(@inject(INTERFACE_TYPE.MenuItemInteractor) interactor: IMenuItemInteractor) {
         this.interactor = interactor;
     }
 
-    async onCreateMenuItemRegister(req: Request, res: Response, next: NextFunction) {
+    async onCreateMenu(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body;
 
-            const data = await this.interactor.createMenuItemRegister(body);
+            const data = await this.interactor.createMenuItem(body);
             res.status(201).json({ status: 'success', data: data, message: 'Menu Item Register created successfully' });
         } catch (error) {
             next(error);
@@ -27,29 +28,29 @@ export class MenuItemRegisterController {
             const offset = parseInt(req.query.offset as string) || 0;
             const limit = parseInt(req.query.limit as string) || 10;
 
-            const data = await this.interactor.getMenuItemRegisters(limit, offset);
+            const data = await this.interactor.getMenuItems(limit, offset);
             res.status(200).json({ status: 'success', data: data, message: 'Menu Item Registers fetched successfully' });
         } catch (error) {
             next(error);
         }
     }
 
-    async onGetMenuItemRegister(req: Request, res: Response, next: NextFunction) {
+    async onGetMenuItem(req: Request, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id);
-            const data = await this.interactor.getMenuItemRegister(id);
+            const data = await this.interactor.getMenuItem(id);
             res.status(200).json({ status: 'success', data: data, message: 'Menu Item Register fetched successfully' });
         } catch (error) {
             next(error);
         }
     }
 
-    async onUpdateMenuItemRegister(req: Request, res: Response, next: NextFunction) {
+    async onUpdateMenuItem(req: Request, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id);
             const body = req.body;
 
-            const data = await this.interactor.updateMenuItemRegister(id, body);
+            const data = await this.interactor.updateMenuItem(id, body);
             res.status(200).json({ status: 'success', data: data, message: 'Menu Item Register updated successfully' });
         } catch (error) {
             next(error);
