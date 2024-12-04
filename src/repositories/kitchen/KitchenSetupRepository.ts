@@ -59,9 +59,38 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
     async getKitchenSetups(limit: number, offset: number): Promise<KitchenSetup[]> {
         try {
             const query = `
-                SELECT kitchen_setup_id, setup_name, setup_description,
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM kitchen_setup
+                           SELECT 
+    ks.kitchen_setup_id, 
+    ks.name, 
+    ks.menu_item_id, 
+    TO_CHAR(ks.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
+    COALESCE(
+        JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'ingredient_id', ki.ingredient_id,
+				'ingredients_id', ki.ingredients_id,
+                'store_item_id', ki.store_item_id,
+                'item_id', si.item_id,
+                'item_name', ir.item_name,
+                'quantity', ki.quantity
+            )
+        ) FILTER (WHERE ki.ingredient_id IS NOT NULL),
+        '[]'
+    ) AS ingredients_value
+FROM 
+    kitchen_setup ks
+LEFT JOIN 
+    kitchen_ingredients ki 
+    ON ks.kitchen_setup_id = ki.ingredients_id
+LEFT JOIN 
+    store_item si 
+    ON ki.store_item_id = si.store_item_id
+LEFT JOIN 
+    item_register ir 
+    ON si.item_id = ir.item_id
+GROUP BY 
+    ks.kitchen_setup_id
+
                 LIMIT $1 OFFSET $2
             `;
             const values = [limit, offset];
@@ -76,10 +105,40 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
     async getKitchenSetup(id: number): Promise<KitchenSetup> {
         try {
             const query = `
-                SELECT kitchen_setup_id, setup_name, setup_description,
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM kitchen_setup
-                WHERE kitchen_setup_id = $1
+                SELECT 
+    ks.kitchen_setup_id, 
+    ks.name, 
+    ks.menu_item_id, 
+    TO_CHAR(ks.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
+    COALESCE(
+        JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'ingredient_id', ki.ingredient_id,
+                'ingredients_id', ki.ingredients_id,
+                'store_item_id', ki.store_item_id,
+                'item_id', si.item_id,
+                'item_name', ir.item_name,
+                'quantity', ki.quantity
+            )
+        ) FILTER (WHERE ki.ingredient_id IS NOT NULL),
+        '[]'
+    ) AS ingredients_value
+FROM 
+    kitchen_setup ks
+LEFT JOIN 
+    kitchen_ingredients ki 
+    ON ks.kitchen_setup_id = ki.ingredients_id
+LEFT JOIN 
+    store_item si 
+    ON ki.store_item_id = si.store_item_id
+LEFT JOIN 
+    item_register ir 
+    ON si.item_id = ir.item_id
+WHERE 
+    ks.kitchen_setup_id = $1
+GROUP BY 
+    ks.kitchen_setup_id
+
             `;
             const values = [id];
             const result = await this.client.query(query, values);
