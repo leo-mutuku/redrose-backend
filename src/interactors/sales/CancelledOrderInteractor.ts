@@ -1,26 +1,26 @@
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
-import { ICancelOrderInteractor } from "../../interfaces/order/ICancelOrderInteractor";
-import { ICancelOrderRepository } from "../../interfaces/order/ICancelOrderRepository";
+
+import { ICancelledOrderRepository } from "../../interfaces/sales/ICancelledOrderRepository";
 
 @injectable()
-export class CancelOrderInteractor implements ICancelOrderInteractor {
-    private repository: ICancelOrderRepository;
+export class CancelledOrderInteractor implements CancelledOrderInteractor {
+    private repository: ICancelledOrderRepository;
 
-    constructor(@inject(INTERFACE_TYPE.CancelOrderRepository) repository: ICancelOrderRepository) {
+    constructor(@inject(INTERFACE_TYPE.CancelledOrderRepository) repository: ICancelledOrderRepository) {
         this.repository = repository;
     }
 
     async createCancelOrder(input: any): Promise<any> {
         try {
-            const result = await this.repository.createCancelOrder(input);
+            const result = await this.repository.createCancelledOrder(input);
 
             // Business logic can be added here if needed
             return result;
         } catch (error) {
             if (error instanceof AppError) {
-                throw new AppError(`Error occurred in CancelOrderInteractor: ${error.message}`, error.statusCode || 500);
+                throw new AppError(`Error occurred in CancelledOrderInteractor: ${error.message}`, error.statusCode || 500);
             }
             throw new Error('Failed to create cancel order. Please try again later.');
         }
@@ -28,7 +28,7 @@ export class CancelOrderInteractor implements ICancelOrderInteractor {
 
     async getCancelOrder(id: number): Promise<any> {
         try {
-            const result = await this.repository.getCancelOrder(id);
+            const result = await this.repository.getCancelledOrder(id);
             return result;
         } catch (error) {
             if (error instanceof AppError) {
@@ -43,7 +43,7 @@ export class CancelOrderInteractor implements ICancelOrderInteractor {
 
     async updateCancelOrder(id: number, input: any): Promise<any> {
         try {
-            const result = await this.repository.updateCancelOrder(id, input);
+            const result = await this.repository.updateCancelledOrder(id, input);
             return result;
         } catch (error) {
             if (error instanceof AppError) {
@@ -55,7 +55,7 @@ export class CancelOrderInteractor implements ICancelOrderInteractor {
 
     async getCancelOrders(limit: number, offset: number): Promise<any> {
         try {
-            const result = await this.repository.getCancelOrders(limit, offset);
+            const result = await this.repository.getCancelledOrders(limit, offset);
             return result;
         } catch (error) {
             if (error instanceof AppError) {

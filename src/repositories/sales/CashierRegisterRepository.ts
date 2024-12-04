@@ -2,8 +2,8 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { CashierRegister } from "../../entities/cashierRegister/CashierRegister";
-import { ICashierRegisterRepository } from "../../interfaces/cashierRegister/ICashierRegisterRepository";
+import { ICashierRegisterRepository } from "../../interfaces/sales/IcashierRegisterRepository";
+import { CashierRegister } from "../../entities/sales/CashierRegister";
 
 @injectable()
 export class CashierRegisterRepository implements ICashierRegisterRepository {
@@ -12,14 +12,13 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
     constructor() {
         this.client = pgClient();
     }
+    openCashierRegister(input: any): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
 
     // Create a new cashier register record
     async createCashierRegister({
-        register_number,
-        cashier_id,
-        opening_balance,
-        status,
-        created_by
+
     }: CashierRegister): Promise<CashierRegister> {
         try {
             const query = `
@@ -27,7 +26,7 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
                 VALUES ($1, $2, $3, $4, $5)
                 RETURNING cashier_register_id, register_number, cashier_id, opening_balance, status, created_by, created_at
             `;
-            const values = [register_number, cashier_id, opening_balance, status, created_by];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

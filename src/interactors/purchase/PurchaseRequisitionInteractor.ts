@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
-import { IPurchaseRequisitionInteractor } from "../../interfaces/purchase/IPurchaseRequisitionInteractor";
+import { IPurchaseRequisitionInteractor } from "../../interfaces/purchase/IpurchaseRequisitionInteractor";
 import { IPurchaseRequisitionRepository } from "../../interfaces/purchase/IPurchaseRequisitionRepository";
 
 @injectable()

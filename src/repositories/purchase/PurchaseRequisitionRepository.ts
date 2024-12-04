@@ -2,8 +2,9 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { PurchaseRequisition } from "../../entities/purchaseRequisition/PurchaseRequisition";
-import { IPurchaseRequisitionRepository } from "../../interfaces/purchaseRequisition/IPurchaseRequisitionRepository";
+
+import { IPurchaseRequisitionRepository } from "../../interfaces/purchase/IPurchaseRequisitionRepository";
+import { PurchaseRequisition } from "../../entities/purchase/PurchaseRequisition";
 
 @injectable()
 export class PurchaseRequisitionRepository implements IPurchaseRequisitionRepository {
@@ -15,12 +16,7 @@ export class PurchaseRequisitionRepository implements IPurchaseRequisitionReposi
 
     // Create a new purchase requisition
     async createPurchaseRequisition({
-        requisition_number,
-        requested_by,
-        request_date,
-        total_amount,
-        status,
-        created_by
+
     }: PurchaseRequisition): Promise<PurchaseRequisition> {
         try {
             const query = `
@@ -28,7 +24,7 @@ export class PurchaseRequisitionRepository implements IPurchaseRequisitionReposi
                 VALUES ($1, $2, $3, $4, $5, $6)
                 RETURNING purchase_requisition_id, requisition_number, requested_by, request_date, total_amount, status, created_by, created_at
             `;
-            const values = [requisition_number, requested_by, request_date, total_amount, status, created_by];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

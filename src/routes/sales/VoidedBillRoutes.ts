@@ -1,11 +1,13 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { VoidedBillRepository } from "../../repositories/sales/VoidedBillRepository";
+
 import { VoidedBillInteractor } from "../../interactors/sales/VoidedBillInteractor";
 import { VoidedBillController } from "../../controllers/sales/VoidedBillController";
-import { IVoidedBillRepository } from "../../interfaces/sales/IVoidedBillRepository";
+import { IVoidedBillRepository } from "../../interfaces/sales/IvoidedBillRepository";
 import { IVoidedBillInteractor } from "../../interfaces/sales/IVoidedBillInteractor";
+import { VoidedBillRepository } from "../../repositories/sales/VoidedBillRepositories";
+
 
 // Initialize Inversify container
 const container = new Container();

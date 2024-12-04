@@ -1,6 +1,8 @@
-import exp from "constants";
 
 
 export class KitchenStation {
-    constructor() { }
+    constructor(
+        public readonly name: string,
+        public readonly lead_staff_id: number
+    ) { }
 }

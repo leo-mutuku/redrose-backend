@@ -2,8 +2,10 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { VoidedBill } from "../../entities/voidedBill/VoidedBill";
-import { IVoidedBillRepository } from "../../interfaces/voidedBill/IVoidedBillRepository";
+
+import { IVoidedBillRepository } from "../../interfaces/sales/IvoidedBillRepository";
+import { VoidedBill } from "../../entities/sales/VoidedBill";
+
 
 @injectable()
 export class VoidedBillRepository implements IVoidedBillRepository {
@@ -15,10 +17,7 @@ export class VoidedBillRepository implements IVoidedBillRepository {
 
     // Create a new voided bill
     async createVoidedBill({
-        bill_id,
-        voided_by,
-        voided_date,
-        voided_reason
+
     }: VoidedBill): Promise<VoidedBill> {
         try {
             const query = `
@@ -26,7 +25,7 @@ export class VoidedBillRepository implements IVoidedBillRepository {
                 VALUES ($1, $2, $3, $4)
                 RETURNING voided_bill_id, bill_id, voided_by, voided_date, voided_reason, created_at
             `;
-            const values = [bill_id, voided_by, voided_date, voided_reason];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

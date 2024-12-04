@@ -2,17 +2,16 @@ import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { SalesOrderClearingRepository } from "../../repositories/sales/SalesOrderClearingRepository";
-import { SalesOrderClearingInteractor } from "../../interactors/sales/SalesOrderClearingInteractor";
 import { SalesOrderClearingController } from "../../controllers/sales/SalesOrderClearingController";
-import { ISalesOrderClearingRepository } from "../../interfaces/sales/ISalesOrderClearingRepository";
-import { ISalesOrderClearingInteractor } from "../../interfaces/sales/ISalesOrderClearingInteractor";
+import { SalesOrderClearingInteractor } from "../../interactors/sales/SalesOrderCleringInteractor";
+
 
 // Initialize Inversify container
 const container = new Container();
 
 // Bind SalesOrderClearing-related interfaces to their implementations
-container.bind<ISalesOrderClearingRepository>(INTERFACE_TYPE.SalesOrderClearingRepository).to(SalesOrderClearingRepository);
-container.bind<ISalesOrderClearingInteractor>(INTERFACE_TYPE.SalesOrderClearingInteractor).to(SalesOrderClearingInteractor);
+container.bind<SalesOrderClearingRepository>(INTERFACE_TYPE.SalesOrderClearingRepository).to(SalesOrderClearingRepository);
+container.bind<SalesOrderClearingController>(INTERFACE_TYPE.SalesOrderClearingInteractor).to(SalesOrderClearingInteractor);
 container.bind(INTERFACE_TYPE.SalesOrderClearingController).to(SalesOrderClearingController);
 
 // Create the router instance

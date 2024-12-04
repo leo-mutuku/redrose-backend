@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { IVoidedBillInteractor } from "../../interfaces/sales/IVoidedBillInteractor";
 
+
 @injectable()
 export class VoidedBillController {
     private interactor: IVoidedBillInteractor;
@@ -57,14 +58,14 @@ export class VoidedBillController {
         }
     }
 
-    async onDeleteVoidedBill(req: Request, res: Response, next: NextFunction) {
-        try {
-            const id = parseInt(req.params.id);
+    // async onDeleteVoidedBill(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         const id = parseInt(req.params.id);
 
-            await this.interactor.deleteVoidedBill(id);
-            res.status(200).json({ status: 'success', message: 'Voided bill deleted successfully' });
-        } catch (error) {
-            next(error);
-        }
-    }
+    //         await this.interactor.deleteVoidedBill(id);
+    //         res.status(200).json({ status: 'success', message: 'Voided bill deleted successfully' });
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 }

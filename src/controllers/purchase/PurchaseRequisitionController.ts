@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { IPurchaseRequisitionInteractor } from "../../interfaces/store/IPurchaseRequisitionInteractor";
+import { IPurchaseRequisitionInteractor } from "../../interfaces/purchase/IpurchaseRequisitionInteractor";
 
 @injectable()
 export class PurchaseRequisitionController {
@@ -57,14 +57,14 @@ export class PurchaseRequisitionController {
         }
     }
 
-    async onDeletePurchaseRequisition(req: Request, res: Response, next: NextFunction) {
-        try {
-            const id = parseInt(req.params.id);
+    // async onDeletePurchaseRequisition(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         const id = parseInt(req.params.id);
 
-            await this.interactor.deletePurchaseRequisition(id);
-            res.status(200).json({ status: 'success', message: 'Purchase requisition deleted successfully' });
-        } catch (error) {
-            next(error);
-        }
-    }
+    //         await this.interactor.deletePurchaseRequisition(id);
+    //         res.status(200).json({ status: 'success', message: 'Purchase requisition deleted successfully' });
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 }

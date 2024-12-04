@@ -1,11 +1,9 @@
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
-import { ISalesOrderClearingInteractor } from "../../interfaces/sales/ISalesOrderClearingInteractor";
-import { ISalesOrderClearingRepository } from "../../interfaces/sales/ISalesOrderClearingRepository";
 
 @injectable()
-export class SalesOrderClearingInteractor implements ISalesOrderClearingInteractor {
+export class SalesOrderClearingInteractor implements SalesOrderClearingInteractor {
     private repository: ISalesOrderClearingRepository;
 
     constructor(@inject(INTERFACE_TYPE.SalesOrderClearingRepository) repository: ISalesOrderClearingRepository) {

@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
-import { ICashierRegisterInteractor } from "../../interfaces/cashier/ICashierRegisterInteractor";
-import { ICashierRegisterRepository } from "../../interfaces/cashier/ICashierRegisterRepository";
+import { ICashierRegisterInteractor } from "../../interfaces/sales/ICashierRegisterInteractor";
+import { ICashierRegisterRepository } from "../../interfaces/sales/IcashierRegisterRepository";
 
 @injectable()
 export class CashierRegisterInteractor implements ICashierRegisterInteractor {
