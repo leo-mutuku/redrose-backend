@@ -13,15 +13,15 @@ export class KitchenStationRepository implements IKitchenStationRepository {
         this.client = pgClient();
     }
 
-    async createKitchenStation({ }: KitchenStation): Promise<KitchenStation> {
+    async createKitchenStation({ name, lead_staff_id }: KitchenStation): Promise<KitchenStation> {
         try {
             const query = `
-                INSERT INTO kitchen_station (station_name, description)
+                INSERT INTO station (name, lead_staff_id)
                 VALUES ($1, $2)
-                RETURNING kitchen_station_id, station_name, description,
+                RETURNING station_id, name, lead_staff_id,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [];
+            const values = [name, lead_staff_id];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
@@ -33,9 +33,18 @@ export class KitchenStationRepository implements IKitchenStationRepository {
     async getKitchenStations(limit: number, offset: number): Promise<KitchenStation[]> {
         try {
             const query = `
-                SELECT kitchen_station_id, station_name, description,
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM kitchen_station
+               SELECT 
+        s.station_id, 
+        s.name, 
+        s.lead_staff_id, 
+        e.first_name || ' ' || e.last_name AS lead_staff,  
+        TO_CHAR(s.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
+    FROM 
+        station AS s 
+    INNER JOIN 
+        staff AS e 
+    ON 
+        e.staff_id = s.lead_staff_id
                 LIMIT $1 OFFSET $2
             `;
             const values = [limit, offset];
@@ -49,11 +58,20 @@ export class KitchenStationRepository implements IKitchenStationRepository {
 
     async getKitchenStation(id: number): Promise<KitchenStation> {
         try {
-            const query = `
-                SELECT kitchen_station_id, station_name, description,
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM kitchen_station
-                WHERE kitchen_station_id = $1
+            const query = `SELECT 
+        s.station_id, 
+        s.name, 
+        s.lead_staff_id, 
+        e.first_name || ' ' || e.last_name AS lead_staff,  
+        TO_CHAR(s.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
+    FROM 
+        station AS s 
+    INNER JOIN 
+        staff AS e 
+    ON 
+        e.staff_id = s.lead_staff_id
+    WHERE 
+        s.station_id = $1;
             `;
             const values = [id];
             const result = await this.client.query(query, values);
@@ -70,7 +88,7 @@ export class KitchenStationRepository implements IKitchenStationRepository {
 
     async updateKitchenStation(id: number, kitchenStation: Partial<KitchenStation>): Promise<KitchenStation> {
         try {
-            let query = `UPDATE kitchen_station SET `;
+            let query = `UPDATE station SET `;
             const values: any[] = [];
             let setClauses: string[] = [];
 
@@ -85,8 +103,8 @@ export class KitchenStationRepository implements IKitchenStationRepository {
             }
 
             query += setClauses.join(', ');
-            query += ` WHERE kitchen_station_id = $${values.length + 1} RETURNING 
-                kitchen_station_id, station_name, description,
+            query += ` WHERE station_id = $${values.length + 1} RETURNING 
+                station_id, name, lead_staff_id,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
             values.push(id);
