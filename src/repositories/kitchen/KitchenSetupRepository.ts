@@ -13,7 +13,6 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
     constructor() {
         this.client = pgClient();
     }
-
     async createKitchenSetup({ station_id, menu_item_id, ingredients_value }: KitchenSetup): Promise<KitchenSetup> {
         try {
             if (!station_id) {
