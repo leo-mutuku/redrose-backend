@@ -1,5 +1,4 @@
 
-
 export const INTERFACE_TYPE = {
   // product test case
   ProductRepository: Symbol.for("ProductRepository"),
@@ -209,10 +208,12 @@ export const INTERFACE_TYPE = {
   VoidedBillInteractor: Symbol.for("VoidedBillInteractor"),
   VoidedBillController: Symbol.for("VoidedBillController"),
 
-  // Order Cancellation
-  OrderCancellationRepository: Symbol.for("OrderCancellationRepository"),
-  OrderCancellationInteractor: Symbol.for("OrderCancellationInteractor"),
-  OrderCancellationController: Symbol.for("OrderCancellationController"),
+  // Cancelled order
+  CancelledOrderRepository: Symbol.for("CancelledOrderRepository"),
+  CancelledOrderController: Symbol.for("CancelledOrderController"),
+  CancelledOrderInteractor: Symbol.for("CancelledOrderInteractor"),
+
+
 
 
   //

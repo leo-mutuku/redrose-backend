@@ -1,11 +1,8 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { CancelledOrderRepository } from "../../repositories/sales/CancelledOrderRepository";
-import { CancelledOrderInteractor } from "../../interactors/sales/CancelledOrderInteractor";
-import { CancelledOrderController } from "../../controllers/sales/CancelledOrderController";
-import { ICancelledOrderRepository } from "../../interfaces/sales/ICancelledOrderRepository";
-import { ICancelledOrderInteractor } from "../../interfaces/sales/ICancelledOrderInteractor";
+import { CancelledOrderController } from "../../controllers/sales/CancelOrderController";
+
 
 // Initialize Inversify container
 const container = new Container();
