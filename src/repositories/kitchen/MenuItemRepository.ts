@@ -33,9 +33,13 @@ export class MenuItemRepository implements IMenuItemRepository {
     async getMenuItems(limit: number, offset: number): Promise<MenuItem[]> {
         try {
             const query = `
-                SELECT menu_item_id,menu_register_id, quantity, price, menu_category_id, available,
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM menu_item
+                
+            SELECT mi.menu_item_id,mi.menu_register_id,
+	 mi.quantity, mi.price, mi.menu_category_id, mi.available,mr.name as menu_name,
+                TO_CHAR(mi.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
+                FROM menu_item as mi
+                inner join menu_register mr on mi.menu_register_id = mr.menu_register_id
+                inner join menu_category mc on mi.menu_category_id = mc.menu_category_id
                 LIMIT $1 OFFSET $2
             `;
             const values = [limit, offset];
@@ -50,10 +54,13 @@ export class MenuItemRepository implements IMenuItemRepository {
     async getMenuItem(id: number): Promise<MenuItem> {
         try {
             const query = `
-                SELECT menu_item_id,menu_register_id, quantity, price, menu_category_id, available,
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM menu_item
-                WHERE menu_item_id = $1
+                SELECT mi.menu_item_id,mi.menu_register_id,
+	            mi.quantity, mi.price, mi.menu_category_id, mi.available,mr.name as menu_name,
+                TO_CHAR(mi.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
+                FROM menu_item as mi
+                inner join menu_register mr on mi.menu_register_id = mr.menu_register_id
+                inner join menu_category mc on mi.menu_category_id = mc.menu_category_id
+                WHERE mi.menu_item_id = $1
             `;
             const values = [id];
             const result = await this.client.query(query, values);
