@@ -2,7 +2,8 @@ import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
 import { IVoidedBillInteractor } from "../../interfaces/sales/IVoidedBillInteractor";
-import { IVoidedBillRepository } from "../../interfaces/sales/IVoidedBillRepository";
+import { IVoidedBillRepository } from "../../interfaces/sales/IvoidedBillRepository";
+
 
 @injectable()
 export class VoidedBillInteractor implements IVoidedBillInteractor {

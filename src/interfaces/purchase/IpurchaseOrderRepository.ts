@@ -27,7 +27,7 @@ export interface IPurchaseOrderRepository {
      * @param input - Any additional data required for approval (e.g., approver's remarks).
      * @returns A promise resolving to the approved purchase order record.
      */
-    approvePurchaseOrder(id: number, input: any): Promise<any>;
+    // approvePurchaseOrder(id: number, input: any): Promise<any>;
 
     /**
      * Retrieves a paginated list of purchase orders.
@@ -42,5 +42,5 @@ export interface IPurchaseOrderRepository {
      * @param id - The unique ID of the purchase order to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deletePurchaseOrder(id: number): Promise<any>;
+    // deletePurchaseOrder(id: number): Promise<any>;
 }

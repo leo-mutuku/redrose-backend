@@ -27,7 +27,7 @@ export interface IPurchaseRequisitionRepository {
      * @param input - Any additional data required for approval (e.g., approver's remarks).
      * @returns A promise resolving to the approved purchase requisition record.
      */
-    approvePurchaseRequisition(id: number, input: any): Promise<any>;
+    //sapprovePurchaseRequisition(id: number, input: any): Promise<any>;
 
     /**
      * Retrieves a paginated list of purchase requisitions.
@@ -42,5 +42,5 @@ export interface IPurchaseRequisitionRepository {
      * @param id - The unique ID of the purchase requisition to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deletePurchaseRequisition(id: number): Promise<any>;
+    // deletePurchaseRequisition(id: number): Promise<any>;
 }

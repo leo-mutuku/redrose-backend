@@ -5,7 +5,7 @@ import { PurchaseRequisitionRepository } from "../../repositories/purchase/Purch
 import { PurchaseRequisitionInteractor } from "../../interactors/purchase/PurchaseRequisitionInteractor";
 import { PurchaseRequisitionController } from "../../controllers/purchase/PurchaseRequisitionController";
 import { IPurchaseRequisitionRepository } from "../../interfaces/purchase/IPurchaseRequisitionRepository";
-import { IPurchaseRequisitionInteractor } from "../../interfaces/purchase/IPurchaseRequisitionInteractor";
+import { IPurchaseRequisitionInteractor } from "../../interfaces/purchase/IpurchaseRequisitionInteractor";
 
 // Initialize Inversify container
 const container = new Container();

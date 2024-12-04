@@ -29,6 +29,17 @@ const StoreregisterRoutes_1 = __importDefault(require("./store/StoreregisterRout
 const ItemRegisterRoutes_1 = __importDefault(require("./store/ItemRegisterRoutes"));
 const StoreItemRoutes_1 = __importDefault(require("./store/StoreItemRoutes"));
 const StoreIssueRoutes_1 = __importDefault(require("./store/StoreIssueRoutes"));
+// ktchen
+const MenuUnitRoutes_1 = __importDefault(require("./kitchen/MenuUnitRoutes"));
+const MenuCategoryRoutes_1 = __importDefault(require("./kitchen/MenuCategoryRoutes"));
+const MenuRegisterRoutes_1 = __importDefault(require("./kitchen/MenuRegisterRoutes"));
+const MenuItemRoutes_1 = __importDefault(require("./kitchen/MenuItemRoutes"));
+const KitchenStationRoutes_1 = __importDefault(require("./kitchen/KitchenStationRoutes"));
+const KitchenSetupRoutes_1 = __importDefault(require("./kitchen/KitchenSetupRoutes"));
+const FoodProcessingRoutes_1 = __importDefault(require("./kitchen/FoodProcessingRoutes"));
+// sales routes
+const CashierRegisterRoutes_1 = __importDefault(require("./sales/CashierRegisterRoutes"));
+const VoidedBillRoutes_1 = __importDefault(require("./sales/VoidedBillRoutes"));
 // POS printer
 //import POSPrinterRoutes from "./sales/PrintPos"
 const routers = express_1.default.Router();
@@ -58,6 +69,20 @@ routers.use("/storeregister", StoreregisterRoutes_1.default);
 routers.use("/itemregister", ItemRegisterRoutes_1.default);
 routers.use("/storeitem", StoreItemRoutes_1.default);
 routers.use("/storeissue", StoreIssueRoutes_1.default);
+// ktchen
+routers.use("/menuunit", MenuUnitRoutes_1.default);
+routers.use("/menucategory", MenuCategoryRoutes_1.default);
+routers.use("/menuregister", MenuRegisterRoutes_1.default);
+routers.use("/menuitem", MenuItemRoutes_1.default);
+routers.use("/kitchenstation", KitchenStationRoutes_1.default);
+routers.use("/kitchensetup", KitchenSetupRoutes_1.default);
+routers.use("/foodprocessing", FoodProcessingRoutes_1.default);
+//purchase
+//sales
+routers.use("/cashier", CashierRegisterRoutes_1.default);
+routers.use("/voidedbill", VoidedBillRoutes_1.default);
+//payment
+//payroll
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)
 exports.default = routers;

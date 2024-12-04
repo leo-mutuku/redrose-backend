@@ -7,6 +7,7 @@ import { SalesOrderController } from "../../controllers/sales/SalesOrderControll
 import { ISalesOrderRepository } from "../../interfaces/sales/ISalesOrderRepository";
 import { ISalesOrderInteractor } from "../../interfaces/sales/ISalesOrderInteractor";
 
+
 // Initialize Inversify container
 const container = new Container();
 

@@ -213,6 +213,11 @@ export const INTERFACE_TYPE = {
   CancelledOrderController: Symbol.for("CancelledOrderController"),
   CancelledOrderInteractor: Symbol.for("CancelledOrderInteractor"),
 
+  //SalesOrderClearingRepository
+  SalesOrderClearingRepository: Symbol.for("SalesOrderClearingRepository"),
+  SalesOrderClearingInteractor: Symbol.for("SalesOrderClearingInteractor"),
+  SalesOrderClearingController: Symbol.for("SalesOrderClearingController"),
+
 
 
 

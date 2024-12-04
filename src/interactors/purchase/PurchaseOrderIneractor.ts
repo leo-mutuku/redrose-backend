@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
 import { IPurchaseOrderInteractor } from "../../interfaces/purchase/IPurchaseOrderInteractor";
-import { IPurchaseOrderRepository } from "../../interfaces/purchase/IPurchaseOrderRepository";
+import { IPurchaseOrderRepository } from "../../interfaces/purchase/IpurchaseOrderRepository";
 
 @injectable()
 export class PurchaseOrderInteractor implements IPurchaseOrderInteractor {

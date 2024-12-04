@@ -2,11 +2,12 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { CancelOrder } from "../../entities/cancelOrder/CancelOrder";
-import { ICancelOrderRepository } from "../../interfaces/cancelOrder/ICancelOrderRepository";
+
+import { ICancelledOrderRepository } from "../../interfaces/sales/ICancelledOrderRepository";
+import { CancelledOrder } from "../../entities/sales/CancelledOrder";
 
 @injectable()
-export class CancelOrderRepository implements ICancelOrderRepository {
+export class CancelOrderRepository implements ICancelledOrderRepository {
     private client: Pool;
 
     constructor() {
@@ -14,19 +15,16 @@ export class CancelOrderRepository implements ICancelOrderRepository {
     }
 
     // Create a new cancel order record
-    async createCancelOrder({
-        order_id,
-        cancel_reason,
-        canceled_by,
-        cancel_date
-    }: CancelOrder): Promise<CancelOrder> {
+    async createCancelledOrder({
+
+    }: CancelledOrder): Promise<CancelledOrder> {
         try {
             const query = `
                 INSERT INTO cancel_order (order_id, cancel_reason, canceled_by, cancel_date)
                 VALUES ($1, $2, $3, $4)
                 RETURNING cancel_order_id, order_id, cancel_reason, canceled_by, cancel_date, created_at
             `;
-            const values = [order_id, cancel_reason, canceled_by, cancel_date];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
@@ -36,7 +34,7 @@ export class CancelOrderRepository implements ICancelOrderRepository {
     }
 
     // Get a list of canceled orders with pagination
-    async getCanceledOrders(limit: number, offset: number): Promise<CancelOrder[]> {
+    async getCancelledOrders(limit: number, offset: number): Promise<CancelledOrder[]> {
         try {
             const query = `
                 SELECT cancel_order_id, order_id, cancel_reason, canceled_by, cancel_date, created_at
@@ -53,7 +51,7 @@ export class CancelOrderRepository implements ICancelOrderRepository {
     }
 
     // Get a single canceled order by ID
-    async getCancelOrder(id: number): Promise<CancelOrder> {
+    async getCancelledOrder(id: number): Promise<CancelledOrder> {
         try {
             const query = `
                 SELECT cancel_order_id, order_id, cancel_reason, canceled_by, cancel_date, created_at
@@ -74,7 +72,7 @@ export class CancelOrderRepository implements ICancelOrderRepository {
     }
 
     // Update an existing cancel order
-    async updateCancelOrder(id: number, cancelOrder: Partial<CancelOrder>): Promise<CancelOrder> {
+    async updateCancelledOrder(id: number, cancelOrder: Partial<CancelledOrder>): Promise<CancelledOrder> {
         try {
             let query = `UPDATE cancel_order SET `;
             const values: any[] = [];
@@ -108,7 +106,7 @@ export class CancelOrderRepository implements ICancelOrderRepository {
     }
 
     // Delete a canceled order by ID
-    async deleteCancelOrder(id: number): Promise<CancelOrder> {
+    async deleteCancelledOrder(id: number): Promise<CancelledOrder> {
         try {
             const query = `
                 DELETE FROM cancel_order

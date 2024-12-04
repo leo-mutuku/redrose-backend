@@ -2,10 +2,10 @@ import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { PurchaseOrderRepository } from "../../repositories/purchase/PurchaseOrderRepository";
-import { PurchaseOrderInteractor } from "../../interactors/purchase/PurchaseOrderInteractor";
 import { PurchaseOrderController } from "../../controllers/purchase/PurchaseOrderController";
-import { IPurchaseOrderRepository } from "../../interfaces/purchase/IPurchaseOrderRepository";
+import { IPurchaseOrderRepository } from "../../interfaces/purchase/IpurchaseOrderRepository";
 import { IPurchaseOrderInteractor } from "../../interfaces/purchase/IPurchaseOrderInteractor";
+import { PurchaseOrderInteractor } from "../../interactors/purchase/PurchaseOrderIneractor";
 
 // Initialize Inversify container
 const container = new Container();

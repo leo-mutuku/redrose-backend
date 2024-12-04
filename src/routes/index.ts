@@ -42,6 +42,17 @@ import FoodProcessingRoutes from "./kitchen/FoodProcessingRoutes"
 
 
 
+// sales routes
+import CashierRoutes from "./sales/CashierRegisterRoutes"
+import VoidedBillRoures from "./sales/VoidedBillRoutes"
+
+
+//purchase routes
+import PurchaseOrderRoutes from "./purchase/PurchaseOrderRoutes"
+import PurchaseRequisitionRoutes from "./purchase/PurchaseRequisition"
+
+
+
 
 // POS printer
 //import POSPrinterRoutes from "./sales/PrintPos"
@@ -91,11 +102,15 @@ routers.use("/foodprocessing", FoodProcessingRoutes)
 
 
 //purchase
+routers.use("/purchaseorder", PurchaseOrderRoutes)
+routers.use("/purchaserequisition", PurchaseRequisitionRoutes)
 
 
 
 
 //sales
+routers.use("/cashier", CashierRoutes)
+routers.use("/voidedbill", VoidedBillRoures)
 
 
 

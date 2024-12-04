@@ -34,5 +34,5 @@ export interface ICancelledOrderInteractor {
      * @param id - The unique ID of the cancelled order to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deleteCancelledOrder(id: number);
+
 }

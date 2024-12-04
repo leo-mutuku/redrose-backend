@@ -101,6 +101,10 @@ exports.INTERFACE_TYPE = {
     ItemCategoryInteractor: Symbol.for("ItemCategoryInteractor"),
     ItemCategoryController: Symbol.for("ItemCategoryController"),
     // kichen 
+    // menu units
+    MenuUnitRepository: Symbol.for("MenuUnitRepository"),
+    MenuUnitInteractor: Symbol.for("MenuUnitInteractor"),
+    MenuUnitController: Symbol.for("MenuUnitController"),
     // Menu register
     MenuRegisterRepository: Symbol.for("MenuRegisterRepository"),
     MenuRegisterInteractor: Symbol.for("MenuRegisterInteractor"),
@@ -155,14 +159,18 @@ exports.INTERFACE_TYPE = {
     WaitStaffRegisterRepository: Symbol.for("WaitStaffRegisterRepository"),
     WaitStaffRegisterInteractor: Symbol.for("WaitStaffRegisterInteractor"),
     WaitStaffRegisterController: Symbol.for("WaitStaffRegisterController"),
-    // Bill Out
-    BillOutRepository: Symbol.for("BillOutRepository"),
-    BillOutInteractor: Symbol.for("BillOutInteractor"),
-    BillOutController: Symbol.for("BillOutController"),
-    // Order Cancellation
-    OrderCancellationRepository: Symbol.for("OrderCancellationRepository"),
-    OrderCancellationInteractor: Symbol.for("OrderCancellationInteractor"),
-    OrderCancellationController: Symbol.for("OrderCancellationController"),
+    // Voided Bill
+    VoidedBillRepository: Symbol.for("VoidedBillRepository"),
+    VoidedBillInteractor: Symbol.for("VoidedBillInteractor"),
+    VoidedBillController: Symbol.for("VoidedBillController"),
+    // Cancelled order
+    CancelledOrderRepository: Symbol.for("CancelledOrderRepository"),
+    CancelledOrderController: Symbol.for("CancelledOrderController"),
+    CancelledOrderInteractor: Symbol.for("CancelledOrderInteractor"),
+    //SalesOrderClearingRepository
+    SalesOrderClearingRepository: Symbol.for("SalesOrderClearingRepository"),
+    SalesOrderClearingInteractor: Symbol.for("SalesOrderClearingInteractor"),
+    SalesOrderClearingController: Symbol.for("SalesOrderClearingController"),
     //
     // --------------------------Payments
     // VendorSupplierPayyment
