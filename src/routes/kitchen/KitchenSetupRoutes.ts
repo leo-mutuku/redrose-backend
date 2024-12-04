@@ -1,31 +1,31 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { KitchenStationRepository } from "../../repositories/kitchen/KitchenStationRepository";
-import { KitchenStationInteractor } from "../../interactors/kitchen/KitchenStationInteractor";
-import { KitchenStationController } from "../../controllers/kitchen/KitchenStationController";
-import { IKitchenStationRepository } from "../../interfaces/kitchen/IKitchenStationRepository";
-import { IKitchenStationInteractor } from "../../interfaces/kitchen/IKitchenStationInteractor";
+import { KitchenSetupRepository } from "../../repositories/kitchen/KitchenSetupRepository";
+import { KitchenSetupInteractor } from "../../interactors/kitchen/KitchenSetupInteractor";
+import { IKitchenSetupInteractor } from "../../interfaces/kitchen/IKitchenSetupInteractor";
+import { KitchenSetupController } from "../../controllers/kitchen/KitchenSetupController";
+import { IKitchenSetupRepository } from "../../interfaces/kitchen/IKitchenSetupRepository";
 
 // Initialize Inversify container
 const container = new Container();
 
-// Bind KitchenStation-related interfaces to their implementations
-container.bind<IKitchenStationRepository>(INTERFACE_TYPE.KitchenStationRepository).to(KitchenStationRepository);
-container.bind<IKitchenStationInteractor>(INTERFACE_TYPE.KitchenStationInteractor).to(KitchenStationInteractor);
-container.bind(INTERFACE_TYPE.KitchenStationController).to(KitchenStationController);
+// Bind KitchenSetup-related interfaces to their implementations
+container.bind<IKitchenSetupRepository>(INTERFACE_TYPE.KitchenSetupRepository).to(KitchenSetupRepository);
+container.bind<IKitchenSetupInteractor>(INTERFACE_TYPE.KitchenSetupInteractor).to(KitchenSetupInteractor);
+container.bind(INTERFACE_TYPE.KitchenSetupController).to(KitchenSetupController);
 
 // Create the router instance
 const router = Router();
 
 // Get the controller instance
-const controller = container.get<KitchenStationController>(INTERFACE_TYPE.KitchenStationController);
+const controller = container.get<KitchenSetupController>(INTERFACE_TYPE.KitchenSetupController);
 
 // Define the routes and bind controller methods
-router.post("/createkitchenstation", controller.onCreateKitchenStation.bind(controller));
-router.get("/getkitchenstation/:id", controller.onGetKitchenStation.bind(controller));
-router.get("/getkitchenstations", controller.onGetKitchenStations.bind(controller));
-router.patch("/updatekitchenstation/:id", controller.onUpdateKitchenStation.bind(controller));
+router.post("/createkitchensetup", controller.onCreateKitchenSetup.bind(controller));
+router.get("/getkitchensetup/:id", controller.onGetKitchenSetup.bind(controller));
+router.get("/getkitchensetups", controller.onGetKitchenSetups.bind(controller));
+router.patch("/updatekitchensetup/:id", controller.onUpdateKitchenSetup.bind(controller));
 
 // Export the configured router
 export default router;

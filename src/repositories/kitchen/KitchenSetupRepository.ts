@@ -14,16 +14,42 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
         this.client = pgClient();
     }
 
-    async createKitchenSetup({ }: KitchenSetup): Promise<KitchenSetup> {
+    async createKitchenSetup({ station_id, menu_item_id, ingredients_value }: KitchenSetup): Promise<KitchenSetup> {
         try {
+            if (!station_id) {
+                throw new AppError('Station ID is required', 400);
+            }
+            if (!menu_item_id) {
+                throw new AppError('Menu item ID is required', 400);
+            }
+
+            if (!ingredients_value) {
+                throw new AppError('Ingredient value is required', 400);
+            }
+            // get menu name
+
+            const menu_register_query = `select name from menu_register where menu_register_id = $1`;
+            const menu_register_values = [menu_item_id];
+            const menu_register_result = await this.client.query(menu_register_query, menu_register_values);
+            const menu_name = menu_register_result.rows[0].name;
+            console.log(menu_name);
             const query = `
-                INSERT INTO kitchen_setup (setup_name, setup_description)
-                VALUES ($1, $2)
-                RETURNING kitchen_setup_id, setup_name, setup_description,
+                INSERT INTO kitchen_setup (station_id, menu_item_id, name)
+                VALUES ($1, $2, $3)
+                RETURNING kitchen_setup_id, station_id, menu_item_id, name,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [];
+            const values = [station_id, menu_item_id, menu_name];
             const result = await this.client.query(query, values);
+
+            const ingredients_id = result.rows[0].kitchen_setup_id;
+            // insert kitchen ingredients
+            for (let item of ingredients_value) {
+                const kitchen_ingredients_query = `insert into kitchen_ingredients (ingredients_id, store_item_id, quantity) values ($1, $2, $3)`;
+                const kitchen_ingredients_values = [ingredients_id, item.store_item_id, item.quantity];
+                await this.client.query(kitchen_ingredients_query, kitchen_ingredients_values);
+
+            }
 
             return result.rows[0];
         } catch (error) {
