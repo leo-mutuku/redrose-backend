@@ -40,6 +40,10 @@ const FoodProcessingRoutes_1 = __importDefault(require("./kitchen/FoodProcessing
 // sales routes
 const CashierRegisterRoutes_1 = __importDefault(require("./sales/CashierRegisterRoutes"));
 const VoidedBillRoutes_1 = __importDefault(require("./sales/VoidedBillRoutes"));
+const SalesOrderRoutes_1 = __importDefault(require("./sales/SalesOrderRoutes"));
+const WaitStaffRegisterRoutes_1 = __importDefault(require("./sales/WaitStaffRegisterRoutes"));
+const CancelledOrderRoutes_1 = __importDefault(require("./sales/CancelledOrderRoutes"));
+const SalesOrderCleararingRoutes_1 = __importDefault(require("./sales/SalesOrderCleararingRoutes"));
 //purchase routes
 const PurchaseOrderRoutes_1 = __importDefault(require("./purchase/PurchaseOrderRoutes"));
 const PurchaseRequisition_1 = __importDefault(require("./purchase/PurchaseRequisition"));
@@ -48,6 +52,8 @@ const DeductionRoutes_1 = __importDefault(require("./payroll/DeductionRoutes"));
 const PayrollRoutes_1 = __importDefault(require("./payroll/PayrollRoutes"));
 const PayrollSetupRoutes_1 = __importDefault(require("./payroll/PayrollSetupRoutes"));
 const PayrollCategoryRoutes_1 = __importDefault(require("./payroll/PayrollCategoryRoutes"));
+//payment
+const PaymentVoucherRoutes_1 = __importDefault(require("./payment/PaymentVoucherRoutes"));
 // POS printer
 //import POSPrinterRoutes from "./sales/PrintPos"
 const routers = express_1.default.Router();
@@ -91,12 +97,18 @@ routers.use("/purchaserequisition", PurchaseRequisition_1.default);
 //sales
 routers.use("/cashier", CashierRegisterRoutes_1.default);
 routers.use("/voidedbill", VoidedBillRoutes_1.default);
+routers.use("/salesorder", SalesOrderRoutes_1.default);
+routers.use("/salesorderclearing", SalesOrderCleararingRoutes_1.default);
+routers.use("/cancelledorder", CancelledOrderRoutes_1.default);
+routers.use("/waitstaff", WaitStaffRegisterRoutes_1.default);
 //payment
+routers.use("/payment", PaymentVoucherRoutes_1.default);
 //payroll
 routers.use("/deduction", DeductionRoutes_1.default);
 routers.use("/payroll", PayrollRoutes_1.default);
 routers.use("/payrollsetup", PayrollSetupRoutes_1.default);
 routers.use("/payrollcategory", PayrollCategoryRoutes_1.default);
+// routers.use("/waitstaff", WaitStaffRegisterRoutes)
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)
 exports.default = routers;

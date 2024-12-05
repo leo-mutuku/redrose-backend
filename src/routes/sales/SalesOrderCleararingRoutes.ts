@@ -11,7 +11,7 @@ const container = new Container();
 
 // Bind SalesOrderClearing-related interfaces to their implementations
 container.bind<SalesOrderClearingRepository>(INTERFACE_TYPE.SalesOrderClearingRepository).to(SalesOrderClearingRepository);
-container.bind<SalesOrderClearingController>(INTERFACE_TYPE.SalesOrderClearingInteractor).to(SalesOrderClearingInteractor);
+container.bind<SalesOrderClearingInteractor>(INTERFACE_TYPE.SalesOrderClearingInteractor).to(SalesOrderClearingInteractor);
 container.bind(INTERFACE_TYPE.SalesOrderClearingController).to(SalesOrderClearingController);
 
 // Create the router instance
