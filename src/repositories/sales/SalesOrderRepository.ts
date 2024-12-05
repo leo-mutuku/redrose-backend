@@ -2,8 +2,9 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { SalesOrder } from "../../entities/salesOrder/SalesOrder";
-import { ISalesOrderRepository } from "../../interfaces/salesOrder/ISalesOrderRepository";
+
+import { SalesOrder } from "../../entities/sales/SalesOrder";
+import { ISalesOrderRepository } from "../../interfaces/sales/ISalesOrderRepository";
 
 @injectable()
 export class SalesOrderRepository implements ISalesOrderRepository {
@@ -15,11 +16,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
     // Create a new sales order
     async createSalesOrder({
-        customer_id,
-        order_date,
-        total_amount,
-        status,
-        created_by
+
     }: SalesOrder): Promise<SalesOrder> {
         try {
             const query = `
@@ -27,7 +24,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                 VALUES ($1, $2, $3, $4, $5)
                 RETURNING sales_order_id, customer_id, order_date, total_amount, status, created_by, created_at
             `;
-            const values = [customer_id, order_date, total_amount, status, created_by];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

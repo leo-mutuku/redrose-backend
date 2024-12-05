@@ -25,14 +25,14 @@ let PurchaseOrderRepository = class PurchaseOrderRepository {
     }
     // Create a new purchase order record
     createPurchaseOrder(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ order_number, supplier_id, order_date, total_amount, status, created_by }) {
+        return __awaiter(this, arguments, void 0, function* ({}) {
             try {
                 const query = `
                 INSERT INTO purchase_order (order_number, supplier_id, order_date, total_amount, status, created_by)
                 VALUES ($1, $2, $3, $4, $5, $6)
                 RETURNING purchase_order_id, order_number, supplier_id, order_date, total_amount, status, created_by, created_at
             `;
-                const values = [order_number, supplier_id, order_date, total_amount, status, created_by];
+                const values = [];
                 const result = yield this.client.query(query, values);
                 return result.rows[0];
             }

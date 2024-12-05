@@ -57,14 +57,14 @@ export class PayrollCategoryController {
         }
     }
 
-    async onDeletePayrollCategory(req: Request, res: Response, next: NextFunction) {
-        try {
-            const id = parseInt(req.params.id);
+    // async onDeletePayrollCategory(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         const id = parseInt(req.params.id);
 
-            await this.interactor.deletePayrollCategory(id);
-            res.status(200).json({ status: 'success', message: 'Payroll category deleted successfully' });
-        } catch (error) {
-            next(error);
-        }
-    }
+    //         await this.interactor.deletePayrollCategory(id);
+    //         res.status(200).json({ status: 'success', message: 'Payroll category deleted successfully' });
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 }

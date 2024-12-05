@@ -38,7 +38,7 @@ export class PayrollSetupController {
             const offset = parseInt(req.query.offset as string) || 0;
             const limit = parseInt(req.query.limit as string) || 10;
 
-            const data = await this.interactor.getAllPayrollSetups(limit, offset);
+            const data = await this.interactor.getPayrollSetups(limit, offset);
             res.status(200).json({ status: 'success', data: data, message: 'Payroll setup records fetched successfully' });
         } catch (error) {
             next(error);
@@ -57,14 +57,14 @@ export class PayrollSetupController {
         }
     }
 
-    async onDeletePayrollSetup(req: Request, res: Response, next: NextFunction) {
-        try {
-            const id = parseInt(req.params.id);
+    // async onDeletePayrollSetup(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         const id = parseInt(req.params.id);
 
-            await this.interactor.deletePayrollSetup(id);
-            res.status(200).json({ status: 'success', message: 'Payroll setup record deleted successfully' });
-        } catch (error) {
-            next(error);
-        }
-    }
+    //         await this.interactor.deletePayrollSetup(id);
+    //         res.status(200).json({ status: 'success', message: 'Payroll setup record deleted successfully' });
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 }

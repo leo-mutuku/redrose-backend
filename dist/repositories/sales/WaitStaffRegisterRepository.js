@@ -25,14 +25,14 @@ let WaitStaffRegisterRepository = class WaitStaffRegisterRepository {
     }
     // Create a new wait staff registration
     createWaitStaffRegister(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ staff_id, register_time, table_assigned, created_by }) {
+        return __awaiter(this, arguments, void 0, function* ({}) {
             try {
                 const query = `
                 INSERT INTO wait_staff_register (staff_id, register_time, table_assigned, created_by)
                 VALUES ($1, $2, $3, $4)
                 RETURNING wait_staff_register_id, staff_id, register_time, table_assigned, created_by, created_at
             `;
-                const values = [staff_id, register_time, table_assigned, created_by];
+                const values = [];
                 const result = yield this.client.query(query, values);
                 return result.rows[0];
             }

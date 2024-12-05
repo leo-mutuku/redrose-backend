@@ -2,8 +2,9 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { Payroll } from "../../entities/payroll/Payroll";
+
 import { IPayrollRepository } from "../../interfaces/payroll/IPayrollRepository";
+import { Payroll } from "../../entities/payroll/Payroll";
 
 @injectable()
 export class PayrollRepository implements IPayrollRepository {
@@ -15,12 +16,7 @@ export class PayrollRepository implements IPayrollRepository {
 
     // Create a new payroll record
     async createPayroll({
-        employee_id,
-        payroll_date,
-        gross_salary,
-        deductions,
-        net_salary,
-        status
+
     }: Payroll): Promise<Payroll> {
         try {
             const query = `
@@ -28,7 +24,7 @@ export class PayrollRepository implements IPayrollRepository {
                 VALUES ($1, $2, $3, $4, $5, $6)
                 RETURNING payroll_id, employee_id, payroll_date, gross_salary, deductions, net_salary, status
             `;
-            const values = [employee_id, payroll_date, gross_salary, deductions, net_salary, status];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

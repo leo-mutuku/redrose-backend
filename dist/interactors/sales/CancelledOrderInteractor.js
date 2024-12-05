@@ -26,7 +26,7 @@ let CancelledOrderInteractor = class CancelledOrderInteractor {
     constructor(repository) {
         this.repository = repository;
     }
-    createCancelOrder(input) {
+    createCancelledOrder(input) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield this.repository.createCancelledOrder(input);
@@ -41,7 +41,7 @@ let CancelledOrderInteractor = class CancelledOrderInteractor {
             }
         });
     }
-    getCancelOrder(id) {
+    getCancelledOrder(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield this.repository.getCancelledOrder(id);
@@ -55,7 +55,7 @@ let CancelledOrderInteractor = class CancelledOrderInteractor {
             }
         });
     }
-    updateCancelOrder(id, input) {
+    updateCancelledOrder(id, input) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield this.repository.updateCancelledOrder(id, input);
@@ -69,7 +69,7 @@ let CancelledOrderInteractor = class CancelledOrderInteractor {
             }
         });
     }
-    getCancelOrders(limit, offset) {
+    getCancelledOrders(limit, offset) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield this.repository.getCancelledOrders(limit, offset);

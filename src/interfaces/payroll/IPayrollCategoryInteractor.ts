@@ -26,7 +26,7 @@ export interface IPayrollCategoryInteractor {
      * @param id - The unique ID of the payroll category to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deletePayrollCategory(id: number);
+    //deletePayrollCategory(id: number);
 
     /**
      * Retrieves a paginated list of payroll categories.

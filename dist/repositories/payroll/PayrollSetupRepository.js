@@ -25,14 +25,14 @@ let PayrollSetupRepository = class PayrollSetupRepository {
     }
     // Create a new payroll setup record
     createPayrollSetup(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ setup_name, setup_description, is_active, created_by }) {
+        return __awaiter(this, arguments, void 0, function* ({}) {
             try {
                 const query = `
                 INSERT INTO payroll_setup (setup_name, setup_description, is_active, created_by)
                 VALUES ($1, $2, $3, $4)
                 RETURNING payroll_setup_id, setup_name, setup_description, is_active, created_by, created_at
             `;
-                const values = [setup_name, setup_description, is_active, created_by];
+                const values = [];
                 const result = yield this.client.query(query, values);
                 return result.rows[0];
             }

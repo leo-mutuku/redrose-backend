@@ -24,7 +24,7 @@ const controller = container.get<PayrollSetupController>(INTERFACE_TYPE.PayrollS
 // Define the routes and bind controller methods
 router.post("/create", controller.onCreatePayrollSetup.bind(controller));
 router.get("/:id", controller.onGetPayrollSetup.bind(controller));
-router.get("/", controller.onGetPayrollSetups.bind(controller));
+router.get("/", controller.onGetAllPayrollSetups.bind(controller));
 router.patch("/:id", controller.onUpdatePayrollSetup.bind(controller));
 
 // Export the configured router

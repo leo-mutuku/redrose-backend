@@ -34,5 +34,5 @@ export interface ISalesOrderInteractor {
      * @param id - The unique ID of the sales order to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deleteSalesOrder(id: number);
+    //deleteSalesOrder(id: number);
 }

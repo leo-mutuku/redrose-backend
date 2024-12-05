@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
-import { IWaitStaffRegisterInteractor } from "../../interfaces/store/IWaitStaffRegisterInteractor";
-import { IWaitStaffRegisterRepository } from "../../interfaces/store/IWaitStaffRegisterRepository";
+import { IWaitStaffRegisterInteractor } from "../../interfaces/sales/IWaitStaffRegisterInteractor";
+import { IWaitStaffRegisterRepository } from "../../interfaces/sales/IWaitStaffRegisterRepository";
 
 @injectable()
 export class WaitStaffRegisterInteractor implements IWaitStaffRegisterInteractor {

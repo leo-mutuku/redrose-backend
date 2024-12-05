@@ -26,7 +26,7 @@ export interface IDeductionInteractor {
      * @param id - The unique ID of the deduction record to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deleteDeduction(id: number);
+    //deleteDeduction(id: number);
 
     /**
      * Retrieves a paginated list of deduction records.
@@ -41,5 +41,5 @@ export interface IDeductionInteractor {
      * @param employeeId - The unique ID of the employee.
      * @returns A promise resolving to a list of deductions applied to the specified employee.
      */
-    getDeductionsByEmployee(employeeId: number);
+    // getDeductionsByEmployee(employeeId: number);
 }

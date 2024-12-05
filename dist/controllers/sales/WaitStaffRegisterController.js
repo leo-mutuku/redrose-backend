@@ -29,7 +29,7 @@ let WaitStaffRegisterController = class WaitStaffRegisterController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const body = req.body;
-                const data = yield this.interactor.createWaitStaff(body);
+                const data = yield this.interactor.createWaitStaffRegister(body);
                 res.status(201).json({ status: 'success', data: data, message: 'Wait staff registered successfully' });
             }
             catch (error) {
@@ -41,7 +41,7 @@ let WaitStaffRegisterController = class WaitStaffRegisterController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = parseInt(req.params.id);
-                const data = yield this.interactor.getWaitStaff(id);
+                const data = yield this.interactor.getWaitStaffRegister(id);
                 res.status(200).json({ status: 'success', data: data, message: 'Wait staff details fetched successfully' });
             }
             catch (error) {
@@ -54,7 +54,7 @@ let WaitStaffRegisterController = class WaitStaffRegisterController {
             try {
                 const offset = parseInt(req.query.offset) || 0;
                 const limit = parseInt(req.query.limit) || 10;
-                const data = yield this.interactor.getWaitStaffs(limit, offset);
+                const data = yield this.interactor.getWaitStaffRegisters(limit, offset);
                 res.status(200).json({ status: 'success', data: data, message: 'Wait staff fetched successfully' });
             }
             catch (error) {
@@ -67,20 +67,8 @@ let WaitStaffRegisterController = class WaitStaffRegisterController {
             try {
                 const id = parseInt(req.params.id);
                 const body = req.body;
-                const data = yield this.interactor.updateWaitStaff(id, body);
+                const data = yield this.interactor.updateWaitStaffRegister(id, body);
                 res.status(200).json({ status: 'success', data: data, message: 'Wait staff details updated successfully' });
-            }
-            catch (error) {
-                next(error);
-            }
-        });
-    }
-    onDeleteWaitStaff(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const id = parseInt(req.params.id);
-                yield this.interactor.deleteWaitStaff(id);
-                res.status(200).json({ status: 'success', message: 'Wait staff deleted successfully' });
             }
             catch (error) {
                 next(error);

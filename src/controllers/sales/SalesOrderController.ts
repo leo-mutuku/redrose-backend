@@ -57,14 +57,14 @@ export class SalesOrderController {
         }
     }
 
-    async onDeleteSalesOrder(req: Request, res: Response, next: NextFunction) {
-        try {
-            const id = parseInt(req.params.id);
+    // async onDeleteSalesOrder(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         const id = parseInt(req.params.id);
 
-            await this.interactor.deleteSalesOrder(id);
-            res.status(200).json({ status: 'success', message: 'Sales order deleted successfully' });
-        } catch (error) {
-            next(error);
-        }
-    }
+    //         await this.interactor.deleteSalesOrder(id);
+    //         res.status(200).json({ status: 'success', message: 'Sales order deleted successfully' });
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 }

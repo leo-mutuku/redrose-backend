@@ -40,6 +40,14 @@ const FoodProcessingRoutes_1 = __importDefault(require("./kitchen/FoodProcessing
 // sales routes
 const CashierRegisterRoutes_1 = __importDefault(require("./sales/CashierRegisterRoutes"));
 const VoidedBillRoutes_1 = __importDefault(require("./sales/VoidedBillRoutes"));
+//purchase routes
+const PurchaseOrderRoutes_1 = __importDefault(require("./purchase/PurchaseOrderRoutes"));
+const PurchaseRequisition_1 = __importDefault(require("./purchase/PurchaseRequisition"));
+//payroll routes
+const DeductionRoutes_1 = __importDefault(require("./payroll/DeductionRoutes"));
+const PayrollRoutes_1 = __importDefault(require("./payroll/PayrollRoutes"));
+const PayrollSetupRoutes_1 = __importDefault(require("./payroll/PayrollSetupRoutes"));
+const PayrollCategoryRoutes_1 = __importDefault(require("./payroll/PayrollCategoryRoutes"));
 // POS printer
 //import POSPrinterRoutes from "./sales/PrintPos"
 const routers = express_1.default.Router();
@@ -78,11 +86,17 @@ routers.use("/kitchenstation", KitchenStationRoutes_1.default);
 routers.use("/kitchensetup", KitchenSetupRoutes_1.default);
 routers.use("/foodprocessing", FoodProcessingRoutes_1.default);
 //purchase
+routers.use("/purchaseorder", PurchaseOrderRoutes_1.default);
+routers.use("/purchaserequisition", PurchaseRequisition_1.default);
 //sales
 routers.use("/cashier", CashierRegisterRoutes_1.default);
 routers.use("/voidedbill", VoidedBillRoutes_1.default);
 //payment
 //payroll
+routers.use("/deduction", DeductionRoutes_1.default);
+routers.use("/payroll", PayrollRoutes_1.default);
+routers.use("/payrollsetup", PayrollSetupRoutes_1.default);
+routers.use("/payrollcategory", PayrollCategoryRoutes_1.default);
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)
 exports.default = routers;

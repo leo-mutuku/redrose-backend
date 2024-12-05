@@ -52,6 +52,13 @@ import PurchaseOrderRoutes from "./purchase/PurchaseOrderRoutes"
 import PurchaseRequisitionRoutes from "./purchase/PurchaseRequisition"
 
 
+//payroll routes
+import DeductionRoutes from "./payroll/DeductionRoutes"
+import PayrollRoutes from "./payroll/PayrollRoutes"
+import PayrollSetupRoutes from "./payroll/PayrollSetupRoutes"
+import PayrollCategoryRoutes from "./payroll/PayrollCategoryRoutes"
+
+
 
 
 // POS printer
@@ -100,13 +107,9 @@ routers.use("/kitchenstation", KitchenStationRoutes)
 routers.use("/kitchensetup", KitchenSetupRoutes)
 routers.use("/foodprocessing", FoodProcessingRoutes)
 
-
 //purchase
 routers.use("/purchaseorder", PurchaseOrderRoutes)
 routers.use("/purchaserequisition", PurchaseRequisitionRoutes)
-
-
-
 
 //sales
 routers.use("/cashier", CashierRoutes)
@@ -122,6 +125,11 @@ routers.use("/voidedbill", VoidedBillRoures)
 
 
 //payroll
+routers.use("/deduction", DeductionRoutes)
+routers.use("/payroll", PayrollRoutes)
+routers.use("/payrollsetup", PayrollSetupRoutes)
+routers.use("/payrollcategory", PayrollCategoryRoutes)
+
 
 // POS printer
 //routers.use("/posprinter", POSPrinterRoutes)

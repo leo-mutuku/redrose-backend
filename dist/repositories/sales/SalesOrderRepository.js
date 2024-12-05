@@ -25,14 +25,14 @@ let SalesOrderRepository = class SalesOrderRepository {
     }
     // Create a new sales order
     createSalesOrder(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ customer_id, order_date, total_amount, status, created_by }) {
+        return __awaiter(this, arguments, void 0, function* ({}) {
             try {
                 const query = `
                 INSERT INTO sales_order (customer_id, order_date, total_amount, status, created_by)
                 VALUES ($1, $2, $3, $4, $5)
                 RETURNING sales_order_id, customer_id, order_date, total_amount, status, created_by, created_at
             `;
-                const values = [customer_id, order_date, total_amount, status, created_by];
+                const values = [];
                 const result = yield this.client.query(query, values);
                 return result.rows[0];
             }
