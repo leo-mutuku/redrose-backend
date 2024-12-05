@@ -138,7 +138,6 @@ WHERE
     ks.kitchen_setup_id = $1
 GROUP BY 
     ks.kitchen_setup_id
-
             `;
             const values = [id];
             const result = await this.client.query(query, values);
@@ -146,7 +145,6 @@ GROUP BY
             if (result.rows.length === 0) {
                 throw new AppError('Kitchen setup not found', 404);
             }
-
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error fetching kitchen setup: ' + error, 500);

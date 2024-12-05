@@ -100,13 +100,9 @@ routers.use("/kitchenstation", KitchenStationRoutes)
 routers.use("/kitchensetup", KitchenSetupRoutes)
 routers.use("/foodprocessing", FoodProcessingRoutes)
 
-
 //purchase
 routers.use("/purchaseorder", PurchaseOrderRoutes)
 routers.use("/purchaserequisition", PurchaseRequisitionRoutes)
-
-
-
 
 //sales
 routers.use("/cashier", CashierRoutes)
