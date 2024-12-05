@@ -16,9 +16,24 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
 
     // Create a new purchase order record
     async createPurchaseOrder({
+        purchase_date, total, from, from_id, cash, cash_details, order_details
 
     }: PurchaseOrder): Promise<PurchaseOrder> {
         try {
+            console.log(purchase_date, total, from, from_id, cash, cash_details, order_details)
+
+            // update store items
+
+
+            // purchase order --entries
+
+
+            // supplier or vendor entries  -- invoicing
+
+
+            // payment   
+
+
             const query = `
                 INSERT INTO purchase_order (order_number, supplier_id, order_date, total_amount, status, created_by)
                 VALUES ($1, $2, $3, $4, $5, $6)
