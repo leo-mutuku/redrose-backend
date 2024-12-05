@@ -1,8 +1,9 @@
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
-import { IPaymentVoucherInteractor } from "../../interfaces/payment/IPaymentVoucherInteractor";
+
 import { IPaymentVoucherRepository } from "../../interfaces/payment/IPaymentVoucherRepository";
+import { IPaymentVoucherInteractor } from "../../interfaces/payment/IPaymentVocherInteractor";
 
 @injectable()
 export class PaymentVoucherInteractor implements IPaymentVoucherInteractor {

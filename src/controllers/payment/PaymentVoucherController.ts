@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { IPaymentVoucherInteractor } from "../../interfaces/payroll/IPaymentVoucherInteractor";
+import { IPaymentVoucherInteractor } from "../../interfaces/payment/IPaymentVocherInteractor";
+
 
 @injectable()
 export class PaymentVoucherController {
@@ -57,14 +58,14 @@ export class PaymentVoucherController {
         }
     }
 
-    async onDeletePaymentVoucher(req: Request, res: Response, next: NextFunction) {
-        try {
-            const id = parseInt(req.params.id);
+    // async onDeletePaymentVoucher(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         const id = parseInt(req.params.id);
 
-            await this.interactor.deletePaymentVoucher(id);
-            res.status(200).json({ status: 'success', message: 'Payment voucher deleted successfully' });
-        } catch (error) {
-            next(error);
-        }
-    }
+    //         await this.interactor.deletePaymentVoucher(id);
+    //         res.status(200).json({ status: 'success', message: 'Payment voucher deleted successfully' });
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 }

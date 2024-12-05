@@ -75,18 +75,6 @@ let DeductionController = class DeductionController {
             }
         });
     }
-    onDeleteDeduction(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const id = parseInt(req.params.id);
-                yield this.interactor.deleteDeduction(id);
-                res.status(200).json({ status: 'success', message: 'Deduction deleted successfully' });
-            }
-            catch (error) {
-                next(error);
-            }
-        });
-    }
 };
 exports.DeductionController = DeductionController;
 exports.DeductionController = DeductionController = __decorate([

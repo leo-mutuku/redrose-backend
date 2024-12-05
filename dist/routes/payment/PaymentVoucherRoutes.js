@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const inversify_1 = require("inversify");
 const utils_1 = require("../../utils");
-const PaymentVoucherRepository_1 = require("../../repositories/payroll/PaymentVoucherRepository");
-const PaymentVoucherInteractor_1 = require("../../interactors/payroll/PaymentVoucherInteractor");
-const PaymentVoucherController_1 = require("../../controllers/payroll/PaymentVoucherController");
+const PaymentVoucherController_1 = require("../../controllers/payment/PaymentVoucherController");
+const PaymentVoucherRepository_1 = require("../../repositories/payment/PaymentVoucherRepository");
+const PaymentVoucherInteractor_1 = require("../../interactors/payment/PaymentVoucherInteractor");
 // Initialize Inversify container
 const container = new inversify_1.Container();
 // Bind PaymentVoucher-related interfaces to their implementations

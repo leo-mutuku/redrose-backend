@@ -54,7 +54,7 @@ let PayrollSetupController = class PayrollSetupController {
             try {
                 const offset = parseInt(req.query.offset) || 0;
                 const limit = parseInt(req.query.limit) || 10;
-                const data = yield this.interactor.getAllPayrollSetups(limit, offset);
+                const data = yield this.interactor.getPayrollSetups(limit, offset);
                 res.status(200).json({ status: 'success', data: data, message: 'Payroll setup records fetched successfully' });
             }
             catch (error) {
@@ -69,18 +69,6 @@ let PayrollSetupController = class PayrollSetupController {
                 const body = req.body;
                 const data = yield this.interactor.updatePayrollSetup(id, body);
                 res.status(200).json({ status: 'success', data: data, message: 'Payroll setup record updated successfully' });
-            }
-            catch (error) {
-                next(error);
-            }
-        });
-    }
-    onDeletePayrollSetup(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const id = parseInt(req.params.id);
-                yield this.interactor.deletePayrollSetup(id);
-                res.status(200).json({ status: 'success', message: 'Payroll setup record deleted successfully' });
             }
             catch (error) {
                 next(error);

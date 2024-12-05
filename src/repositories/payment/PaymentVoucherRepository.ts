@@ -2,8 +2,9 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { PaymentVoucher } from "../../entities/paymentVoucher/PaymentVoucher";
-import { IPaymentVoucherRepository } from "../../interfaces/paymentVoucher/IPaymentVoucherRepository";
+
+import { IPaymentVoucherRepository } from "../../interfaces/payment/IPaymentVoucherRepository";
+import { PaymentVoucher } from "../../entities/payment/PaymentVoucher";
 
 @injectable()
 export class PaymentVoucherRepository implements IPaymentVoucherRepository {
@@ -15,10 +16,7 @@ export class PaymentVoucherRepository implements IPaymentVoucherRepository {
 
     // Create a new payment voucher
     async createPaymentVoucher({
-        voucher_number,
-        amount,
-        description,
-        payment_date
+
     }: PaymentVoucher): Promise<PaymentVoucher> {
         try {
             const query = `
@@ -27,7 +25,7 @@ export class PaymentVoucherRepository implements IPaymentVoucherRepository {
                 RETURNING payment_voucher_id, voucher_number, amount, description, 
                 TO_CHAR(payment_date, 'DD/MM/YYYY') AS payment_date
             `;
-            const values = [voucher_number, amount, description, payment_date];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

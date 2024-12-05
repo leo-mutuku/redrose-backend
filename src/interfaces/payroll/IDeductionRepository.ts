@@ -26,7 +26,7 @@ export interface IDeductionRepository {
      * @param id - The unique ID of the deduction record to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deleteDeduction(id: number): Promise<any>;
+    // deleteDeduction(id: number): Promise<any>;
 
     /**
      * Retrieves a paginated list of deduction records.
@@ -41,5 +41,5 @@ export interface IDeductionRepository {
      * @param employeeId - The unique ID of the employee.
      * @returns A promise resolving to a list of deductions applied to the specified employee.
      */
-    getDeductionsByEmployee(employeeId: number): Promise<any>;
+    // getDeductionsByEmployee(employeeId: number): Promise<any>;
 }

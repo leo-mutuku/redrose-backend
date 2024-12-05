@@ -2,8 +2,8 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { SalesOrderClearing } from "../../entities/salesOrderClearing/SalesOrderClearing";
-import { ISalesOrderClearingRepository } from "../../interfaces/salesOrderClearing/ISalesOrderClearingRepository";
+import { SalesOrderClearing } from "../../entities/sales/SalesOrderClearing";
+import { ISalesOrderClearingRepository } from "../../interfaces/sales/ISalesOrderClearingRepository";
 
 @injectable()
 export class SalesOrderClearingRepository implements ISalesOrderClearingRepository {
@@ -14,19 +14,14 @@ export class SalesOrderClearingRepository implements ISalesOrderClearingReposito
     }
 
     // Create a new sales order clearing record
-    async createSalesOrderClearing({
-        sales_order_id,
-        cleared_by,
-        cleared_date,
-        clearing_amount
-    }: SalesOrderClearing): Promise<SalesOrderClearing> {
+    async createSalesOrderClearing(): Promise<any> {
         try {
             const query = `
                 INSERT INTO sales_order_clearing (sales_order_id, cleared_by, cleared_date, clearing_amount)
                 VALUES ($1, $2, $3, $4)
                 RETURNING sales_order_clearing_id, sales_order_id, cleared_by, cleared_date, clearing_amount, created_at
             `;
-            const values = [sales_order_id, cleared_by, cleared_date, clearing_amount];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

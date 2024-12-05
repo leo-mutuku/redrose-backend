@@ -57,14 +57,14 @@ export class DeductionController {
         }
     }
 
-    async onDeleteDeduction(req: Request, res: Response, next: NextFunction) {
-        try {
-            const id = parseInt(req.params.id);
+    // async onDeleteDeduction(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         const id = parseInt(req.params.id);
 
-            await this.interactor.deleteDeduction(id);
-            res.status(200).json({ status: 'success', message: 'Deduction deleted successfully' });
-        } catch (error) {
-            next(error);
-        }
-    }
+    //         await this.interactor.deleteDeduction(id);
+    //         res.status(200).json({ status: 'success', message: 'Deduction deleted successfully' });
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 }

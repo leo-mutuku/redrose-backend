@@ -2,8 +2,9 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { WaitStaffRegister } from "../../entities/waitStaff/WaitStaffRegister";
-import { IWaitStaffRegisterRepository } from "../../interfaces/waitStaff/IWaitStaffRegisterRepository";
+
+import { WaitStaffRegister } from "../../entities/sales/WaitStaffRegister";
+import { IWaitStaffRegisterRepository } from "../../interfaces/sales/IWaitStaffRegisterRepository";
 
 @injectable()
 export class WaitStaffRegisterRepository implements IWaitStaffRegisterRepository {
@@ -15,10 +16,7 @@ export class WaitStaffRegisterRepository implements IWaitStaffRegisterRepository
 
     // Create a new wait staff registration
     async createWaitStaffRegister({
-        staff_id,
-        register_time,
-        table_assigned,
-        created_by
+
     }: WaitStaffRegister): Promise<WaitStaffRegister> {
         try {
             const query = `
@@ -26,7 +24,7 @@ export class WaitStaffRegisterRepository implements IWaitStaffRegisterRepository
                 VALUES ($1, $2, $3, $4)
                 RETURNING wait_staff_register_id, staff_id, register_time, table_assigned, created_by, created_at
             `;
-            const values = [staff_id, register_time, table_assigned, created_by];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

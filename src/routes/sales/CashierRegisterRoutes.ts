@@ -4,8 +4,9 @@ import { INTERFACE_TYPE } from "../../utils";
 import { CashierRegisterRepository } from "../../repositories/sales/CashierRegisterRepository";
 import { CashierRegisterInteractor } from "../../interactors/sales/CashierRegisterInteractor";
 import { CashierRegisterController } from "../../controllers/sales/CashierRegisterController";
-import { ICashierRegisterRepository } from "../../interfaces/sales/IcashierRegisterRepository";
+
 import { ICashierRegisterInteractor } from "../../interfaces/sales/ICashierRegisterInteractor";
+import { ICashierRegisterRepository } from "../../interfaces/sales/ICashierRegisterRepository";
 
 
 // Initialize Inversify container

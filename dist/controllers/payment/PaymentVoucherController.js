@@ -75,18 +75,6 @@ let PaymentVoucherController = class PaymentVoucherController {
             }
         });
     }
-    onDeletePaymentVoucher(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const id = parseInt(req.params.id);
-                yield this.interactor.deletePaymentVoucher(id);
-                res.status(200).json({ status: 'success', message: 'Payment voucher deleted successfully' });
-            }
-            catch (error) {
-                next(error);
-            }
-        });
-    }
 };
 exports.PaymentVoucherController = PaymentVoucherController;
 exports.PaymentVoucherController = PaymentVoucherController = __decorate([

@@ -15,9 +15,7 @@ export class PayrollCategoryRepository implements IPayrollCategoryRepository {
 
     // Create a new payroll category
     async createPayrollCategory({
-        category_name,
-        category_description,
-        is_active
+
     }: PayrollCategory): Promise<PayrollCategory> {
         try {
             const query = `
@@ -25,7 +23,7 @@ export class PayrollCategoryRepository implements IPayrollCategoryRepository {
                 VALUES ($1, $2, $3)
                 RETURNING payroll_category_id, category_name, category_description, is_active
             `;
-            const values = [category_name, category_description, is_active];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

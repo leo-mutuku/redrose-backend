@@ -173,6 +173,10 @@ exports.INTERFACE_TYPE = {
     SalesOrderClearingController: Symbol.for("SalesOrderClearingController"),
     //
     // --------------------------Payments
+    // PaymentVoucherRepository
+    PaymentVoucherRepository: Symbol.for("PaymentVoucherRepository"),
+    PaymentVoucherInteractor: Symbol.for("PaymentVoucherInteractor"),
+    PaymentVoucherController: Symbol.for("PaymentVoucherController"),
     // VendorSupplierPayyment
     VendorSupplierPaymentRepository: Symbol.for("VendorSupplierPaymentRepository"),
     VendorSupplierPaymentInteractor: Symbol.for("VendorSupplierPaymentInteractor"),
@@ -186,6 +190,18 @@ exports.INTERFACE_TYPE = {
     PayrollEntriesRepository: Symbol.for("PayrollEntriesRepository"),
     PayrollEntriesInteractor: Symbol.for("PayrollEntriesInteractor"),
     PayrollEntriesController: Symbol.for("PayrollEntriesController"),
+    //Payroll
+    PayrollRepository: Symbol.for("PayrollRepository"),
+    PayrollInteractor: Symbol.for("PayrollInteractor"),
+    PayrollController: Symbol.for("PayrollController"),
+    // DeductionRepository
+    DeductionRepository: Symbol.for("DeductionRepository"),
+    DeductionInteractor: Symbol.for("DeductionInteractor"),
+    DeductionController: Symbol.for("DeductionController"),
+    //PayrollCategoryRepository
+    PayrollCategoryRepository: Symbol.for("PayrollCategoryRepository"),
+    PayrollCategoryInteractor: Symbol.for("PayrollCategoryInteractor"),
+    PayrollCategoryController: Symbol.for("PayrollCategoryController"),
     // --------------------------------global
     // global
     Mailer: Symbol.for("Mailer"),

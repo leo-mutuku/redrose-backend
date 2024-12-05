@@ -25,7 +25,7 @@ let DeductionRepository = class DeductionRepository {
     }
     // Create a new deduction
     createDeduction(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ deduction_type, amount, description, deduction_date }) {
+        return __awaiter(this, arguments, void 0, function* ({}) {
             try {
                 const query = `
                 INSERT INTO deduction (deduction_type, amount, description, deduction_date)
@@ -33,7 +33,7 @@ let DeductionRepository = class DeductionRepository {
                 RETURNING deduction_id, deduction_type, amount, description,
                 TO_CHAR(deduction_date, 'DD/MM/YYYY') AS deduction_date
             `;
-                const values = [deduction_type, amount, description, deduction_date];
+                const values = [];
                 const result = yield this.client.query(query, values);
                 return result.rows[0];
             }

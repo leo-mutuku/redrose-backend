@@ -1,4 +1,4 @@
-export interface IPayrollSetupInteractor {
+export interface IPayrollInteractor {
     /**
      * Processes and creates a new payroll record.
      * @param input - The data for the payroll (e.g., employee details, earnings, deductions, and net pay).
@@ -26,7 +26,7 @@ export interface IPayrollSetupInteractor {
      * @param id - The unique ID of the payroll record to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deletePayroll(id: number);
+    // deletePayroll(id: number);
 
     /**
      * Retrieves a paginated list of payroll records.
@@ -41,12 +41,12 @@ export interface IPayrollSetupInteractor {
      * @param input - The calculation parameters (e.g., date range, employee details).
      * @returns A promise resolving to the calculated payroll data.
      */
-    calculatePayroll(input: any);
+    // calculatePayroll(input: any);
 
     /**
      * Marks a payroll record as finalized for the given period.
      * @param id - The unique ID of the payroll record to finalize.
      * @returns A promise resolving to the finalized payroll record.
      */
-    finalizePayroll(id: number);
+    // finalizePayroll(id: number);
 }

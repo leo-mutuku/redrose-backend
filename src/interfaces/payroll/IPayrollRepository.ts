@@ -26,7 +26,7 @@ export interface IPayrollRepository {
      * @param id - The unique ID of the payroll record to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deletePayroll(id: number): Promise<any>;
+    // deletePayroll(id: number): Promise<any>;
 
     /**
      * Retrieves a paginated list of payroll records.
@@ -41,12 +41,12 @@ export interface IPayrollRepository {
      * @param input - The calculation parameters (e.g., date range, employee details).
      * @returns A promise resolving to the calculated payroll data.
      */
-    calculatePayroll(input: any): Promise<any>;
+    //calculatePayroll(input: any): Promise<any>;
 
     /**
      * Marks a payroll record as finalized for the given period.
      * @param id - The unique ID of the payroll record to finalize.
      * @returns A promise resolving to the finalized payroll record.
      */
-    finalizePayroll(id: number): Promise<any>;
+    // finalizePayroll(id: number): Promise<any>;
 }

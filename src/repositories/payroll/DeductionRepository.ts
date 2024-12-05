@@ -2,8 +2,8 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { Deduction } from "../../entities/deduction/Deduction";
-import { IDeductionRepository } from "../../interfaces/deduction/IDeductionRepository";
+import { IDeductionRepository } from "../../interfaces/payroll/IDeductionRepository";
+import { Deduction } from "../../entities/payroll/Deduction";
 
 @injectable()
 export class DeductionRepository implements IDeductionRepository {
@@ -15,10 +15,7 @@ export class DeductionRepository implements IDeductionRepository {
 
     // Create a new deduction
     async createDeduction({
-        deduction_type,
-        amount,
-        description,
-        deduction_date
+
     }: Deduction): Promise<Deduction> {
         try {
             const query = `
@@ -27,7 +24,7 @@ export class DeductionRepository implements IDeductionRepository {
                 RETURNING deduction_id, deduction_type, amount, description,
                 TO_CHAR(deduction_date, 'DD/MM/YYYY') AS deduction_date
             `;
-            const values = [deduction_type, amount, description, deduction_date];
+            const values = [];
             const result = await this.client.query(query, values);
 
             return result.rows[0];

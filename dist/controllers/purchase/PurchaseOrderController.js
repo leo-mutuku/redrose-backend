@@ -75,18 +75,6 @@ let PurchaseOrderController = class PurchaseOrderController {
             }
         });
     }
-    onDeletePurchaseOrder(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const id = parseInt(req.params.id);
-                yield this.interactor.deletePurchaseOrder(id);
-                res.status(200).json({ status: 'success', message: 'Purchase order deleted successfully' });
-            }
-            catch (error) {
-                next(error);
-            }
-        });
-    }
 };
 exports.PurchaseOrderController = PurchaseOrderController;
 exports.PurchaseOrderController = PurchaseOrderController = __decorate([

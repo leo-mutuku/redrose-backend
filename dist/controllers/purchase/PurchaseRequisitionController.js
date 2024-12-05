@@ -75,18 +75,6 @@ let PurchaseRequisitionController = class PurchaseRequisitionController {
             }
         });
     }
-    onDeletePurchaseRequisition(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const id = parseInt(req.params.id);
-                yield this.interactor.deletePurchaseRequisition(id);
-                res.status(200).json({ status: 'success', message: 'Purchase requisition deleted successfully' });
-            }
-            catch (error) {
-                next(error);
-            }
-        });
-    }
 };
 exports.PurchaseRequisitionController = PurchaseRequisitionController;
 exports.PurchaseRequisitionController = PurchaseRequisitionController = __decorate([

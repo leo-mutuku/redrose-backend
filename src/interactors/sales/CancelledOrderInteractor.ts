@@ -1,18 +1,19 @@
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
-
+import { ICancelledOrderInteractor } from "../../interfaces/sales/ICancelledOrderInteractor";
 import { ICancelledOrderRepository } from "../../interfaces/sales/ICancelledOrderRepository";
 
+
 @injectable()
-export class CancelledOrderInteractor implements CancelledOrderInteractor {
+export class CancelledOrderInteractor implements ICancelledOrderInteractor {
     private repository: ICancelledOrderRepository;
 
     constructor(@inject(INTERFACE_TYPE.CancelledOrderRepository) repository: ICancelledOrderRepository) {
         this.repository = repository;
     }
 
-    async createCancelOrder(input: any): Promise<any> {
+    async createCancelledOrder(input: any): Promise<any> {
         try {
             const result = await this.repository.createCancelledOrder(input);
 
@@ -26,7 +27,7 @@ export class CancelledOrderInteractor implements CancelledOrderInteractor {
         }
     }
 
-    async getCancelOrder(id: number): Promise<any> {
+    async getCancelledOrder(id: number): Promise<any> {
         try {
             const result = await this.repository.getCancelledOrder(id);
             return result;
@@ -41,7 +42,7 @@ export class CancelledOrderInteractor implements CancelledOrderInteractor {
         }
     }
 
-    async updateCancelOrder(id: number, input: any): Promise<any> {
+    async updateCancelledOrder(id: number, input: any): Promise<any> {
         try {
             const result = await this.repository.updateCancelledOrder(id, input);
             return result;
@@ -53,7 +54,7 @@ export class CancelledOrderInteractor implements CancelledOrderInteractor {
         }
     }
 
-    async getCancelOrders(limit: number, offset: number): Promise<any> {
+    async getCancelledOrders(limit: number, offset: number): Promise<any> {
         try {
             const result = await this.repository.getCancelledOrders(limit, offset);
             return result;

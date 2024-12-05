@@ -24,15 +24,15 @@ let SalesOrderClearingRepository = class SalesOrderClearingRepository {
         this.client = (0, dbConnection_1.pgClient)();
     }
     // Create a new sales order clearing record
-    createSalesOrderClearing(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ sales_order_id, cleared_by, cleared_date, clearing_amount }) {
+    createSalesOrderClearing() {
+        return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
                 INSERT INTO sales_order_clearing (sales_order_id, cleared_by, cleared_date, clearing_amount)
                 VALUES ($1, $2, $3, $4)
                 RETURNING sales_order_clearing_id, sales_order_id, cleared_by, cleared_date, clearing_amount, created_at
             `;
-                const values = [sales_order_id, cleared_by, cleared_date, clearing_amount];
+                const values = [];
                 const result = yield this.client.query(query, values);
                 return result.rows[0];
             }

@@ -2,9 +2,8 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-import { ICashierRegisterRepository } from "../../interfaces/sales/IcashierRegisterRepository";
 import { CashierRegister } from "../../entities/sales/CashierRegister";
-
+import { ICashierRegisterRepository } from "../../interfaces/sales/ICashierRegisterRepository";
 @injectable()
 export class CashierRegisterRepository implements ICashierRegisterRepository {
     private client: Pool;

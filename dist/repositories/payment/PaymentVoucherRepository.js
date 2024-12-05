@@ -25,7 +25,7 @@ let PaymentVoucherRepository = class PaymentVoucherRepository {
     }
     // Create a new payment voucher
     createPaymentVoucher(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ voucher_number, amount, description, payment_date }) {
+        return __awaiter(this, arguments, void 0, function* ({}) {
             try {
                 const query = `
                 INSERT INTO payment_voucher (voucher_number, amount, description, payment_date)
@@ -33,7 +33,7 @@ let PaymentVoucherRepository = class PaymentVoucherRepository {
                 RETURNING payment_voucher_id, voucher_number, amount, description, 
                 TO_CHAR(payment_date, 'DD/MM/YYYY') AS payment_date
             `;
-                const values = [voucher_number, amount, description, payment_date];
+                const values = [];
                 const result = yield this.client.query(query, values);
                 return result.rows[0];
             }

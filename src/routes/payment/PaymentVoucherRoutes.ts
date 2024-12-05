@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { PaymentVoucherRepository } from "../../repositories/payroll/PaymentVoucherRepository";
-import { PaymentVoucherInteractor } from "../../interactors/payroll/PaymentVoucherInteractor";
-import { PaymentVoucherController } from "../../controllers/payroll/PaymentVoucherController";
-import { IPaymentVoucherRepository } from "../../interfaces/payroll/IPaymentVoucherRepository";
-import { IPaymentVoucherInteractor } from "../../interfaces/payroll/IPaymentVoucherInteractor";
+import { IPaymentVoucherRepository } from "../../interfaces/payment/IPaymentVoucherRepository";
+import { IPaymentVoucherInteractor } from "../../interfaces/payment/IPaymentVocherInteractor";
+import { PaymentVoucherController } from "../../controllers/payment/PaymentVoucherController";
+import { PaymentVoucherRepository } from "../../repositories/payment/PaymentVoucherRepository";
+import { PaymentVoucherInteractor } from "../../interactors/payment/PaymentVoucherInteractor";
+
 
 // Initialize Inversify container
 const container = new Container();

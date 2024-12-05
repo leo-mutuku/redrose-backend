@@ -26,7 +26,7 @@ export interface IPaymentVoucherInteractor {
      * @param id - The unique ID of the payment voucher record to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deletePaymentVoucher(id: number);
+    // deletePaymentVoucher(id: number);
 
     /**
      * Retrieves a paginated list of payment voucher records.
@@ -41,5 +41,5 @@ export interface IPaymentVoucherInteractor {
      * @param criteria - The search criteria (e.g., date range, status).
      * @returns A promise resolving to a list of payment vouchers matching the criteria.
      */
-    searchPaymentVouchers(criteria: any);
+    //  searchPaymentVouchers(criteria: any);
 }

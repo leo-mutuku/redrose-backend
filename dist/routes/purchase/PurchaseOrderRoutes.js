@@ -4,13 +4,13 @@ const express_1 = require("express");
 const inversify_1 = require("inversify");
 const utils_1 = require("../../utils");
 const PurchaseOrderRepository_1 = require("../../repositories/purchase/PurchaseOrderRepository");
-const PurchaseOrderInteractor_1 = require("../../interactors/purchase/PurchaseOrderInteractor");
 const PurchaseOrderController_1 = require("../../controllers/purchase/PurchaseOrderController");
+const PurchaseOrderIneractor_1 = require("../../interactors/purchase/PurchaseOrderIneractor");
 // Initialize Inversify container
 const container = new inversify_1.Container();
 // Bind PurchaseOrder-related interfaces to their implementations
 container.bind(utils_1.INTERFACE_TYPE.PurchaseOrderRepository).to(PurchaseOrderRepository_1.PurchaseOrderRepository);
-container.bind(utils_1.INTERFACE_TYPE.PurchaseOrderInteractor).to(PurchaseOrderInteractor_1.PurchaseOrderInteractor);
+container.bind(utils_1.INTERFACE_TYPE.PurchaseOrderInteractor).to(PurchaseOrderIneractor_1.PurchaseOrderInteractor);
 container.bind(utils_1.INTERFACE_TYPE.PurchaseOrderController).to(PurchaseOrderController_1.PurchaseOrderController);
 // Create the router instance
 const router = (0, express_1.Router)();

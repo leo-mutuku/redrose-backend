@@ -75,18 +75,6 @@ let SalesOrderController = class SalesOrderController {
             }
         });
     }
-    onDeleteSalesOrder(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const id = parseInt(req.params.id);
-                yield this.interactor.deleteSalesOrder(id);
-                res.status(200).json({ status: 'success', message: 'Sales order deleted successfully' });
-            }
-            catch (error) {
-                next(error);
-            }
-        });
-    }
 };
 exports.SalesOrderController = SalesOrderController;
 exports.SalesOrderController = SalesOrderController = __decorate([

@@ -26,7 +26,7 @@ export interface IPayrollCategoryRepository {
      * @param id - The unique ID of the payroll category to delete.
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
-    deletePayrollCategory(id: number): Promise<any>;
+    //deletePayrollCategory(id: number): Promise<any>;
 
     /**
      * Retrieves a paginated list of payroll categories.
