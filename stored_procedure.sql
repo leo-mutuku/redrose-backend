@@ -112,47 +112,95 @@ CREATE OR REPLACE FUNCTION update_menu_item_quantities(
 RETURNS VOID AS $$
 DECLARE
     item JSON;
-    pl_store_menu_id INT; --PL / pgSQL variable to store the menu_item_id
-    pl_qty NUMERIC(15, 2); --PL / pgSQL variable to store the quantity
-    current_quantity NUMERIC(15, 2); --Variable to store the current quantity from menu_item
-    new_quantity NUMERIC(15, 2); --Variable to store the new quantity after update
+    pl_menu_item_id INT;
+    pl_qty NUMERIC(15,2);
+    current_quantity NUMERIC(15,2);
+    new_quantity NUMERIC(15,2);
 BEGIN
---Loop through the JSON array to process each item
+    -- Sort the JSON input by menu_item_id for consistent locking order
     FOR item IN
-SELECT * FROM json_array_elements(food_items)-- Get each JSON element
-LOOP
---Extract menu_item_id and quantity from the JSON object
-pl_store_menu_id:= (item ->> 'menu_item_id'):: INT; --Assign to PL / pgSQL variable
-pl_qty:= (item ->> 'quantity'):: NUMERIC; --Assign to PL / pgSQL variable
+        SELECT * FROM json_array_elements(food_items)
+        ORDER BY (item->>'menu_item_id')::INT  -- Sort by menu_item_id
+    LOOP
+        pl_menu_item_id := (item->>'menu_item_id')::INT;
+        pl_qty := (item->>'quantity')::NUMERIC;
 
---Lock the row for the menu_item_id to prevent race conditions
-        FOR current_quantity IN 
-            SELECT mi.quantity-- Explicitly qualify the column name
-            FROM menu_item mi-- Explicitly qualify the table name
-            WHERE mi.store_item_id = pl_store_item_id-- Use the PL / pgSQL variable
-            FOR UPDATE-- Row - level lock
-LOOP
---Check if the new quantity after update would be negative
-            IF  pl_qty < 0 THEN
+        FOR current_quantity IN
+            SELECT mi.quantity
+            FROM menu_item mi
+            WHERE mi.menu_item_id = pl_menu_item_id
+            FOR UPDATE
+        LOOP
+            IF pl_qty < 0 THEN
                 RAISE EXCEPTION 'Quantity for menu_item_id % negative update not allowed', pl_menu_item_id;
-ELSE
---Calculate the new quantity after adsition
-new_quantity:= current_quantity + pl_qty;
+            ELSE
+                new_quantity := current_quantity + pl_qty;
 
---Update the menu_item quantity with the new value
                 UPDATE menu_item
                 SET quantity = new_quantity
                 WHERE menu_item_id = pl_menu_item_id;
 
---Insert into menu_tracking table to track the change
-                INSERT INTO menu_tracking(store_item_id, current_quantity, new_quantity, reason)
-VALUES(pl_store_item_id, current_quantity, new_quantity, 'Food processing');
+                INSERT INTO menu_tracking (menu_item_id, current_quantity, new_quantity, reason)
+                VALUES (pl_menu_item_id, current_quantity, new_quantity, 'Food processing');
             END IF;
         END LOOP;
     END LOOP;
 END;
 $$ LANGUAGE plpgsql;
 
+
+
+---------------
+
+
+
+
+CREATE OR REPLACE FUNCTION update_supplier_balance(p_json_input JSONB)
+RETURNS VOID AS $$
+DECLARE
+    supplier_id INT;
+    amount NUMERIC;
+    description TEXT;
+    is_credit BOOLEAN;
+    current_balance NUMERIC;
+    new_balance NUMERIC;
+BEGIN
+    -- Extract values from the JSON object
+    supplier_id := (p_json_input->>'supplier_id')::INT;
+    amount := (p_json_input->>'amount')::NUMERIC;
+    description := p_json_input->>'description';
+    is_credit := (p_json_input->>'is_credit')::BOOLEAN;
+
+    -- Lock the supplier row and get the current balance
+    SELECT balance INTO current_balance
+    FROM supplier
+    WHERE id = supplier_id
+    FOR UPDATE; -- Acquires a row-level lock
+
+    -- Calculate the new balance
+    IF is_credit THEN
+        new_balance := current_balance + amount;
+    ELSE
+        new_balance := current_balance - amount;
+    END IF;
+
+    -- Update the supplier's balance
+    UPDATE supplier
+    SET balance = new_balance
+    WHERE id = supplier_id;
+
+    -- Insert the entry into supplier_entries
+    INSERT INTO supplier_entries (supplier_id, debit, credit, description, balance, created_at)
+    VALUES (
+        supplier_id,
+        CASE WHEN is_credit THEN 0 ELSE amount END,
+        CASE WHEN is_credit THEN amount ELSE 0 END,
+        description,
+        new_balance,
+        NOW()
+    );
+END;
+$$ LANGUAGE plpgsql;
 
 --trigger to update store_item and menu_item quantities
 SELECT update_menu_item_quantities('[{"menu_item_id": 9, "quantity": 100}]':: json);
@@ -168,3 +216,106 @@ SELECT update_menu_item_quantities('[{"menu_item_id": 9, "quantity": 100}]':: js
 
 
     --------------------------------------------Start of purchase procedures--------------------------------
+
+-- procedure to update supplier entries 
+-- supplier entries table   credit, debit balance description
+SELECT update_supplier_entries('{"supplier_id":100, txn_type:"credit" , "amount":2000}':: json);
+
+CREATE OR REPLACE FUNCTION update_supplier_balance(
+    p_supplier_id INT,
+    p_amount NUMERIC,
+    p_description TEXT,
+    p_is_credit BOOLEAN
+)
+RETURNS VOID AS $$
+DECLARE
+    v_current_balance NUMERIC;
+    v_new_balance NUMERIC;
+BEGIN
+    -- Get the current balance of the supplier
+    SELECT balance INTO v_current_balance
+    FROM supplier
+    WHERE id = p_supplier_id;
+
+    IF v_current_balance IS NULL THEN
+        RAISE EXCEPTION 'Supplier with ID % does not exist', p_supplier_id;
+    END IF;
+
+    -- Calculate the new balance
+    IF p_is_credit THEN
+        v_new_balance := v_current_balance + p_amount;
+    ELSE
+        v_new_balance := v_current_balance - p_amount;
+    END IF;
+
+    -- Update the supplier's balance
+    UPDATE supplier
+    SET balance = v_new_balance
+    WHERE id = p_supplier_id;
+
+    -- Insert the entry into supplier_entries
+    INSERT INTO supplier_entries (supplier_id, debit, credit, description, balance, created_at)
+    VALUES (
+        p_supplier_id,
+        CASE WHEN p_is_credit THEN 0 ELSE p_amount END,
+        CASE WHEN p_is_credit THEN p_amount ELSE 0 END,
+        p_description,
+        v_new_balance,
+        NOW()
+    );
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+--- Sales procedure to update sales order 
+
+
+--sales person balance/ waiter
+
+CREATE OR REPLACE FUNCTION update_waitstaff_balance(
+    p_waitstaff_id INT,
+    p_amount NUMERIC,
+    p_description TEXT,
+    p_is_credit BOOLEAN
+)
+RETURNS VOID AS $$
+DECLARE
+    v_current_balance NUMERIC;
+    v_new_balance NUMERIC;
+BEGIN
+    -- Get the current balance of the waitstaff
+    SELECT balance INTO v_current_balance
+    FROM waitstaff
+    WHERE id = p_waitstaff_id;
+
+    IF v_current_balance IS NULL THEN
+        RAISE EXCEPTION 'Supplier with ID % does not exist', p_waitstaff_id;
+    END IF;
+
+    -- Calculate the new balance
+    IF p_is_credit THEN
+        v_new_balance := v_current_balance + p_amount;
+    ELSE
+        v_new_balance := v_current_balance - p_amount;
+    END IF;
+
+    -- Update the waitstaff's balance
+    UPDATE waitstaff
+    SET balance = v_new_balance
+    WHERE id = p_supplier_id;
+
+    -- Insert the entry into waitstaff_entries
+    INSERT INTO supplier_entries (supplier_id, debit, credit, description, balance, created_at)
+    VALUES (
+        p_waitsatff_id,
+        CASE WHEN p_is_credit THEN 0 ELSE p_amount END,
+        CASE WHEN p_is_credit THEN p_amount ELSE 0 END,
+        p_description,
+        v_new_balance,
+        NOW()
+    );
+
+END;
+$$ LANGUAGE plpgsql;
