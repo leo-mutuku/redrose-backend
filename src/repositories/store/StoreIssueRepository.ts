@@ -96,18 +96,47 @@ export class StoreIssueRepository implements IStoreIssueRepository {
     async getStoreIssues(limit: number, offset: number): Promise<StoreIssue[]> {
         try {
             const query = `
-                SELECT 
-    sih.*, 
-    json_agg(sil) AS issue_lines
-FROM 
-    store_issue_header sih
-LEFT JOIN 
-    store_issue_line sil 
-    ON sih.store_issue_header_id = sil.store_issue_header_id
-
-GROUP BY
-    sih.store_issue_header_id
-limit $1 offset $2
+            SELECT 
+            sih.store_issue_header_id,
+            sih.created_at, 
+            sih.issued_by, 
+            sih.created_by,
+            us.first_name AS created_by_name,  -- Add first_name from users table
+            st.first_name AS issued_by_name,  -- Add first_name from staff table
+            json_agg(
+                json_build_object(
+                    'issue_line_id', sil.store_issue_line_id,
+                    'store_item_id', sil.store_item_id,
+                    'item_id', si.item_id,
+                    'item_name', ir.item_name,
+                    'issue_quantity', sil.issue_quantity
+                )
+            ) AS issue_lines
+        FROM 
+            store_issue_header sih
+        INNER JOIN 
+            users us
+            ON sih.created_by = us.user_id  -- Join on created_by and user_id
+        INNER JOIN 
+            staff st
+            ON sih.issued_by = st.staff_id  -- Join on issued_by and staff_id
+        LEFT JOIN 
+            store_issue_line sil 
+            ON sih.store_issue_header_id = sil.store_issue_header_id
+        LEFT JOIN 
+            store_item si
+            ON sil.store_item_id = si.store_item_id
+        LEFT JOIN 
+            item_register ir
+            ON si.item_id = ir.item_id
+        GROUP BY
+            sih.store_issue_header_id, 
+            us.first_name,
+            st.first_name
+        ORDER BY
+            sih.created_at DESC
+        LIMIT $1 OFFSET $2;  -- Add LIMIT and OFFSET with placeholders
+        
             `;
             const values = [limit, offset];
             const result = await this.client.query(query, values);
@@ -122,18 +151,46 @@ limit $1 offset $2
     async getStoreIssue(id: number): Promise<StoreIssue> {
         try {
             const query = `
-                SELECT 
-    sih.*, 
-    json_agg(sil) AS issue_lines
+SELECT 
+    sih.store_issue_header_id,
+    sih.created_at, 
+    sih.issued_by, 
+    sih.created_by,
+    us.first_name AS created_by_name,  -- Add first_name from users table
+    st.first_name AS issued_by_name,  -- Add first_name from staff table
+    json_agg(
+        json_build_object(
+            'issue_line_id', sil.store_issue_line_id,
+            'store_item_id', sil.store_item_id,
+            'item_id', si.item_id,
+            'item_name', ir.item_name,
+            'issue_quantity', sil.issue_quantity
+        )
+    ) AS issue_lines
 FROM 
     store_issue_header sih
+INNER JOIN 
+    users us
+    ON sih.created_by = us.user_id  -- Join on created_by and user_id
+INNER JOIN 
+    staff st
+    ON sih.issued_by = st.staff_id  -- Join on issued_by and staff_id
 LEFT JOIN 
     store_issue_line sil 
     ON sih.store_issue_header_id = sil.store_issue_header_id
-WHERE 
-    sih.store_issue_header_id = $1
+LEFT JOIN 
+    store_item si
+    ON sil.store_item_id = si.store_item_id
+LEFT JOIN 
+    item_register ir
+    ON si.item_id = ir.item_id
+    WHERE sih.store_issue_header_id = $1
 GROUP BY
-    sih.store_issue_header_id;
+    sih.store_issue_header_id, 
+    us.first_name,
+    st.first_name
+ORDER BY
+    sih.created_at DESC;  -- Add ORDER BY clause to sort by created_at in descending order
             `;
             const values = [id];
             const result = await this.client.query(query, values);

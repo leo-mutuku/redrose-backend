@@ -34,6 +34,7 @@ export class UserInteractor implements IUserInteractor {
     async getUser(id: number): Promise<any> {
         try {
 
+
             const result = await this.repository.getUser(id)
 
             return result
