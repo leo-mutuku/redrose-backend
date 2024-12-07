@@ -30,7 +30,7 @@ export class AuthInteractor implements IAuthInteractor {
         const token = jwt.sign(
             { userId: userId, userName: result.username, roles: result.roles }, // Payload
             process.env.JWT_SECRET!,                 // Secret key from environment
-            { expiresIn: "1h" }                      // Token expiration
+            { expiresIn: "24h" }                      // Token expiration
         );
 
         return { ...result, token };

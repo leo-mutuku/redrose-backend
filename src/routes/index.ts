@@ -25,7 +25,7 @@ import GLAccountRoutes from "./finance/GLAccountRoutes"
 // store routes 
 import UnitRoutes from "./store/UnitsRoutes"
 import ItemcategoryRoutes from "./store/ItemCategoryRoutes"
-import StoreRegisterRoutes from "./store/StoreregisterRoutes"
+import StoreRegisterRoutes from "./store/StoreRegisterRoutes"
 import ItemRegisterRoutes from "./store/ItemRegisterRoutes"
 import StoreItemRoutes from "./store/StoreItemRoutes"
 import StoreIssueRoutes from "./store/StoreIssueRoutes"

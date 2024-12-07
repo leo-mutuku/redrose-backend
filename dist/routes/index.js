@@ -25,7 +25,7 @@ const GLAccountRoutes_1 = __importDefault(require("./finance/GLAccountRoutes"));
 // store routes 
 const UnitsRoutes_1 = __importDefault(require("./store/UnitsRoutes"));
 const ItemCategoryRoutes_1 = __importDefault(require("./store/ItemCategoryRoutes"));
-const StoreregisterRoutes_1 = __importDefault(require("./store/StoreregisterRoutes"));
+const StoreRegisterRoutes_1 = __importDefault(require("./store/StoreRegisterRoutes"));
 const ItemRegisterRoutes_1 = __importDefault(require("./store/ItemRegisterRoutes"));
 const StoreItemRoutes_1 = __importDefault(require("./store/StoreItemRoutes"));
 const StoreIssueRoutes_1 = __importDefault(require("./store/StoreIssueRoutes"));
@@ -79,7 +79,7 @@ routers.use("/glaccounts", GLAccountRoutes_1.default);
 //store routes
 routers.use("/unit", UnitsRoutes_1.default);
 routers.use("/itemcategory", ItemCategoryRoutes_1.default);
-routers.use("/storeregister", StoreregisterRoutes_1.default);
+routers.use("/storeregister", StoreRegisterRoutes_1.default);
 routers.use("/itemregister", ItemRegisterRoutes_1.default);
 routers.use("/storeitem", StoreItemRoutes_1.default);
 routers.use("/storeissue", StoreIssueRoutes_1.default);
