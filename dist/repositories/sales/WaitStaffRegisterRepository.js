@@ -25,14 +25,20 @@ let WaitStaffRegisterRepository = class WaitStaffRegisterRepository {
     }
     // Create a new wait staff registration
     createWaitStaffRegister(_a) {
-        return __awaiter(this, arguments, void 0, function* ({}) {
+        return __awaiter(this, arguments, void 0, function* ({ staff_id, balance, pin, created_by }) {
             try {
                 const query = `
-                INSERT INTO wait_staff_register (staff_id, register_time, table_assigned, created_by)
+                INSERT INTO waitstaff ( staff_id,
+        balance,
+        pin,created_by)
                 VALUES ($1, $2, $3, $4)
-                RETURNING wait_staff_register_id, staff_id, register_time, table_assigned, created_by, created_at
+                RETURNING waitstaff_id, staff_id,
+        balance,
+        pin, created_by, created_at
             `;
-                const values = [];
+                const values = [staff_id,
+                    balance,
+                    pin, created_by,];
                 const result = yield this.client.query(query, values);
                 return result.rows[0];
             }
@@ -46,9 +52,20 @@ let WaitStaffRegisterRepository = class WaitStaffRegisterRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-                SELECT wait_staff_register_id, staff_id, register_time, table_assigned, created_by, created_at
-                FROM wait_staff_register
-                LIMIT $1 OFFSET $2
+               SELECT 
+    ws.staff_id, 
+    ws.balance,  
+    ws.created_by, 
+    ws.created_at,
+    s.first_name || ' ' || s.last_name AS waitstaff_name
+FROM 
+    waitstaff AS ws
+INNER JOIN 
+    staff AS s 
+ON 
+    ws.staff_id = s.staff_id
+LIMIT $1 OFFSET $2
+
             `;
                 const values = [limit, offset];
                 const result = yield this.client.query(query, values);
@@ -64,9 +81,19 @@ let WaitStaffRegisterRepository = class WaitStaffRegisterRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-                SELECT wait_staff_register_id, staff_id, register_time, table_assigned, created_by, created_at
-                FROM wait_staff_register
-                WHERE wait_staff_register_id = $1
+                 SELECT 
+    ws.staff_id, 
+    ws.balance,  
+    ws.created_by, 
+    ws.created_at,
+    s.first_name || ' ' || s.last_name AS waitstaff_name
+FROM 
+    waitstaff AS ws
+INNER JOIN 
+    staff AS s 
+ON 
+    ws.staff_id = s.staff_id
+    WHERE ws.waitstaff_id = $1
             `;
                 const values = [id];
                 const result = yield this.client.query(query, values);
@@ -84,7 +111,7 @@ let WaitStaffRegisterRepository = class WaitStaffRegisterRepository {
     updateWaitStaffRegister(id, waitStaffRegister) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let query = `UPDATE wait_staff_register SET `;
+                let query = `UPDATE waitstaff SET `;
                 const values = [];
                 let setClauses = [];
                 // Dynamically build the SET clause and values array
@@ -96,8 +123,8 @@ let WaitStaffRegisterRepository = class WaitStaffRegisterRepository {
                     throw new AppError_1.AppError('No fields to update', 400);
                 }
                 query += setClauses.join(', ');
-                query += ` WHERE wait_staff_register_id = $${values.length + 1} RETURNING 
-                wait_staff_register_id, staff_id, register_time, table_assigned, created_by, created_at`;
+                query += ` WHERE waitstaff_id = $${values.length + 1} RETURNING 
+                waitstaff, staff_id, balance, created_by, created_at`;
                 values.push(id);
                 const result = yield this.client.query(query, values);
                 if (result.rows.length === 0) {
@@ -106,7 +133,7 @@ let WaitStaffRegisterRepository = class WaitStaffRegisterRepository {
                 return result.rows[0];
             }
             catch (error) {
-                throw new AppError_1.AppError('Error updating wait staff registration: ' + error, 500);
+                throw new AppError_1.AppError('Error updating waitstaff: ' + error, 500);
             }
         });
     }

@@ -20,6 +20,6 @@ const controller = container.get(utils_1.INTERFACE_TYPE.WaitStaffRegisterControl
 router.post("/createwaitstaffregister", controller.onCreateWaitStaff.bind(controller));
 router.get("/getwaitstaffregister/:id", controller.onGetWaitStaff.bind(controller));
 router.get("/getwaitstaffregisters", controller.onGetWaitStaffs.bind(controller));
-router.patch("/updatewaitstaffregister/:id", controller.onUpdateWaitStaff.bind(controller));
+router.patch("/updatewaitstaff/:id", controller.onUpdateWaitStaff.bind(controller));
 // Export the configured router
 exports.default = router;

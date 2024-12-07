@@ -48,7 +48,7 @@ let AuthInteractor = class AuthInteractor {
             let userId = result.user_id ? result.user_id : "";
             const token = jsonwebtoken_1.default.sign({ userId: userId, userName: result.username, roles: result.roles }, // Payload
             process.env.JWT_SECRET, // Secret key from environment
-            { expiresIn: "1h" } // Token expiration
+            { expiresIn: "24h" } // Token expiration
             );
             return Object.assign(Object.assign({}, result), { token });
         });

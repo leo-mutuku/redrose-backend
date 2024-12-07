@@ -105,7 +105,7 @@ ON
     // Update an existing wait staff registration
     async updateWaitStaffRegister(id: number, waitStaffRegister: Partial<WaitStaffRegister>): Promise<WaitStaffRegister> {
         try {
-            let query = `UPDATE wait_staff_register SET `;
+            let query = `UPDATE waitstaff SET `;
             const values: any[] = [];
             let setClauses: string[] = [];
 
@@ -120,8 +120,8 @@ ON
             }
 
             query += setClauses.join(', ');
-            query += ` WHERE wait_staff_register_id = $${values.length + 1} RETURNING 
-                wait_staff_register_id, staff_id, register_time, table_assigned, created_by, created_at`;
+            query += ` WHERE waitstaff_id = $${values.length + 1} RETURNING 
+                waitstaff, staff_id, balance, created_by, created_at`;
 
             values.push(id);
 
@@ -132,7 +132,7 @@ ON
 
             return result.rows[0];
         } catch (error) {
-            throw new AppError('Error updating wait staff registration: ' + error, 500);
+            throw new AppError('Error updating waitstaff: ' + error, 500);
         }
     }
 

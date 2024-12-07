@@ -53,6 +53,7 @@ let UserController = class UserController {
     onGetUser(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log('get user', req.body.user);
                 console.log(req.params.id);
                 const id = parseInt(req.params.id);
                 const data = yield this.interactor.getUser(id);
