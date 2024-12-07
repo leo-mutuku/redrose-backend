@@ -16,15 +16,25 @@ export class WaitStaffRegisterRepository implements IWaitStaffRegisterRepository
 
     // Create a new wait staff registration
     async createWaitStaffRegister({
+        staff_id,
+        balance,
+        pin,
+        created_by
 
     }: WaitStaffRegister): Promise<WaitStaffRegister> {
         try {
             const query = `
-                INSERT INTO wait_staff_register (staff_id, register_time, table_assigned, created_by)
+                INSERT INTO waitstaff ( staff_id,
+        balance,
+        pin,created_by)
                 VALUES ($1, $2, $3, $4)
-                RETURNING wait_staff_register_id, staff_id, register_time, table_assigned, created_by, created_at
+                RETURNING waitstaff_id, staff_id,
+        balance,
+        pin, created_by, created_at
             `;
-            const values = [];
+            const values = [staff_id,
+                balance,
+                pin, created_by,];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
@@ -37,9 +47,20 @@ export class WaitStaffRegisterRepository implements IWaitStaffRegisterRepository
     async getWaitStaffRegisters(limit: number, offset: number): Promise<WaitStaffRegister[]> {
         try {
             const query = `
-                SELECT wait_staff_register_id, staff_id, register_time, table_assigned, created_by, created_at
-                FROM wait_staff_register
-                LIMIT $1 OFFSET $2
+               SELECT 
+    ws.staff_id, 
+    ws.balance,  
+    ws.created_by, 
+    ws.created_at,
+    s.first_name || ' ' || s.last_name AS waitstaff_name
+FROM 
+    waitstaff AS ws
+INNER JOIN 
+    staff AS s 
+ON 
+    ws.staff_id = s.staff_id
+LIMIT $1 OFFSET $2
+
             `;
             const values = [limit, offset];
             const result = await this.client.query(query, values);
@@ -54,9 +75,19 @@ export class WaitStaffRegisterRepository implements IWaitStaffRegisterRepository
     async getWaitStaffRegister(id: number): Promise<WaitStaffRegister> {
         try {
             const query = `
-                SELECT wait_staff_register_id, staff_id, register_time, table_assigned, created_by, created_at
-                FROM wait_staff_register
-                WHERE wait_staff_register_id = $1
+                 SELECT 
+    ws.staff_id, 
+    ws.balance,  
+    ws.created_by, 
+    ws.created_at,
+    s.first_name || ' ' || s.last_name AS waitstaff_name
+FROM 
+    waitstaff AS ws
+INNER JOIN 
+    staff AS s 
+ON 
+    ws.staff_id = s.staff_id
+    WHERE ws.waitstaff_id = $1
             `;
             const values = [id];
             const result = await this.client.query(query, values);

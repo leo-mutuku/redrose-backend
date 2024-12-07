@@ -1,11 +1,9 @@
 
 export class WaitStaffRegister {
     constructor(
-        public waitStaffRegisterId: number,
-        public staffId: number,
-        public registerTime: Date,
-        public tableAssigned: number,
-        public createdBy: number,
-        public createdAt: Date
+        public staff_id: number,
+        public balance: number,
+        public pin: number,
+        public created_by: number,
     ) { }
 }
