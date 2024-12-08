@@ -117,6 +117,15 @@ export const INTERFACE_TYPE = {
   StoreRegisterInteractor: Symbol.for("StoreRegisterInteractor"),
   StoreRegisterController: Symbol.for("StoreRegisterController"),
 
+  // hot kitchen store
+  HotKitchenStoreRepository: Symbol.for("HotKitchenStoreRepository"),
+  HotKitchenStoreInteractor: Symbol.for("HotKitchenStoreInteractor"),
+  HotKitchenStoreController: Symbol.for("HotKitchenStoreController"),
+  // store transfer
+  StoreTransferRepository: Symbol.for("StoreTransferRepository"),
+  StoreTransferInteractor: Symbol.for("StoreTransferInteractor"),
+  StoreTransferController: Symbol.for("StoreTransferController"),
+
   // Units
   UnitRepository: Symbol.for("UnitRepository"),
   UnitInteractor: Symbol.for("UnitInteractor"),

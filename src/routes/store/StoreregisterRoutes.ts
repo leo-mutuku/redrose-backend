@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Container } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
-import { StoreRegisterInteractor } from "../../interactors/store/StoreregisterInteractor";
+import { StoreRegisterInteractor } from "../../interactors/store/StoreRegisterInteractor";
 import { IStoreRegisterInteractor } from "../../interfaces/store/IStoreRegisterInteractor";
 import { StoreRegisterController } from "../../controllers/store/StoreregisterController";
 import { IStoreRegisterRepository } from "../../interfaces/store/IStoreRegisterRepository";
