@@ -28,14 +28,20 @@ let CashierRegisterRepository = class CashierRegisterRepository {
     }
     // Create a new cashier register record
     createCashierRegister(_a) {
-        return __awaiter(this, arguments, void 0, function* ({}) {
+        return __awaiter(this, arguments, void 0, function* ({ staff_id, balance, pin, created_by }) {
             try {
                 const query = `
-                INSERT INTO cashier_register (register_number, cashier_id, opening_balance, status, created_by)
-                VALUES ($1, $2, $3, $4, $5)
-                RETURNING cashier_register_id, register_number, cashier_id, opening_balance, status, created_by, created_at
+                INSERT INTO sales_cashiers (staff_id,
+    balance,
+      pin ,
+    created_by)
+                VALUES ($1, $2, $3, $4 )
+                RETURNING sales_cashier_id, staff_id,  balance, created_by, created_at
             `;
-                const values = [];
+                const values = [staff_id,
+                    balance,
+                    pin,
+                    created_by];
                 const result = yield this.client.query(query, values);
                 return result.rows[0];
             }
@@ -49,8 +55,10 @@ let CashierRegisterRepository = class CashierRegisterRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-                SELECT cashier_register_id, register_number, cashier_id, opening_balance, status, created_by, created_at
-                FROM cashier_register
+                 SELECT  sc.sales_cashier_id, sc.balance, sc.created_by, sc.created_at,
+                s.first_name || ''||  s.last_name as cashier_name
+                FROM sales_cashiers sc
+                inner join staff s on s.staff_id = sc.staff_id
                 LIMIT $1 OFFSET $2
             `;
                 const values = [limit, offset];
@@ -67,9 +75,11 @@ let CashierRegisterRepository = class CashierRegisterRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-                SELECT cashier_register_id, register_number, cashier_id, opening_balance, status, created_by, created_at
-                FROM cashier_register
-                WHERE cashier_register_id = $1
+                SELECT  sc.sales_cashier_id, sc.balance, sc.created_by, sc.created_at,
+                s.first_name || ''||  s.last_name as cashier_name
+                FROM sales_cashiers sc
+                inner join staff s on s.staff_id = sc.staff_id
+                WHERE sales_cashier_id = $1
             `;
                 const values = [id];
                 const result = yield this.client.query(query, values);
@@ -87,7 +97,7 @@ let CashierRegisterRepository = class CashierRegisterRepository {
     updateCashierRegister(id, cashierRegister) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let query = `UPDATE cashier_register SET `;
+                let query = `UPDATE sales_cashiers SET `;
                 const values = [];
                 let setClauses = [];
                 // Dynamically build the SET clause and values array
@@ -99,8 +109,8 @@ let CashierRegisterRepository = class CashierRegisterRepository {
                     throw new AppError_1.AppError('No fields to update', 400);
                 }
                 query += setClauses.join(', ');
-                query += ` WHERE cashier_register_id = $${values.length + 1} RETURNING 
-                cashier_register_id, register_number, cashier_id, opening_balance, status, created_by, created_at`;
+                query += ` WHERE sales_cashier_id = $${values.length + 1} RETURNING 
+                sales_cashier_id, balance,  created_by, created_at`;
                 values.push(id);
                 const result = yield this.client.query(query, values);
                 if (result.rows.length === 0) {
