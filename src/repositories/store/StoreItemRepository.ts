@@ -73,10 +73,10 @@ LEFT JOIN item_register ir ON ir.item_id = si.item_id
 LEFT JOIN item_category ic ON ic.category_id = si.item_category
 LEFT JOIN store_register sr ON sr.store_id = si.store_id
 LEFT JOIN item_unit iu ON iu.unit_id = si.item_unit
-LIMIT $1 OFFSET $2;
+
             `;
-            const values = [limit, offset];
-            const result = await this.client.query(query, values);
+
+            const result = await this.client.query(query);
 
             return result.rows;
         } catch (error) {

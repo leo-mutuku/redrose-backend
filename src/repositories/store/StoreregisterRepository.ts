@@ -38,10 +38,10 @@ export class StoreRegisterRepository implements IStoreRegisterRepository {
                 SELECT store_id, store_name, location,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM store_register
-                LIMIT $1 OFFSET $2
+              ORDER BY created_at DESC
             `;
-            const values = [limit, offset];
-            const result = await this.client.query(query, values);
+
+            const result = await this.client.query(query);
 
             return result.rows;
         } catch (error) {

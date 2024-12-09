@@ -15,8 +15,7 @@ export class MenuRegisterRepository implements IMenuRegisterRepository {
 
     async createMenuRegister({ name, description, created_by }: MenuRegister): Promise<MenuRegister> {
         try {
-            const query = `
-                INSERT INTO menu_register (name, description, created_by )
+            const query = `INSERT INTO menu_register (name, description, created_by )
                 VALUES ($1, $2, $3)
                 RETURNING menu_register_id, name, description, created_by,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
@@ -32,14 +31,14 @@ export class MenuRegisterRepository implements IMenuRegisterRepository {
 
     async getMenuRegisters(limit: number, offset: number): Promise<MenuRegister[]> {
         try {
-            const query = `
-                SELECT menu_register_id, name, description, created_by,
+            const query = `SELECT menu_register_id, name, description, created_by,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM menu_register
-                LIMIT $1 OFFSET $2
+                ORDER BY created_at DESC
+              
             `;
-            const values = [limit, offset];
-            const result = await this.client.query(query, values);
+
+            const result = await this.client.query(query);
 
             return result.rows;
         } catch (error) {
