@@ -12,46 +12,87 @@ export class SalesOrderRepository implements ISalesOrderRepository {
     }
     // Create a new sales order
     async createSalesOrder({
-        order_items
+        order_items,
     }: SalesOrder): Promise<SalesOrder> {
         try {
-            // prepare store item json
-            const qry = `select * from kitchen_setup where menu_item_id  = $1`
-            const v1 = [order_items[0].menu_item_id]
-            const r1 = await this.client.query(qry, v1)
-            let menu_json = JSON.stringify(order_items)
-            let setupid = r1.rows[0].kitchen_setup_id
-            let qry2 = 'select * from kitchen_ingredients where ingredients_id =$1'
-            let v2 = [setupid]
-            let r2 = await this.client.query(qry2, v2)
-            let store = r2.rows;
-            const updatedData = store.map(item => ({
-                ...item,
-                quantity: (parseFloat(item.quantity) * order_items[0].quantity).toFixed(2) // Multiply and format
-            }));
-            let store_json = JSON.stringify(updatedData);
-            let result1;
-            (async () => {
-                try {
-                    const result = await this.client.query(
-                        `SELECT * FROM sales_order_processing($1::JSON, $2::JSON);`,
-                        [menu_json, store_json]
-                    );
-                    console.log('Function executed successfully:', result.rows);
+            // Prepare store item JSON
+            const qry = `SELECT * FROM kitchen_setup WHERE menu_item_id = $1`;
+            const v1 = [order_items[0].menu_item_id];
+            const r1 = await this.client.query(qry, v1);
 
-                    result1 = result.rows
-                } catch (error) {
-                    console.error('Error executing function:', error);
+            const menu_json = JSON.stringify(order_items);
+
+            // Get array of setup IDs
+            const setupids: number[] = [];
+            if (order_items) {
+                for (const item of order_items) {
+                    setupids.push(item.menu_item_id);
                 }
-            })();
+            }
+            console.log(setupids);
 
+            const setupid = r1.rows[0]?.kitchen_setup_id;
+            if (!setupid) {
+                throw new AppError('Kitchen setup ID not found.', 404);
+            }
 
-            return result1
+            // Fetch ingredients for the setup
+            type StoreObject = {
+                quantity: number,
+                store_item_id: number,
+                source_type: string
 
+            }
+            let stores: StoreObject[] = []
+            for (let item of setupids) {
+                console.log(item, "item")
+                const qry2 = `SELECT * FROM kitchen_setup WHERE menu_item_id = $1`;
+                const v2 = [item];
+                const r2 = await this.client.query(qry2, v2);
+                let ingredients_id = parseInt(r2.rows[0].kitchen_setup_id)
+                console.log(ingredients_id, "ing")
+                // get ingredients seting , pick, store_item, quantity and source_type
+                let qry3 = `select * from kitchen_ingredients where ingredients_id = $1`
+                let v3 = [ingredients_id]
+                let r3 = await this.client.query(qry3, v3)
+                if (!r3.rows.length) {
+                    throw new AppError("Error in ingredients setup, one of the item in the menu is not set well", 500)
+                }
+                for (let item of r3.rows) {
+
+                }
+
+                console.log(stores, "stores")
+            }
+
+            if (!stores.length) {
+                throw new AppError("Store item in one of tour chosen meal is not setup properly", 500)
+            };
+            const updatedData = stores.map((item) => ({
+                ...item,
+                quantity: (item.quantity * order_items[0].quantity).toFixed(4), // Multiply and format
+            }));
+
+            const store_json = JSON.stringify(updatedData);
+
+            // Call the sales order processing function
+            const result = await this.client.query(
+                `SELECT * FROM sales_order_processing($1::JSON, $2::JSON);`,
+                [menu_json, store_json]
+            );
+
+            // Build and return the result
+            const salesOrder: SalesOrder = {
+                order_items,
+                // Include additional properties if necessary
+            };
+
+            return salesOrder;
         } catch (error) {
             throw new AppError('Error creating sales order: ' + error, 500);
         }
     }
+
 
     // Get a list of sales orders with pagination
     async getSalesOrders(limit: number, offset: number): Promise<SalesOrder[]> {
