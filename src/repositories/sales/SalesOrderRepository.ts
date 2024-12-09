@@ -2,33 +2,24 @@ import { injectable } from "inversify";
 import { pgClient } from "../../dbConnection";
 import { Pool } from "pg";
 import { AppError } from "../../utils/AppError";
-
 import { SalesOrder } from "../../entities/sales/SalesOrder";
 import { ISalesOrderRepository } from "../../interfaces/sales/ISalesOrderRepository";
-
 @injectable()
 export class SalesOrderRepository implements ISalesOrderRepository {
     private client: Pool;
-
     constructor() {
         this.client = pgClient();
     }
-
     // Create a new sales order
     async createSalesOrder({
         order_items
-
     }: SalesOrder): Promise<SalesOrder> {
         try {
-
-
             // prepare store item json
-
             const qry = `select * from kitchen_setup where menu_item_id  = $1`
             const v1 = [order_items[0].menu_item_id]
             const r1 = await this.client.query(qry, v1)
             let menu_json = JSON.stringify(order_items)
-
             let setupid = r1.rows[0].kitchen_setup_id
             let qry2 = 'select * from kitchen_ingredients where ingredients_id =$1'
             let v2 = [setupid]
@@ -39,8 +30,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                 quantity: (parseFloat(item.quantity) * order_items[0].quantity).toFixed(2) // Multiply and format
             }));
             let store_json = JSON.stringify(updatedData);
-
-
+            let result1;
             (async () => {
                 try {
                     const result = await this.client.query(
@@ -48,20 +38,16 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                         [menu_json, store_json]
                     );
                     console.log('Function executed successfully:', result.rows);
+
+                    result1 = result.rows
                 } catch (error) {
                     console.error('Error executing function:', error);
                 }
             })();
 
-            const query = `
-                INSERT INTO sales_order (customer_id, order_date, total_amount, status, created_by)
-                VALUES ($1, $2, $3, $4, $5)
-                RETURNING sales_order_id, customer_id, order_date, total_amount, status, created_by, created_at
-            `;
-            const values = [];
-            const result = await this.client.query(query, values);
 
-            return result.rows[0];
+            return result1
+
         } catch (error) {
             throw new AppError('Error creating sales order: ' + error, 500);
         }
