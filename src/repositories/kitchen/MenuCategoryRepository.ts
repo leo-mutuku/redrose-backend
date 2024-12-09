@@ -5,6 +5,7 @@ import { AppError } from "../../utils/AppError";
 import { IMenuCategoryRepository } from "../../interfaces/kitchen/IMenuCategoryRepository";
 import { MenuCategory } from "../../entities/kitchen/Menucategory";
 
+
 @injectable()
 export class MenuCategoryRepository implements IMenuCategoryRepository {
     private client: Pool;
@@ -33,13 +34,37 @@ export class MenuCategoryRepository implements IMenuCategoryRepository {
     async getMenuCategories(limit: number, offset: number): Promise<MenuCategory[]> {
         try {
             const query = `
-                SELECT menu_category_id, category_name, description,category_abbr,
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM menu_category
-                LIMIT $1 OFFSET $2
+                SELECT 
+    mc.menu_category_id, 
+    mc.category_name, 
+    mc.description, 
+    mc.category_abbr,
+    TO_CHAR(mc.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
+    COALESCE(
+        JSON_AGG(
+            JSONB_BUILD_OBJECT(
+                'menu_item_id', mi.menu_item_id,
+                'item_name', ir.item_name,
+                'price', mi.price
+            )
+        ) FILTER (WHERE mi.menu_item_id IS NOT NULL), 
+        '[]'
+    ) AS menu_items
+FROM 
+    menu_category mc
+LEFT JOIN 
+    menu_item mi 
+ON 
+    mc.menu_category_id = mi.menu_category_id
+LEFT JOIN 
+    item_register ir
+ON 
+    mi.menu_register_id = ir.item_id
+GROUP BY 
+    mc.menu_category_id
             `;
-            const values = [limit, offset];
-            const result = await this.client.query(query, values);
+
+            const result = await this.client.query(query);
 
             return result.rows;
         } catch (error) {
@@ -47,13 +72,39 @@ export class MenuCategoryRepository implements IMenuCategoryRepository {
         }
     }
 
+
     async getMenuCategory(id: number): Promise<MenuCategory> {
         try {
             const query = `
-                SELECT menu_category_id, category_name, description,category_abbr,
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM menu_category
-                WHERE menu_category_id = $1
+                SELECT 
+    mc.menu_category_id, 
+    mc.category_name, 
+    mc.description, 
+    mc.category_abbr,
+    TO_CHAR(mc.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
+    COALESCE(
+        JSON_AGG(
+            JSONB_BUILD_OBJECT(
+                'menu_item_id', mi.menu_item_id,
+                'item_name', ir.item_name,
+                'price', mi.price
+            )
+        ) FILTER (WHERE mi.menu_item_id IS NOT NULL), 
+        '[]'
+    ) AS menu_items
+FROM 
+    menu_category mc
+LEFT JOIN 
+    menu_item mi 
+ON 
+    mc.menu_category_id = mi.menu_category_id
+LEFT JOIN 
+    item_register ir
+ON 
+    mi.menu_register_id = ir.item_id
+GROUP BY 
+    mc.menu_category_id;
+                WHERE mc.menu_category_id = $1
             `;
             const values = [id];
             const result = await this.client.query(query, values);
@@ -67,6 +118,7 @@ export class MenuCategoryRepository implements IMenuCategoryRepository {
             throw new AppError('Error fetching menu category: ' + error, 500);
         }
     }
+
 
     async updateMenuCategory(id: number, menuCategory: Partial<MenuCategory>): Promise<MenuCategory> {
         try {
