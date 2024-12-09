@@ -109,6 +109,8 @@ export class StoreIssueRepository implements IStoreIssueRepository {
                     'store_item_id', sil.store_item_id,
                     'item_id', si.item_id,
                     'item_name', ir.item_name,
+                    'initial_value', sil.initial_value,
+                    'final_value', sil.final_value,
                     'issue_quantity', sil.issue_quantity
                 )
             ) AS issue_lines
@@ -164,6 +166,8 @@ SELECT
             'store_item_id', sil.store_item_id,
             'item_id', si.item_id,
             'item_name', ir.item_name,
+            'initial_value', sil.initial_value,
+                    'final_value', sil.final_value,
             'issue_quantity', sil.issue_quantity
         )
     ) AS issue_lines

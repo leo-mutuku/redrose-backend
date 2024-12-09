@@ -13,19 +13,25 @@ export class StoreTransferRepository implements IStoreTransferRepository {
         this.client = pgClient();
     }
 
-    async createStoreTransfer({ }: StoreTransfer): Promise<StoreTransfer> {
+    async createStoreTransfer({ store_item_id, quantity }: StoreTransfer): Promise<StoreTransfer> {
         try {
-            const query = `
-                INSERT INTO store_transfer (transfer_date, source_store_id, destination_store_id, item_name, quantity, transferred_by)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING transfer_id, transfer_date, source_store_id, destination_store_id, item_name, quantity, transferred_by, 
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-            `;
-            const values = [];
-            const result = await this.client.query(query, values);
+            // Prepare JSON payload
+            const store_item_json = JSON.stringify([{ store_item_id, quantity }]);
+            console.log('Store item JSON:', store_item_json);
 
-            return result.rows[0];
+            // Call the stored procedure directly
+            const query = `
+                select * from  store_transfer_procedure($1::JSON);
+            `;
+            const values = [store_item_json];
+
+            // Execute the query
+            await this.client.query(query, values);
+
+            // Return the transferred data or confirmation
+            return { store_item_id, quantity };
         } catch (error) {
+            console.error('Error during store transfer:', error);
             throw new AppError('Error creating store transfer record: ' + error, 500);
         }
     }
