@@ -48,7 +48,7 @@ export class WaitStaffRegisterRepository implements IWaitStaffRegisterRepository
         try {
             const query = `
                         SELECT 
-                ws.waitstaff_id
+                ws.waitstaff_id,
                 ws.staff_id, 
                 ws.balance,  
                 ws.created_by, 
@@ -76,7 +76,7 @@ export class WaitStaffRegisterRepository implements IWaitStaffRegisterRepository
         try {
             const query = `
                  SELECT 
-    ws.waitstaff_id
+    ws.waitstaff_id,
     ws.staff_id, 
     ws.balance,  
     ws.created_by, 
