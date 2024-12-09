@@ -22,6 +22,7 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
                 throw new AppError('Menu item ID is required', 400);
             }
 
+
             if (!ingredients_value) {
                 throw new AppError('Ingredient value is required', 400);
             }
@@ -44,8 +45,8 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
             const ingredients_id = result.rows[0].kitchen_setup_id;
             // insert kitchen ingredients
             for (let item of ingredients_value) {
-                const kitchen_ingredients_query = `insert into kitchen_ingredients (ingredients_id, store_item_id, quantity) values ($1, $2, $3)`;
-                const kitchen_ingredients_values = [ingredients_id, item.store_item_id, item.quantity];
+                const kitchen_ingredients_query = `insert into kitchen_ingredients (ingredients_id, store_item_id, quantity, source_type) values ($1, $2, $3,$4)`;
+                const kitchen_ingredients_values = [ingredients_id, item.store_item_id, item.quantity, item.source_type];
                 await this.client.query(kitchen_ingredients_query, kitchen_ingredients_values);
 
             }
@@ -58,6 +59,7 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
 
     async getKitchenSetups(limit: number, offset: number): Promise<KitchenSetup[]> {
         try {
+
             const query = `
                            SELECT 
     ks.kitchen_setup_id, 

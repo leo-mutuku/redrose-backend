@@ -13,15 +13,15 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
         this.client = pgClient();
     }
 
-    async createHotKitchenStore({ item_id, quantity }: HotKitchenStore): Promise<HotKitchenStore> {
+    async createHotKitchenStore({ item_id, quantity, store_item_id }: HotKitchenStore): Promise<HotKitchenStore> {
         try {
             const query = `
-                INSERT INTO hot_kitchen_store (item_id, quantity)
-                VALUES ($1, $2)
-                RETURNING hot_kitchen_store_id, item_id, quantity, 
+                INSERT INTO hot_kitchen_store (item_id, quantity, store_item_id)
+                VALUES ($1, $2, $3)
+                RETURNING hot_kitchen_store_id, item_id, quantity, store_item_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [item_id, quantity];
+            const values = [item_id, quantity, store_item_id];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
@@ -33,7 +33,7 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
     async getHotKitchenStores(limit: number, offset: number): Promise<HotKitchenStore[]> {
         try {
             const query = `
-                SELECT hks.hot_kitchen_store_id, hks.item_id, ir.item_name, hks.quantity, 
+                SELECT hks.hot_kitchen_store_id, hks.item_id, ir.item_name, hks.quantity, hks.store_item_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM hot_kitchen_store as hks
                 inner join item_register as ir on hks.item_id = ir.item_id
@@ -51,7 +51,7 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
     async getHotKitchenStore(id: number): Promise<HotKitchenStore> {
         try {
             const query = `
-                SELECT hks.hot_kitchen_store_id, hks.item_id, ir.item_name, hks.quantity, 
+                SELECT hks.hot_kitchen_store_id, hks.item_id, ir.item_name, hks.quantity, hks.store_item_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM hot_kitchen_store as hks
                 inner join item_register as ir on hks.item_id = ir.item_id
@@ -88,7 +88,7 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
 
             query += setClauses.join(', ');
             query += ` WHERE hot_kitchen_store_id = $${values.length + 1} RETURNING 
-                item_id, quantity,  
+                item_id, quantity,  store_item_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
             values.push(id);

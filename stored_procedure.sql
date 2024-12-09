@@ -114,6 +114,7 @@ DECLARE
     item JSON;
     pl_menu_item_id INT;
     pl_qty NUMERIC(15,2);
+    pl_source_type VARCHAR(200);
     current_quantity NUMERIC(15,2);
     new_quantity NUMERIC(15,2);
 BEGIN
@@ -123,27 +124,31 @@ BEGIN
         ORDER BY (item->>'menu_item_id')::INT  -- Sort by menu_item_id
     LOOP
         pl_menu_item_id := (item->>'menu_item_id')::INT;
+        pl_source_type :=(item->>'source_type')::VARCHAR;
         pl_qty := (item->>'quantity')::NUMERIC;
 
-        FOR current_quantity IN
-            SELECT mi.quantity
-            FROM menu_item mi
-            WHERE mi.menu_item_id = pl_menu_item_id
+        -- Select and update the quantity in a single statement
+        -- This uses a subquery to lock and select the current quantity, then updates it
+        WITH current_data AS (
+            SELECT quantity
+            FROM menu_item
+            WHERE menu_item_id = pl_menu_item_id
             FOR UPDATE
-        LOOP
-            IF pl_qty < 0 THEN
-                RAISE EXCEPTION 'Quantity for menu_item_id % negative update not allowed', pl_menu_item_id;
-            ELSE
-                new_quantity := current_quantity + pl_qty;
+        )
+        UPDATE menu_item
+        SET quantity = current_data.quantity + pl_qty
+        FROM current_data
+        WHERE menu_item.menu_item_id = pl_menu_item_id
+        RETURNING menu_item.quantity AS new_quantity, current_data.quantity AS current_quantity;
 
-                UPDATE menu_item
-                SET quantity = new_quantity
-                WHERE menu_item_id = pl_menu_item_id;
-
-                INSERT INTO menu_tracking (menu_item_id, current_quantity, new_quantity, reason)
-                VALUES (pl_menu_item_id, current_quantity, new_quantity, 'Food processing');
-            END IF;
-        END LOOP;
+        -- Insert into tracking after updating
+        INSERT INTO menu_tracking (menu_item_id, current_quantity, new_quantity, reason)
+        VALUES (pl_menu_item_id, current_quantity, new_quantity, 'Food processing');
+        
+        -- Raise an exception if quantity is negative
+        IF pl_qty < 0 THEN
+            RAISE EXCEPTION 'Quantity for menu_item_id % negative update not allowed', pl_menu_item_id;
+        END IF;
     END LOOP;
 END;
 $$ LANGUAGE plpgsql;
@@ -206,6 +211,79 @@ $$ LANGUAGE plpgsql;
 SELECT update_menu_item_quantities('[{"menu_item_id": 9, "quantity": 100}]':: json);
 
 
+
+
+  
+
+
+------- Store transfer
+CREATE OR REPLACE FUNCTION store_transfer_procedure(
+    store_item JSON
+)
+RETURNS VOID AS $$
+DECLARE
+    item JSON;
+    pl_store_item_id INT; -- Variable to store store_item_id
+    pl_qty NUMERIC(15, 2); -- Variable to store quantity
+    s_current_quantity NUMERIC(15, 2); -- Current quantity in store_item
+    s_new_quantity NUMERIC(15, 2); -- New quantity in store_item
+    h_current_quantity NUMERIC(15, 2); -- Current quantity in hot_kitchen_store
+    h_new_quantity NUMERIC(15, 2); -- New quantity in hot_kitchen_store
+BEGIN
+    -- Loop through the JSON array to process each item
+    FOR item IN
+        SELECT * FROM json_array_elements(store_item)
+    LOOP
+        -- Extract store_item_id and quantity
+        pl_store_item_id := (item ->> 'store_item_id')::INT;
+        pl_qty := (item ->> 'quantity')::NUMERIC;
+
+        -- Lock and check quantity in store_item
+        SELECT quantity
+        INTO s_current_quantity
+        FROM store_item
+        WHERE store_item_id = pl_store_item_id
+        FOR UPDATE;
+
+        -- Check if there is enough quantity in store_item
+        IF s_current_quantity - pl_qty < 0 THEN
+            RAISE EXCEPTION 'Quantity for store_item_id % in store_item would be negative', pl_store_item_id;
+        ELSE
+            -- Update store_item
+            s_new_quantity := s_current_quantity - pl_qty;
+            UPDATE store_item
+            SET quantity = s_new_quantity
+            WHERE store_item_id = pl_store_item_id;
+
+            -- Log in item_tracking
+            INSERT INTO item_tracking(store_item_id, current_quantity, new_quantity, reason)
+            VALUES (pl_store_item_id, s_current_quantity, s_new_quantity, 'Transfer to hot kitchen');
+        END IF;
+
+        -- Lock and update hot_kitchen_store
+        SELECT quantity
+        INTO h_current_quantity
+        FROM hot_kitchen_store
+        WHERE store_item_id = pl_store_item_id
+        FOR UPDATE;
+
+        -- Update or insert into hot_kitchen_store
+        h_new_quantity := COALESCE(h_current_quantity, 0) + pl_qty;
+        IF h_current_quantity IS NULL THEN
+            INSERT INTO hot_kitchen_store (store_item_id, quantity)
+            VALUES (pl_store_item_id, pl_qty);
+        ELSE
+            UPDATE hot_kitchen_store
+            SET quantity = h_new_quantity
+            WHERE store_item_id = pl_store_item_id;
+        END IF;
+
+        -- Log in hot_kitchen_tracking
+        INSERT INTO hot_kitchen_tracking(store_item_id, current_quantity, new_quantity, reason)
+        VALUES (pl_store_item_id, COALESCE(h_current_quantity, 0), h_new_quantity, 'Transfer from store');
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
 
 
 
@@ -316,6 +394,119 @@ BEGIN
         v_new_balance,
         NOW()
     );
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+-----order processing
+
+CREATE OR REPLACE FUNCTION sales_order_processing(
+    menu_items JSON,      -- First JSON array for menu items
+    store_items JSON      -- Second JSON array for store items
+)
+RETURNS VOID AS $$
+DECLARE
+    item JSON;
+    pl_menu_item_id INT;
+    pl_menu_qty NUMERIC(15, 2);
+    current_quantity NUMERIC(15, 2);
+    new_quantity NUMERIC(15, 2);
+
+    pl_store_item_id INT;  -- Variable for store item ID
+    pl_source_type VARCHAR(200); -- Variable for source type (MAIN_STORE or HOT_KITCHEN)
+    pl_store_qty NUMERIC(15, 2); -- Store quantity to subtract
+    store_current_quantity NUMERIC(15, 2);  -- Current quantity in store
+    store_new_quantity NUMERIC(15, 2);      -- New quantity after update
+BEGIN
+    -- Process menu items
+    FOR item IN
+        SELECT * FROM json_array_elements(menu_items)
+    LOOP
+        pl_menu_item_id := (item->>'menu_item_id')::INT;
+        pl_menu_qty := (item->>'quantity')::NUMERIC;
+
+        -- Lock the row and update the quantity for menu_item
+        WITH current_data AS (
+            SELECT quantity
+            FROM menu_item
+            WHERE menu_item_id = pl_menu_item_id
+            FOR UPDATE
+        )
+        UPDATE menu_item
+        SET quantity = current_data.quantity + pl_menu_qty
+        FROM current_data
+        WHERE menu_item.menu_item_id = pl_menu_item_id
+        RETURNING menu_item.quantity INTO new_quantity;
+
+        SELECT quantity INTO current_quantity FROM current_data;
+
+        -- Insert into menu tracking
+        INSERT INTO menu_tracking (menu_item_id, current_quantity, new_quantity, reason)
+        VALUES (pl_menu_item_id, current_quantity, new_quantity, 'Sales Order processing');
+    END LOOP;
+
+    -- Process store items
+    FOR item IN
+        SELECT * FROM json_array_elements(store_items)
+    LOOP
+        pl_store_item_id := (item->>'store_item_id')::INT;
+        pl_source_type := (item->>'source_type')::VARCHAR;
+        pl_store_qty := (item->>'quantity')::NUMERIC;
+
+        IF pl_source_type = 'MAIN_STORE' THEN
+            -- Lock and update MAIN_STORE items
+            WITH store_current_data AS (
+                SELECT quantity
+                FROM store_item
+                WHERE store_item_id = pl_store_item_id
+                FOR UPDATE
+            )
+            UPDATE store_item
+            SET quantity = store_current_data.quantity - pl_store_qty
+            FROM store_current_data
+            WHERE store_item.store_item_id = pl_store_item_id
+            RETURNING store_item.quantity INTO store_new_quantity;
+
+            SELECT quantity INTO store_current_quantity FROM store_current_data;
+
+            -- Insert into item tracking
+            INSERT INTO item_tracking (store_item_id, current_quantity, new_quantity, reason)
+            VALUES (pl_store_item_id, store_current_quantity, store_new_quantity, 'Sales order processing');
+
+            -- Raise exception if quantity goes negative
+            IF store_current_quantity - pl_store_qty < 0 THEN
+                RAISE EXCEPTION 'Quantity for store_item_id % would be negative', pl_store_item_id;
+            END IF;
+        END IF;
+
+        IF pl_source_type = 'HOT_KITCHEN' THEN
+            -- Lock and update HOT_KITCHEN items
+            WITH store_current_data AS (
+                SELECT quantity
+                FROM hot_kitchen_store
+                WHERE store_item_id = pl_store_item_id
+                FOR UPDATE
+            )
+            UPDATE hot_kitchen_store
+            SET quantity = store_current_data.quantity - pl_store_qty
+            FROM store_current_data
+            WHERE hot_kitchen_store.store_item_id = pl_store_item_id
+            RETURNING hot_kitchen_store.quantity INTO store_new_quantity;
+
+            SELECT quantity INTO store_current_quantity FROM store_current_data;
+
+            -- Insert into hot kitchen tracking
+            INSERT INTO hot_kitchen_tracking (store_item_id, current_quantity, new_quantity, reason)
+            VALUES (pl_store_item_id, store_current_quantity, store_new_quantity, 'Sales order processing');
+
+            -- Raise exception if quantity goes negative
+            IF store_current_quantity - pl_store_qty < 0 THEN
+                RAISE EXCEPTION 'Quantity for store_item_id % would be negative', pl_store_item_id;
+            END IF;
+        END IF;
+    END LOOP;
 
 END;
 $$ LANGUAGE plpgsql;

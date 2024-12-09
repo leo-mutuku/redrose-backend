@@ -4,6 +4,7 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler"; // Adjust path
 import routers from "./routes";
 import cors from "cors";
+import { pgClient } from "./dbConnection";
 const PORT = process.env.PORT || 9000;
 const app = express();
 app.use(express.json());
@@ -35,4 +36,17 @@ app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log("Listening to: ", PORT);
+});
+
+
+// Graceful shutdown logic
+process.on("SIGTERM", async () => {
+  console.log("Shutting down...");
+  try {
+    await pgClient().end();
+    console.log("Database connection pool closed.");
+  } catch (error) {
+    console.error("Error during shutdown:", error);
+  }
+  process.exit(0);
 });

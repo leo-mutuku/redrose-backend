@@ -16,9 +16,43 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
     // Create a new sales order
     async createSalesOrder({
+        order_items
 
     }: SalesOrder): Promise<SalesOrder> {
         try {
+
+
+            // prepare store item json
+
+            const qry = `select * from kitchen_setup where menu_item_id  = $1`
+            const v1 = [order_items[0].menu_item_id]
+            const r1 = await this.client.query(qry, v1)
+            let menu_json = JSON.stringify(order_items)
+
+            let setupid = r1.rows[0].kitchen_setup_id
+            let qry2 = 'select * from kitchen_ingredients where ingredients_id =$1'
+            let v2 = [setupid]
+            let r2 = await this.client.query(qry2, v2)
+            let store = r2.rows;
+            const updatedData = store.map(item => ({
+                ...item,
+                quantity: (parseFloat(item.quantity) * order_items[0].quantity).toFixed(2) // Multiply and format
+            }));
+            let store_json = JSON.stringify(updatedData);
+
+
+            (async () => {
+                try {
+                    const result = await this.client.query(
+                        `SELECT * FROM sales_order_processing($1::JSON, $2::JSON);`,
+                        [menu_json, store_json]
+                    );
+                    console.log('Function executed successfully:', result.rows);
+                } catch (error) {
+                    console.error('Error executing function:', error);
+                }
+            })();
+
             const query = `
                 INSERT INTO sales_order (customer_id, order_date, total_amount, status, created_by)
                 VALUES ($1, $2, $3, $4, $5)
