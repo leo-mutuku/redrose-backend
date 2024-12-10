@@ -123,6 +123,26 @@ LIMIT 1
         }
     }
 
+    async itemtracking() {
+        const query = `SELECT 
+    t.store_item_id,
+    ir.item_name,
+    ir.item_id,
+    t.current_quantity,
+    t.new_quantity,
+	t.reason
+FROM 
+    item_tracking t
+LEFT JOIN 
+    store_item s ON t.store_item_id = s.store_item_id
+LEFT JOIN 
+    item_register ir ON s.item_id = ir.item_id
+
+ORDER BY 
+    t.item_tracking_id DESC;  
+`
+
+    }
     // Update a store item by its ID
     async updateStoreItem(id: number, item: Partial<StoreItem>): Promise<StoreItem> {
         try {

@@ -54,10 +54,10 @@ FROM item_register ir
 
 LEFT JOIN users u ON ir.created_by = u.user_id
 
-LIMIT $1 OFFSET $2
+
             `
-            const values = [limit, offset];
-            const result = await this.client.query(query, values);
+            // const values = [limit, offset];
+            const result = await this.client.query(query);
 
             return result.rows;
         } catch (error) {

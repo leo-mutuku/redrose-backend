@@ -75,6 +75,30 @@ export class MenuItemRepository implements IMenuItemRepository {
         }
     }
 
+    async menuTracking() {
+        try {
+            let query = `  SELECT 
+    m.menu_item_id,
+    mr.name,
+    mr.menu_register_id,
+    m.current_quantity,
+    m.new_quantity
+FROM 
+    menu_tracking m
+LEFT JOIN 
+    menu_item mi ON m.menu_item_id = mi.menu_item_id  -- Corrected join condition
+LEFT JOIN 
+    menu_register mr ON mi.menu_register_id = mr.menu_register_id  -- Corrected join condition
+ORDER BY 
+    m.menu_tracking_id DESC`
+            const res = await this.client.query(query)
+            console.log(res.rows)
+
+        } catch (error) {
+            throw new AppError("Error" + error, 500)
+
+        }
+    }
     async updateMenuItem(id: number, menuItem: Partial<MenuItem>): Promise<MenuItem> {
         try {
             let query = `UPDATE menu_item SET `;

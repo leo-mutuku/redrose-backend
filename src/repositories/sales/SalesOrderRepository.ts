@@ -19,6 +19,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
             const qry = `SELECT * FROM kitchen_setup WHERE menu_item_id = $1`;
             const v1 = [order_items[0].menu_item_id];
             const r1 = await this.client.query(qry, v1);
+            console.log(r1.rows[0]);
 
             const menu_json = JSON.stringify(order_items);
 
@@ -59,6 +60,13 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                     throw new AppError("Error in ingredients setup, one of the item in the menu is not set well", 500)
                 }
                 for (let item of r3.rows) {
+                    console.log(item, "item")
+                    stores.push({
+                        quantity: parseFloat(item.quantity),
+                        store_item_id: item.store_item_id,
+                        source_type: item.source_type
+                    })
+
 
                 }
 

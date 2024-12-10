@@ -70,6 +70,27 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
         }
     }
 
+    async kitchenTracking() {
+        try {
+            const qry = `SELECT 
+    ht.store_item_id,
+    ir.item_name,
+    ir.item_id,
+    ht.current_quantity,
+    ht.new_quantity,
+	ht.reason
+FROM 
+    hot_kitchen_tracking ht
+LEFT JOIN 
+    store_item si ON ht.store_item_id = si.store_item_id  -- Corrected join condition
+LEFT JOIN 
+    item_register ir ON si.item_id = ir.item_id  -- Corrected join condition
+ORDER BY 
+    ht.hot_kitchen_tracking_id DESC`
+        } catch (error) {
+
+        }
+    }
     async updateHotKitchenStore(id: number, store: Partial<HotKitchenStore>): Promise<HotKitchenStore> {
         try {
             let query = `UPDATE hot_kitchen_store SET `;
