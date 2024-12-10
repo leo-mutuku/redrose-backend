@@ -8,7 +8,7 @@ export class KitchenSetup {
 }
 
 type IngredientValue = {
-    store_item_id: number,
+    ingredients_id: number,
     quantity: number,
     source_type: 'MAIN_STORE' | 'HOT_KITCHEN',
 }

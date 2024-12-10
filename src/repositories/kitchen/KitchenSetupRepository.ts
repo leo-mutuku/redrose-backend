@@ -15,6 +15,7 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
     }
     async createKitchenSetup({ station_id, menu_item_id, ingredients_value }: KitchenSetup): Promise<KitchenSetup> {
         try {
+
             if (!station_id) {
                 throw new AppError('Station ID is required', 400);
             }
@@ -27,8 +28,11 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
                 throw new AppError('Ingredient value is required', 400);
             }
             // get menu name
+            console.log('Received ingredients_value:', ingredients_value);
+            const menu_register_query = `select mr.name from menu_register as mr
+            inner join menu_item as mi on mr.menu_register_id = mi.menu_register_id
+             where mi.menu_item_id = $1`;
 
-            const menu_register_query = `select name from menu_register where menu_register_id = $1`;
             const menu_register_values = [menu_item_id];
             const menu_register_result = await this.client.query(menu_register_query, menu_register_values);
             const menu_name = menu_register_result.rows[0].name;
@@ -42,11 +46,17 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
             const values = [station_id, menu_item_id, menu_name];
             const result = await this.client.query(query, values);
 
-            const ingredients_id = result.rows[0].kitchen_setup_id;
+            console.log(result.rows[0]);
+
+            const ingredients_id = parseInt(result.rows[0].kitchen_setup_id)
+            console.log(ingredients_id);
             // insert kitchen ingredients
             for (let item of ingredients_value) {
+
                 const kitchen_ingredients_query = `insert into kitchen_ingredients (ingredients_id, store_item_id, quantity, source_type) values ($1, $2, $3,$4)`;
-                const kitchen_ingredients_values = [ingredients_id, item.store_item_id, item.quantity, item.source_type];
+
+                const kitchen_ingredients_values = [ingredients_id, item.ingredients_id, item.quantity, item.source_type];
+
                 await this.client.query(kitchen_ingredients_query, kitchen_ingredients_values);
 
             }

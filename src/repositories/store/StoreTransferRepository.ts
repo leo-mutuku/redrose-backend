@@ -39,13 +39,25 @@ export class StoreTransferRepository implements IStoreTransferRepository {
     async getStoreTransfers(limit: number, offset: number): Promise<StoreTransfer[]> {
         try {
             const query = `
-                SELECT transfer_id, transfer_date, source_store_id, destination_store_id, item_name, quantity, transferred_by, 
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM store_transfer
-                LIMIT $1 OFFSET $2
+           SELECT 
+    t.store_item_id,
+    ir.item_name,
+    ir.item_id,
+    t.current_quantity,
+    t.new_quantity
+FROM 
+    item_tracking t
+LEFT JOIN 
+    store_item s ON t.store_item_id = s.store_item_id
+LEFT JOIN 
+    item_register ir ON s.item_id = ir.item_id
+WHERE 
+    t.reason = 'Transfer to hot kitchen'
+	order by t.item_tracking_id desc;
+
             `;
             const values = [limit, offset];
-            const result = await this.client.query(query, values);
+            const result = await this.client.query(query);
 
             return result.rows;
         } catch (error) {
