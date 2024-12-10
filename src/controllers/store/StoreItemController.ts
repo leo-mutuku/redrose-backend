@@ -55,4 +55,16 @@ export class StoreItemController {
             next(error);
         }
     }
+
+    async onGetItemtracking(req: Request, res: Response, next: NextFunction) {
+        try {
+
+
+        } catch (error) {
+            next(error)
+
+        }
+
+
+    }
 }
