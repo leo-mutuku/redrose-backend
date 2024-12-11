@@ -123,7 +123,7 @@ LIMIT 1
         }
     }
 
-    async itemtracking() {
+    async getItemtracking() {
         const query = `SELECT 
     t.store_item_id,
     ir.item_name,
@@ -141,6 +141,9 @@ LEFT JOIN
 ORDER BY 
     t.item_tracking_id DESC;  
 `
+
+        const result = await this.client.query(query)
+        return result.rows
 
     }
     // Update a store item by its ID

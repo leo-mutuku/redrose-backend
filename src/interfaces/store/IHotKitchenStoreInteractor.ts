@@ -3,4 +3,5 @@ export interface IHotKitchenStoreInteractor {
     getHotKitchenStore(id: number);
     updateHotKitchenStore(id: number, input: any);
     getHotKitchenStores(limit: number, offset: number);
+    getKitchenTracking();
 }

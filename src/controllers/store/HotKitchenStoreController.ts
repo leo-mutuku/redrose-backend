@@ -58,6 +58,13 @@ export class HotKitchenStoreController {
 
     async onKitchenTracking(req: Request, res: Response, next: NextFunction) {
         try {
+            const data = await this.interactor.getKitchenTracking();
+            res.status(200).json({
+                status: "success",
+                data: data,
+                message: "Kitchen tracking"
+
+            })
 
         } catch (error) {
             next(error)

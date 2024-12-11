@@ -52,6 +52,19 @@ export class StoreItemInteractor implements IStoreItemInteractor {
             throw new Error('Failed to update store item. Please try again later.');
         }
     }
+    async getItemtracking() {
+        try {
+            const result = await this.repository.getItemtracking()
+            return result
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw new AppError(`Error updating store item in StoreItemInteractor: ${error.message}`, error.statusCode || 500);
+            }
+            throw new Error('Failed to update store item. Please try again later.');
+
+        }
+    }
 
     async getStoreItems(limit: number, offset: number): Promise<any> {
         try {

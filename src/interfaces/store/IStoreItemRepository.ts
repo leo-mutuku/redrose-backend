@@ -13,4 +13,7 @@ export interface IStoreItemRepository {
 
     // Method to update a store item by its ID
     updateStoreItem(id: number, item: Partial<StoreItem>): Promise<StoreItem>;
+
+
+    getItemtracking();
 }

@@ -70,7 +70,7 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
         }
     }
 
-    async kitchenTracking() {
+    async getKitchenTracking() {
         try {
             const qry = `SELECT 
     ht.store_item_id,
@@ -87,6 +87,9 @@ LEFT JOIN
     item_register ir ON si.item_id = ir.item_id  -- Corrected join condition
 ORDER BY 
     ht.hot_kitchen_tracking_id DESC`
+            const res = await this.client.query(qry)
+
+            return res.rows
         } catch (error) {
 
         }
