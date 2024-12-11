@@ -3,4 +3,5 @@ export interface IMenuItemRepository {
     getMenuItem(id: number): Promise<any>;
     updateMenuItem(id: number, input: any): Promise<any>;
     getMenuItems(limit: number, offset: number): Promise<any>;
+    getmenuTracking(): Promise<any>
 }

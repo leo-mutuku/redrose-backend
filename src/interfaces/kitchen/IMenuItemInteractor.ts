@@ -3,4 +3,5 @@ export interface IMenuItemInteractor {
     getMenuItem(id: number);
     updateMenuItem(id: number, input: any);
     getMenuItems(limit: number, offset: number);
+    getmenuTracking();
 }
