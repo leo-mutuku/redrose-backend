@@ -45,6 +45,23 @@ export class HotKitchenStoreInteractor implements IHotKitchenStoreInteractor {
             throw new Error("Error occurred in HotKitchenStoreInteractor. Please try again later.");
         }
     }
+    async getKitchenTracking() {
+        try {
+            const result = await this.repository.getKitchenTracking()
+            return result
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw new AppError(
+                    `Failed to retrieve hot kitchen store record with I. Reason: ${error.message}`,
+                    error.statusCode || 500
+                );
+            }
+            throw new Error("Error occurred in HotKitchenStoreInteractor. Please try again later.");
+
+        }
+
+    }
 
     async updateHotKitchenStore(id: number, input: any): Promise<any> {
         try {

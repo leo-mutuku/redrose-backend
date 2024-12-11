@@ -44,7 +44,8 @@ export class StoreTransferRepository implements IStoreTransferRepository {
     ir.item_name,
     ir.item_id,
     t.current_quantity,
-    t.new_quantity
+    t.new_quantity,
+    t.reason
 FROM 
     item_tracking t
 LEFT JOIN 

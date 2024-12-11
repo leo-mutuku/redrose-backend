@@ -58,6 +58,12 @@ export class StoreItemController {
 
     async onGetItemtracking(req: Request, res: Response, next: NextFunction) {
         try {
+            const data = await this.interactor.getItemtracking()
+            res.status(200).json({
+                status: "success",
+                data: data,
+                message: "Store tracking"
+            })
 
 
         } catch (error) {
