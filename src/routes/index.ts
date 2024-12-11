@@ -52,6 +52,7 @@ import SalesOrderRoutes from "./sales/SalesOrderRoutes"
 import WaitStaffRoutes from "./sales/WaitStaffRegisterRoutes"
 import CancelledOrderRoutes from "./sales/CancelledOrderRoutes"
 import SalesOrderClearingRoutes from "./sales/SalesOrderCleararingRoutes"
+import PosTerminalCategoryRoutes from "./sales/PosTerminalCategoryRoutes"
 
 
 //purchase routes
@@ -131,6 +132,7 @@ routers.use("/salesorder", SalesOrderRoutes)
 routers.use("/salesorderclearing", SalesOrderClearingRoutes)
 routers.use("/cancelledorder", CancelledOrderRoutes)
 routers.use("/waitstaff", WaitStaffRoutes)
+routers.use("/posterminalcategory", PosTerminalCategoryRoutes)
 
 
 
