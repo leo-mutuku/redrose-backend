@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 
 const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     // Skip JWT verification for auth routes
-    if (req.path.startsWith("/auth") || req.path.startsWith("/posterminal")) {
+    if (req.path.startsWith("/auth") || req.path.startsWith("/posterminal") || req.path.startsWith("/posterminalprintbill") || req.path.startsWith("/sales")) {
         return next();
     }
 
