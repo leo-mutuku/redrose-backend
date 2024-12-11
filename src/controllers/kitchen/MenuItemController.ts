@@ -56,4 +56,18 @@ export class MenuItemController {
             next(error);
         }
     }
+    async onGetmenuTracking(req: Request, res: Response, next: NextFunction) {
+        try {
+            const data = await this.interactor.getmenuTracking()
+            res.status(200).json({
+                status: "success",
+                data: data,
+                message: "Menu tracking"
+            })
+
+        } catch (error) {
+            next(error)
+
+        }
+    }
 }

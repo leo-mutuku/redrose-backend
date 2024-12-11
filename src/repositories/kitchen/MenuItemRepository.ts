@@ -75,7 +75,7 @@ export class MenuItemRepository implements IMenuItemRepository {
         }
     }
 
-    async menuTracking() {
+    async getmenuTracking() {
         try {
             let query = `  SELECT 
     m.menu_item_id,
@@ -92,7 +92,8 @@ LEFT JOIN
 ORDER BY 
     m.menu_tracking_id DESC`
             const res = await this.client.query(query)
-            console.log(res.rows)
+
+            return res.rows
 
         } catch (error) {
             throw new AppError("Error" + error, 500)
@@ -132,4 +133,5 @@ ORDER BY
             throw new AppError('Error updating menu item: ' + error, 500);
         }
     }
+
 }

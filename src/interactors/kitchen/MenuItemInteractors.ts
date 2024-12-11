@@ -64,4 +64,18 @@ export class MenuItemInteractor implements IMenuItemInteractor {
             throw new Error('Failed to retrieve menu items. Please try again later.');
         }
     }
+
+    async getmenuTracking() {
+        try {
+            const result = await this.repository.getmenuTracking()
+            return result
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw new AppError(`Error fetching menu items in MenuItemInteractor: ${error.message}`, error.statusCode || 500);
+            }
+            throw new Error('Failed to retrieve menu items. Please try again later.');
+
+        }
+    }
 }
