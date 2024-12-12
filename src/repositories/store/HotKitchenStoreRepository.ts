@@ -33,14 +33,16 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
     async getHotKitchenStores(limit: number, offset: number): Promise<HotKitchenStore[]> {
         try {
             const query = `
-                SELECT hks.kitchen_store_item_id, hks.item_id, ir.item_name, hks.quantity, hks.store_item_id,
+                SELECT hks.kitchen_store_item_id, hks.item_id, ir.item_name, 
+                hks.quantity, hks.store_item_id,sr.store_name,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM kitchen_store as hks
                 inner join item_register as ir on hks.item_id = ir.item_id
-                LIMIT $1 OFFSET $2
+                 INNER JOIN store_register as sr ON sr.store_id = hks.store_id 
+             
             `;
             const values = [limit, offset];
-            const result = await this.client.query(query, values);
+            const result = await this.client.query(query);
 
             return result.rows;
         } catch (error) {
@@ -51,10 +53,12 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
     async getHotKitchenStore(id: number): Promise<HotKitchenStore> {
         try {
             const query = `
-                SELECT hks.kitchen_store_item_id, hks.item_id, ir.item_name, hks.quantity, hks.store_item_id,
+                SELECT hks.kitchen_store_item_id, hks.item_id, ir.item_name,
+                 hks.quantity, hks.store_item_id, sr.store_name,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM kitchen_store as hks
                 inner join item_register as ir on hks.item_id = ir.item_id
+                 INNER JOIN store_register as sr ON sr.store_id = hks.store_id 
                 WHERE hks.kitchen_store_item_id = $1
             `;
             const values = [id];

@@ -33,14 +33,16 @@ export class RestaurantStoreRepository implements IRestaurantStoreRepository {
     async getRestaurantStores(limit: number, offset: number): Promise<RestaurantStore[]> {
         try {
             const query = `
-                SELECT rs.restaurant_store_item_id, rs.item_id, ir.item_name, rs.quantity, rs.store_item_id,
+                SELECT rs.restaurant_store_item_id, rs.item_id, ir.item_name,
+                 rs.quantity, rs.store_item_id, sr.store_name,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM restaurant_store as rs
                 INNER JOIN item_register as ir ON rs.item_id = ir.item_id
-                LIMIT $1 OFFSET $2
+                 INNER JOIN store_register as sr ON rs.store_id = sr.store_id 
+              
             `;
             const values = [limit, offset];
-            const result = await this.client.query(query, values);
+            const result = await this.client.query(query);
 
             return result.rows;
         } catch (error) {
@@ -51,10 +53,12 @@ export class RestaurantStoreRepository implements IRestaurantStoreRepository {
     async getRestaurantStore(id: number): Promise<RestaurantStore> {
         try {
             const query = `
-                SELECT rs.restaurant_store_item_id, rs.item_id, ir.item_name, rs.quantity, rs.store_item_id,
+                SELECT rs.restaurant_store_item_id, rs.item_id, ir.item_name, 
+                rs.quantity, rs.store_item_id, sr.store_name,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM restaurant_store as rs
                 INNER JOIN item_register as ir ON rs.item_id = ir.item_id
+                INNER JOIN store_register as sr ON rs.store_id = sr.store_id 
                 WHERE rs.restaurant_store_item_id = $1
             `;
             const values = [id];
