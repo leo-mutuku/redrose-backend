@@ -13,7 +13,7 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
         this.client = pgClient();
     }
 
-    async createHotKitchenStore({ item_id, quantity, store_id, store_item_id }: HotKitchenStore): Promise<HotKitchenStore> {
+    async createHotKitchenStore({ item_id, quantity, store_id, store_item_id, }: HotKitchenStore): Promise<HotKitchenStore> {
         try {
             const query = `
                 INSERT INTO kitchen_store (item_id, quantity, store_id, store_item_id)
@@ -100,24 +100,28 @@ ORDER BY
     }
     async updateHotKitchenStore(id: number, store: Partial<HotKitchenStore>): Promise<HotKitchenStore> {
         try {
-            let query = `UPDATE kitchen_store SET `;
+            // Define a whitelist of fields that are allowed to be updated
+            const allowedFields = ['quantity'];
             const values: any[] = [];
-            let setClauses: string[] = [];
+            const setClauses: string[] = [];
 
-            // Dynamically build the SET clause and values array
+            // Filter the `store` object to only include allowed fields
             Object.entries(store).forEach(([key, value], index) => {
-                setClauses.push(`${key} = $${index + 1}`);
-                values.push(value);
+                if (allowedFields.includes(key)) {
+                    setClauses.push(`${key} = $${values.length + 1}`);
+                    values.push(value);
+                }
             });
 
             if (setClauses.length === 0) {
-                throw new AppError('No fields to update', 400);
+                throw new AppError('No valid fields to update', 400);
             }
 
+            let query = `UPDATE kitchen_store SET `;
             query += setClauses.join(', ');
             query += ` WHERE kitchen_store_item_id = $${values.length + 1} RETURNING 
-                item_id, quantity,  store_item_id,
-                TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
+                item_id, quantity, store_item_id,
+                TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS updated_at`;
 
             values.push(id);
 
@@ -131,6 +135,7 @@ ORDER BY
             throw new AppError('Error updating hot kitchen store record: ' + error, 500);
         }
     }
+
     async deleteHotKitchenStore(id: number): Promise<void> {
         try {
             const query = `

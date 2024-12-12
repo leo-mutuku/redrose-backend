@@ -103,28 +103,32 @@ export class RestaurantStoreRepository implements IRestaurantStoreRepository {
 
     async updateRestaurantStore(id: number, store: Partial<RestaurantStore>): Promise<RestaurantStore> {
         try {
-            console.log(id)
-            let query = `UPDATE restaurant_store SET `;
+            // Only allow the `quantity` field to be updated
+            const allowedFields = ['quantity'];
             const values: any[] = [];
-            let setClauses: string[] = [];
+            const setClauses: string[] = [];
 
+            // Filter the `store` object to only include the `quantity` field
             Object.entries(store).forEach(([key, value], index) => {
-                setClauses.push(`${key} = $${index + 1}`);
-                values.push(value);
+                if (allowedFields.includes(key)) {
+                    setClauses.push(`${key} = $${values.length + 1}`);
+                    values.push(value);
+                }
             });
 
             if (setClauses.length === 0) {
-                throw new AppError('No fields to update', 400);
+                throw new AppError('No valid fields to update', 400);
             }
 
+            let query = `UPDATE restaurant_store SET `;
             query += setClauses.join(', ');
             query += ` WHERE restaurant_store_item_id = $${values.length + 1} RETURNING 
                 item_id, quantity, store_item_id,
-                TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
+                TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS updated_at`;
 
             values.push(id);
 
-            console.log(query)
+            console.log(query);
 
             const result = await this.client.query(query, values);
 
@@ -137,6 +141,7 @@ export class RestaurantStoreRepository implements IRestaurantStoreRepository {
             throw new AppError('Error updating restaurant store record: ' + error, 500);
         }
     }
+
 
     async deleteRestaurantStore(id: number): Promise<void> {
         try {
