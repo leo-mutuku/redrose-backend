@@ -83,10 +83,9 @@ LEFT JOIN item_register ir ON ir.item_id = si.item_id
 LEFT JOIN item_category ic ON ic.category_id = si.item_category
 LEFT JOIN store_register sr ON sr.store_id = si.store_id
 LEFT JOIN item_unit iu ON iu.unit_id = si.item_unit
-LIMIT $1 OFFSET $2;
+
             `;
-                const values = [limit, offset];
-                const result = yield this.client.query(query, values);
+                const result = yield this.client.query(query);
                 return result.rows;
             }
             catch (error) {
@@ -131,6 +130,29 @@ LIMIT 1
             catch (error) {
                 throw new AppError_1.AppError('Error fetching store item: ' + error, 500);
             }
+        });
+    }
+    getItemtracking() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = `SELECT 
+    t.store_item_id,
+    ir.item_name,
+    ir.item_id,
+    t.current_quantity,
+    t.new_quantity,
+	t.reason
+FROM 
+    item_tracking t
+LEFT JOIN 
+    store_item s ON t.store_item_id = s.store_item_id
+LEFT JOIN 
+    item_register ir ON s.item_id = ir.item_id
+
+ORDER BY 
+    t.item_tracking_id DESC;  
+`;
+            const result = yield this.client.query(query);
+            return result.rows;
         });
     }
     // Update a store item by its ID

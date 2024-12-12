@@ -21,5 +21,6 @@ router.post("/createitem", controller.onCreateStoreItem.bind(controller));
 router.get("/getitem/:id", controller.onGetStoreItem.bind(controller));
 router.get("/getitems", controller.onGetStoreItems.bind(controller)); // Example for listing items with pagination
 router.patch("/updateitem/:id", controller.onUpdateStoreItem.bind(controller));
+router.get("/itemtracking", controller.onGetItemtracking.bind(controller));
 // Export the configured router
 exports.default = router;

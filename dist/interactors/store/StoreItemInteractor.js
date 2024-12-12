@@ -69,6 +69,20 @@ let StoreItemInteractor = class StoreItemInteractor {
             }
         });
     }
+    getItemtracking() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield this.repository.getItemtracking();
+                return result;
+            }
+            catch (error) {
+                if (error instanceof AppError_1.AppError) {
+                    throw new AppError_1.AppError(`Error updating store item in StoreItemInteractor: ${error.message}`, error.statusCode || 500);
+                }
+                throw new Error('Failed to update store item. Please try again later.');
+            }
+        });
+    }
     getStoreItems(limit, offset) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

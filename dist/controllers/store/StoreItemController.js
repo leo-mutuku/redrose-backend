@@ -75,6 +75,21 @@ let StoreItemController = class StoreItemController {
             }
         });
     }
+    onGetItemtracking(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = yield this.interactor.getItemtracking();
+                res.status(200).json({
+                    status: "success",
+                    data: data,
+                    message: "Store tracking"
+                });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
 };
 exports.StoreItemController = StoreItemController;
 exports.StoreItemController = StoreItemController = __decorate([

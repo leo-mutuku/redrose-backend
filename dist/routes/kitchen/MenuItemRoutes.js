@@ -21,5 +21,6 @@ router.post("/createitem", controller.onCreateMenu.bind(controller));
 router.get("/getitem/:id", controller.onGetMenuItem.bind(controller));
 router.get("/getitems", controller.onGetMenuItemRegisters.bind(controller));
 router.patch("/updateitem/:id", controller.onUpdateMenuItem.bind(controller));
+router.get("/getmenutracking", controller.onGetmenuTracking.bind(controller));
 // Export the configured router
 exports.default = router;

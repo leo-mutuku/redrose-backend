@@ -45,13 +45,36 @@ let MenuCategoryRepository = class MenuCategoryRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-                SELECT menu_category_id, category_name, description,category_abbr,
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM menu_category
-                LIMIT $1 OFFSET $2
+                SELECT 
+    mc.menu_category_id, 
+    mc.category_name, 
+    mc.description, 
+    mc.category_abbr,
+    TO_CHAR(mc.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
+    COALESCE(
+        JSON_AGG(
+            JSONB_BUILD_OBJECT(
+                'menu_item_id', mi.menu_item_id,
+                'item_name', ir.item_name,
+                'price', mi.price
+            )
+        ) FILTER (WHERE mi.menu_item_id IS NOT NULL), 
+        '[]'
+    ) AS menu_items
+FROM 
+    menu_category mc
+LEFT JOIN 
+    menu_item mi 
+ON 
+    mc.menu_category_id = mi.menu_category_id
+LEFT JOIN 
+    item_register ir
+ON 
+    mi.menu_register_id = ir.item_id
+GROUP BY 
+    mc.menu_category_id
             `;
-                const values = [limit, offset];
-                const result = yield this.client.query(query, values);
+                const result = yield this.client.query(query);
                 return result.rows;
             }
             catch (error) {
@@ -63,10 +86,35 @@ let MenuCategoryRepository = class MenuCategoryRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-                SELECT menu_category_id, category_name, description,category_abbr,
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM menu_category
-                WHERE menu_category_id = $1
+                SELECT 
+    mc.menu_category_id, 
+    mc.category_name, 
+    mc.description, 
+    mc.category_abbr,
+    TO_CHAR(mc.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
+    COALESCE(
+        JSON_AGG(
+            JSONB_BUILD_OBJECT(
+                'menu_item_id', mi.menu_item_id,
+                'item_name', ir.item_name,
+                'price', mi.price
+            )
+        ) FILTER (WHERE mi.menu_item_id IS NOT NULL), 
+        '[]'
+    ) AS menu_items
+FROM 
+    menu_category mc
+LEFT JOIN 
+    menu_item mi 
+ON 
+    mc.menu_category_id = mi.menu_category_id
+LEFT JOIN 
+    item_register ir
+ON 
+    mi.menu_register_id = ir.item_id
+GROUP BY 
+    mc.menu_category_id;
+                WHERE mc.menu_category_id = $1
             `;
                 const values = [id];
                 const result = yield this.client.query(query, values);

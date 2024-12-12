@@ -83,6 +83,20 @@ let MenuItemInteractor = class MenuItemInteractor {
             }
         });
     }
+    getmenuTracking() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield this.repository.getmenuTracking();
+                return result;
+            }
+            catch (error) {
+                if (error instanceof AppError_1.AppError) {
+                    throw new AppError_1.AppError(`Error fetching menu items in MenuItemInteractor: ${error.message}`, error.statusCode || 500);
+                }
+                throw new Error('Failed to retrieve menu items. Please try again later.');
+            }
+        });
+    }
 };
 exports.MenuItemInteractor = MenuItemInteractor;
 exports.MenuItemInteractor = MenuItemInteractor = __decorate([

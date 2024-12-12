@@ -52,20 +52,20 @@ let WaitStaffRegisterRepository = class WaitStaffRegisterRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-               SELECT 
-    ws.staff_id, 
-    ws.balance,  
-    ws.created_by, 
-    ws.created_at,
-    s.first_name || ' ' || s.last_name AS waitstaff_name
-FROM 
-    waitstaff AS ws
-INNER JOIN 
-    staff AS s 
-ON 
-    ws.staff_id = s.staff_id
-LIMIT $1 OFFSET $2
-
+                        SELECT 
+                ws.waitstaff_id,
+                ws.staff_id, 
+                ws.balance,  
+                ws.created_by, 
+                ws.created_at,
+                s.first_name || ' ' || s.last_name AS waitstaff_name
+            FROM 
+                waitstaff AS ws
+            INNER JOIN 
+                staff AS s 
+            ON 
+                ws.staff_id = s.staff_id
+            LIMIT $1 OFFSET $2
             `;
                 const values = [limit, offset];
                 const result = yield this.client.query(query, values);
@@ -82,6 +82,7 @@ LIMIT $1 OFFSET $2
             try {
                 const query = `
                  SELECT 
+    ws.waitstaff_id,
     ws.staff_id, 
     ws.balance,  
     ws.created_by, 

@@ -87,6 +87,31 @@ let MenuItemRepository = class MenuItemRepository {
             }
         });
     }
+    getmenuTracking() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let query = `  SELECT 
+    m.menu_item_id,
+    mr.name,
+    mr.menu_register_id,
+    m.current_quantity,
+    m.new_quantity
+FROM 
+    menu_tracking m
+LEFT JOIN 
+    menu_item mi ON m.menu_item_id = mi.menu_item_id  -- Corrected join condition
+LEFT JOIN 
+    menu_register mr ON mi.menu_register_id = mr.menu_register_id  -- Corrected join condition
+ORDER BY 
+    m.menu_tracking_id DESC`;
+                const res = yield this.client.query(query);
+                return res.rows;
+            }
+            catch (error) {
+                throw new AppError_1.AppError("Error" + error, 500);
+            }
+        });
+    }
     updateMenuItem(id, menuItem) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

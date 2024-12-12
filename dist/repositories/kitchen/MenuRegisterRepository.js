@@ -26,8 +26,7 @@ let MenuRegisterRepository = class MenuRegisterRepository {
     createMenuRegister(_a) {
         return __awaiter(this, arguments, void 0, function* ({ name, description, created_by }) {
             try {
-                const query = `
-                INSERT INTO menu_register (name, description, created_by )
+                const query = `INSERT INTO menu_register (name, description, created_by )
                 VALUES ($1, $2, $3)
                 RETURNING menu_register_id, name, description, created_by,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
@@ -44,14 +43,13 @@ let MenuRegisterRepository = class MenuRegisterRepository {
     getMenuRegisters(limit, offset) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = `
-                SELECT menu_register_id, name, description, created_by,
+                const query = `SELECT menu_register_id, name, description, created_by,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM menu_register
-                LIMIT $1 OFFSET $2
+                ORDER BY created_at DESC
+              
             `;
-                const values = [limit, offset];
-                const result = yield this.client.query(query, values);
+                const result = yield this.client.query(query);
                 return result.rows;
             }
             catch (error) {

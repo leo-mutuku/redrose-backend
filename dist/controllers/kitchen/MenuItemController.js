@@ -75,6 +75,21 @@ let MenuItemController = class MenuItemController {
             }
         });
     }
+    onGetmenuTracking(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = yield this.interactor.getmenuTracking();
+                res.status(200).json({
+                    status: "success",
+                    data: data,
+                    message: "Menu tracking"
+                });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
 };
 exports.MenuItemController = MenuItemController;
 exports.MenuItemController = MenuItemController = __decorate([

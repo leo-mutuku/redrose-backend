@@ -29,6 +29,8 @@ const StoreRegisterRoutes_1 = __importDefault(require("./store/StoreRegisterRout
 const ItemRegisterRoutes_1 = __importDefault(require("./store/ItemRegisterRoutes"));
 const StoreItemRoutes_1 = __importDefault(require("./store/StoreItemRoutes"));
 const StoreIssueRoutes_1 = __importDefault(require("./store/StoreIssueRoutes"));
+const HotKitchenStoreRoutes_1 = __importDefault(require("./store/HotKitchenStoreRoutes"));
+const StoreTransferRoutes_1 = __importDefault(require("./store/StoreTransferRoutes"));
 // ktchen
 const MenuUnitRoutes_1 = __importDefault(require("./kitchen/MenuUnitRoutes"));
 const MenuCategoryRoutes_1 = __importDefault(require("./kitchen/MenuCategoryRoutes"));
@@ -44,6 +46,8 @@ const SalesOrderRoutes_1 = __importDefault(require("./sales/SalesOrderRoutes"));
 const WaitStaffRegisterRoutes_1 = __importDefault(require("./sales/WaitStaffRegisterRoutes"));
 const CancelledOrderRoutes_1 = __importDefault(require("./sales/CancelledOrderRoutes"));
 const SalesOrderCleararingRoutes_1 = __importDefault(require("./sales/SalesOrderCleararingRoutes"));
+const PosTerminalCategoryRoutes_1 = __importDefault(require("./sales/PosTerminalCategoryRoutes"));
+const PosTerminalPrintBillRoutes_1 = __importDefault(require("./sales/PosTerminalPrintBillRoutes"));
 //purchase routes
 const PurchaseOrderRoutes_1 = __importDefault(require("./purchase/PurchaseOrderRoutes"));
 const PurchaseRequisition_1 = __importDefault(require("./purchase/PurchaseRequisition"));
@@ -83,6 +87,8 @@ routers.use("/storeregister", StoreRegisterRoutes_1.default);
 routers.use("/itemregister", ItemRegisterRoutes_1.default);
 routers.use("/storeitem", StoreItemRoutes_1.default);
 routers.use("/storeissue", StoreIssueRoutes_1.default);
+routers.use("/hotkitchen", HotKitchenStoreRoutes_1.default);
+routers.use("/storetransfer", StoreTransferRoutes_1.default);
 // ktchen
 routers.use("/menuunit", MenuUnitRoutes_1.default);
 routers.use("/menucategory", MenuCategoryRoutes_1.default);
@@ -101,6 +107,8 @@ routers.use("/salesorder", SalesOrderRoutes_1.default);
 routers.use("/salesorderclearing", SalesOrderCleararingRoutes_1.default);
 routers.use("/cancelledorder", CancelledOrderRoutes_1.default);
 routers.use("/waitstaff", WaitStaffRegisterRoutes_1.default);
+routers.use("/posterminalcategory", PosTerminalCategoryRoutes_1.default);
+routers.use("/posterminalprintbill", PosTerminalPrintBillRoutes_1.default);
 //payment
 routers.use("/payment", PaymentVoucherRoutes_1.default);
 //payroll

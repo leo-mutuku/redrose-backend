@@ -7,7 +7,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const verifyJWT = (req, res, next) => {
     var _a;
     // Skip JWT verification for auth routes
-    if (req.path.startsWith("/auth")) {
+    if (req.path.startsWith("/auth") || req.path.startsWith("/posterminal") || req.path.startsWith("/posterminalprintbill") || req.path.startsWith("/sales")) {
         return next();
     }
     const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1]; // Expected format: "Bearer <token>"
