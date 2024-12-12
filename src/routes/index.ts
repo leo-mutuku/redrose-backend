@@ -30,6 +30,7 @@ import ItemRegisterRoutes from "./store/ItemRegisterRoutes"
 import StoreItemRoutes from "./store/StoreItemRoutes"
 import StoreIssueRoutes from "./store/StoreIssueRoutes"
 import HotKitchenRoutes from "./store/HotKitchenStoreRoutes"
+import RestaurantStoreRoutes from "./store/RestaurantStoreRoutes"
 import StoreTransferRooutes from "./store/StoreTransferRoutes"
 
 
@@ -110,6 +111,7 @@ routers.use("/itemregister", ItemRegisterRoutes)
 routers.use("/storeitem", StoreItemRoutes)
 routers.use("/storeissue", StoreIssueRoutes)
 routers.use("/hotkitchen", HotKitchenRoutes)
+routers.use("/restaurantstore", RestaurantStoreRoutes)
 routers.use("/storetransfer", StoreTransferRooutes)
 
 

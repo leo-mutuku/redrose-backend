@@ -136,6 +136,11 @@ export const INTERFACE_TYPE = {
   ItemCategoryInteractor: Symbol.for("ItemCategoryInteractor"),
   ItemCategoryController: Symbol.for("ItemCategoryController"),
 
+  // Restaurant Store
+  RestaurantStoreRepository: Symbol.for("RestaurantStoreRepository"),
+  RestaurantStoreInteractor: Symbol.for("RestaurantStoreInteractor"),
+  RestaurantStoreController: Symbol.for("RestaurantStoreController"),
+
 
   // kichen 
 
