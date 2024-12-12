@@ -92,4 +92,18 @@ export class HotKitchenStoreInteractor implements IHotKitchenStoreInteractor {
             throw new Error("Failed to retrieve hot kitchen store records. Please try again later.");
         }
     }
+    deleteHotKitchenStore(id: number) {
+        try {
+            const result = this.repository.deleteHotKitchenStore(id)
+            return result
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw new AppError(
+                    `Error deleting hot kitchen store record in HotKitchenStoreInteractor: ${error.message}`,
+                    error.statusCode || 500
+                );
+            }
+            throw new Error("Failed to delete hot kitchen store record. Please try again later.");
+        }
+    }
 }

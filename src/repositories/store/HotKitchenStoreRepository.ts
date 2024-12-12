@@ -13,15 +13,15 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
         this.client = pgClient();
     }
 
-    async createHotKitchenStore({ item_id, quantity, store_item_id }: HotKitchenStore): Promise<HotKitchenStore> {
+    async createHotKitchenStore({ item_id, quantity, store_id, store_item_id }: HotKitchenStore): Promise<HotKitchenStore> {
         try {
             const query = `
-                INSERT INTO hot_kitchen_store (item_id, quantity, store_item_id)
-                VALUES ($1, $2, $3)
-                RETURNING hot_kitchen_store_id, item_id, quantity, store_item_id,
+                INSERT INTO kitchen_store (item_id, quantity, store_id, store_item_id)
+                VALUES ($1, $2, $3, $4)
+                RETURNING kitchen_store_item_id, item_id, quantity,store_id, store_item_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
             `;
-            const values = [item_id, quantity, store_item_id];
+            const values = [item_id, quantity, store_id, store_item_id];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
@@ -33,9 +33,9 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
     async getHotKitchenStores(limit: number, offset: number): Promise<HotKitchenStore[]> {
         try {
             const query = `
-                SELECT hks.hot_kitchen_store_id, hks.item_id, ir.item_name, hks.quantity, hks.store_item_id,
+                SELECT hks.kitchen_store_item_id, hks.item_id, ir.item_name, hks.quantity, hks.store_item_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM hot_kitchen_store as hks
+                FROM kitchen_store as hks
                 inner join item_register as ir on hks.item_id = ir.item_id
                 LIMIT $1 OFFSET $2
             `;
@@ -51,11 +51,11 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
     async getHotKitchenStore(id: number): Promise<HotKitchenStore> {
         try {
             const query = `
-                SELECT hks.hot_kitchen_store_id, hks.item_id, ir.item_name, hks.quantity, hks.store_item_id,
+                SELECT hks.kitchen_store_item_id, hks.item_id, ir.item_name, hks.quantity, hks.store_item_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
-                FROM hot_kitchen_store as hks
+                FROM kitchen_store as hks
                 inner join item_register as ir on hks.item_id = ir.item_id
-                WHERE hks.hot_kitchen_store_id = $1
+                WHERE hks.kitchen_store_item_id = $1
             `;
             const values = [id];
             const result = await this.client.query(query, values);
@@ -96,7 +96,7 @@ ORDER BY
     }
     async updateHotKitchenStore(id: number, store: Partial<HotKitchenStore>): Promise<HotKitchenStore> {
         try {
-            let query = `UPDATE hot_kitchen_store SET `;
+            let query = `UPDATE kitchen_store SET `;
             const values: any[] = [];
             let setClauses: string[] = [];
 
@@ -111,7 +111,7 @@ ORDER BY
             }
 
             query += setClauses.join(', ');
-            query += ` WHERE hot_kitchen_store_id = $${values.length + 1} RETURNING 
+            query += ` WHERE kitchen_store_item_id = $${values.length + 1} RETURNING 
                 item_id, quantity,  store_item_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
@@ -125,6 +125,20 @@ ORDER BY
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error updating hot kitchen store record: ' + error, 500);
+        }
+    }
+    async deleteHotKitchenStore(id: number): Promise<void> {
+        try {
+            const query = `
+                DELETE FROM kitchen_store
+                WHERE kitchen_store_item_id = $1
+            `;
+            const values = [id];
+            await this.client.query(query, values);
+            return
+        }
+        catch (error) {
+            throw new AppError('Error deleting hot kitchen store record: ' + error, 500);
         }
     }
 }

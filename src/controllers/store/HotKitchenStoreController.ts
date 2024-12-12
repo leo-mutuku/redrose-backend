@@ -72,4 +72,15 @@ export class HotKitchenStoreController {
         }
 
     }
+
+    //onDeleteHotKitchenStore
+    async onDeleteHotKitchenStore(req: Request, res: Response, next: NextFunction) {
+        try {
+            const id = parseInt(req.params.id);
+            const data = await this.interactor.deleteHotKitchenStore(id);
+            res.status(200).json({ status: 'success', data: data, message: 'Hot kitchen store item deleted successfully' });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

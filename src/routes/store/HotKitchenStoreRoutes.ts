@@ -26,7 +26,8 @@ router.post("/createhotkitchenstore", controller.onCreateHotKitchenStore.bind(co
 router.get("/gethotkitchenstore/:id", controller.onGetHotKitchenStore.bind(controller));
 router.get("/gethotkitchenstores", controller.onGetHotKitchenStores.bind(controller));
 router.patch("/updatehotkitchenstore/:id", controller.onUpdateHotKitchenStore.bind(controller));
-router.get("/getkitchentracking", controller.onKitchenTracking.bind(controller))
+router.get("/getkitchentracking", controller.onKitchenTracking.bind(controller));
+router.delete("/deletehotkitchenstore/:id", controller.onDeleteHotKitchenStore.bind(controller));
 
 // Export the configured router
 export default router;

@@ -4,4 +4,5 @@ export interface IHotKitchenStoreInteractor {
     updateHotKitchenStore(id: number, input: any);
     getHotKitchenStores(limit: number, offset: number);
     getKitchenTracking();
+    deleteHotKitchenStore(id: number);
 }
