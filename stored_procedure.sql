@@ -224,11 +224,13 @@ RETURNS VOID AS $$
 DECLARE
     item JSON;
     pl_store_item_id INT; -- Variable to store store_item_id
+    pl_destination_store_item_id INT; -- Variable to store destination_store_item_id
     pl_qty NUMERIC(15, 2); -- Variable to store quantity
+    pl_transfer_type VARCHAR(200); -- Variable to store transfer_type
     s_current_quantity NUMERIC(15, 2); -- Current quantity in store_item
     s_new_quantity NUMERIC(15, 2); -- New quantity in store_item
-    h_current_quantity NUMERIC(15, 2); -- Current quantity in hot_kitchen_store
-    h_new_quantity NUMERIC(15, 2); -- New quantity in hot_kitchen_store
+    des_current_quantity NUMERIC(15, 2); -- Current quantity in hot_kitchen_store
+    des_new_quantity NUMERIC(15, 2); -- New quantity in hot_kitchen_store
 BEGIN
     -- Loop through the JSON array to process each item
     FOR item IN
@@ -260,16 +262,16 @@ BEGIN
             VALUES (pl_store_item_id, s_current_quantity, s_new_quantity, 'Transfer to hot kitchen');
         END IF;
 
-        -- Lock and update hot_kitchen_store
-        SELECT quantity
-        INTO h_current_quantity
-        FROM hot_kitchen_store
-        WHERE store_item_id = pl_store_item_id
-        FOR UPDATE;
-
-        -- Update or insert into hot_kitchen_store
-        h_new_quantity := COALESCE(h_current_quantity, 0) + pl_qty;
-        IF h_current_quantity IS NULL THEN
+        -- Lock and update destination store_item
+        IF pl_transfer_type = 'hot_kitchen' THEN
+            SELECT quantity
+            INTO des_current_quantity
+            FROM kitchen_store
+            WHERE store_item_id = pl_store_item_id
+            FOR UPDATE;
+        -- Update or insert into kitchen_store
+           des_new_quantity := COALESCE(h_current_quantity, 0) + pl_qty;
+           IF des_current_quantity IS NULL THEN
             INSERT INTO hot_kitchen_store (store_item_id, quantity)
             VALUES (pl_store_item_id, pl_qty);
         ELSE

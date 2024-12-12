@@ -34,7 +34,7 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
         try {
             const query = `
                 SELECT hks.kitchen_store_item_id, hks.item_id, ir.item_name, 
-                hks.quantity, hks.store_item_id,sr.store_name,
+                hks.quantity, hks.store_item_id,sr.store_name,sr.store_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM kitchen_store as hks
                 inner join item_register as ir on hks.item_id = ir.item_id
@@ -54,7 +54,7 @@ export class HotKitchenStoreRepository implements IHotKitchenStoreRepository {
         try {
             const query = `
                 SELECT hks.kitchen_store_item_id, hks.item_id, ir.item_name,
-                 hks.quantity, hks.store_item_id, sr.store_name,
+                 hks.quantity, hks.store_item_id, sr.store_name,sr.store_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM kitchen_store as hks
                 inner join item_register as ir on hks.item_id = ir.item_id

@@ -13,12 +13,56 @@ export class StoreTransferRepository implements IStoreTransferRepository {
         this.client = pgClient();
     }
 
-    async createStoreTransfer({ store_item_id, quantity }: StoreTransfer): Promise<StoreTransfer> {
+    async createStoreTransfer({ store_item_id, quantity, transfer_type, destination_store_item_id }: StoreTransfer): Promise<any> {
         try {
             // Prepare JSON payload
             const store_item_json = JSON.stringify([{ store_item_id, quantity }]);
             console.log('Store item JSON:', store_item_json);
+            // validate the item_id match in the select store
 
+            // case 1 for RESTAURANT type
+            if (transfer_type == "RESTAURANT") {
+                let qry1 = `select * from store_item where store_item_id = $1 `;
+                let qry2 = `select * from restaurant_store where store_item_id = $1 `;
+                let result1 = await this.client.query(qry1, [store_item_id]);
+                let result2 = await this.client.query(qry2, [destination_store_item_id]);
+                if (!result1.rows.length || !result2.rows.length) {
+                    throw new AppError('Item mismatch in the selected stores', 404);
+
+                }
+                if (result1.rows[0].store_id != result2.rows[0].store_id) {
+                    throw new AppError('Store mismatch in the selected stores', 404);
+                }
+                if (result1.rows[0].quantity < quantity) {
+                    throw new AppError('Insufficient quantity in the selected store', 404);
+                }
+                if (result1.rows[0].item_id != result2.rows[0].item_id) {
+                    throw new AppError('Item mismatch in the selected stores', 404);
+                }
+
+            }
+
+            // case 2 for KITCHEN type
+            if (transfer_type == "KITCHEN") {
+                let qry1 = `select * from store_item where store_item_id = $1 `;
+                let qry2 = `select * from kitchen_store where store_item_id = $1 `;
+                let result1 = await this.client.query(qry1, [store_item_id]);
+                let result2 = await this.client.query(qry2, [destination_store_item_id]);
+                if (!result1.rows.length || !result2.rows.length) {
+                    throw new AppError('Item mismatch in the selected stores', 404);
+
+                }
+                if (result1.rows[0].store_id != result2.rows[0].store_id) {
+                    throw new AppError('Store mismatch in the selected stores', 404);
+                }
+                if (result1.rows[0].quantity < quantity) {
+                    throw new AppError('Insufficient quantity in the selected store', 404);
+                }
+                if (result1.rows[0].item_id != result2.rows[0].item_id) {
+                    throw new AppError('Item mismatch in the selected stores', 404);
+                }
+
+            }
             // Call the stored procedure directly
             const query = `
                 select * from  store_transfer_procedure($1::JSON);
@@ -26,10 +70,9 @@ export class StoreTransferRepository implements IStoreTransferRepository {
             const values = [store_item_json];
 
             // Execute the query
-            await this.client.query(query, values);
+            let result = await this.client.query(query, values);
 
-            // Return the transferred data or confirmation
-            return { store_item_id, quantity };
+            return result.rows;
         } catch (error) {
             console.error('Error during store transfer:', error);
             throw new AppError('Error creating store transfer record: ' + error, 500);

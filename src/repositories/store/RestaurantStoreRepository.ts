@@ -34,7 +34,7 @@ export class RestaurantStoreRepository implements IRestaurantStoreRepository {
         try {
             const query = `
                 SELECT rs.restaurant_store_item_id, rs.item_id, ir.item_name,
-                 rs.quantity, rs.store_item_id, sr.store_name,
+                 rs.quantity, rs.store_item_id, sr.store_name,sr.store_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM restaurant_store as rs
                 INNER JOIN item_register as ir ON rs.item_id = ir.item_id
@@ -54,7 +54,7 @@ export class RestaurantStoreRepository implements IRestaurantStoreRepository {
         try {
             const query = `
                 SELECT rs.restaurant_store_item_id, rs.item_id, ir.item_name, 
-                rs.quantity, rs.store_item_id, sr.store_name,
+                rs.quantity, rs.store_item_id, sr.store_name,sr.store_id,
                 TO_CHAR(updated_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
                 FROM restaurant_store as rs
                 INNER JOIN item_register as ir ON rs.item_id = ir.item_id
