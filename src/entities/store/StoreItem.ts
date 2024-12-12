@@ -11,9 +11,8 @@ export class StoreItem {
         public readonly unit_name_other: string,
         public readonly unit_name_value_other: number,
         public readonly quantity: number,
-        public readonly selling_price: number,
         public readonly buying_price: number,
-        public readonly item_unit: number,
+        public readonly item_unit_id: number,
         public readonly item_status: number,
         public readonly item_category: number,
     ) { }

@@ -77,4 +77,15 @@ export class StoreItemInteractor implements IStoreItemInteractor {
             throw new Error('Failed to retrieve store items. Please try again later.');
         }
     }
+
+    async deleteStoreItem(id: number): Promise<void> {
+        try {
+            await this.repository.deleteStoreItem(id);
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw new AppError(`Error deleting store item in StoreItemInteractor: ${error.message}`, error.statusCode || 500);
+            }
+            throw new Error('Failed to delete store item. Please try again later.');
+        }
+    }
 }

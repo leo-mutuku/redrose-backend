@@ -15,4 +15,6 @@ export interface IStoreItemInteractor {
     updateStoreItem(id: number, item: Partial<StoreItem>);
 
     getItemtracking();
+
+    deleteStoreItem(id: number);
 }

@@ -72,5 +72,16 @@ export class StoreItemController {
         }
 
 
+
+    }
+
+    async onDeleteStoreItem(req: Request, res: Response, next: NextFunction) {
+        try {
+            const id = parseInt(req.params.id);
+            await this.interactor.deleteStoreItem(id);
+            res.status(200).json({ status: 'success', message: 'Store item deleted successfully' });
+        } catch (error) {
+            next(error);
+        }
     }
 }

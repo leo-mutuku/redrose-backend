@@ -14,34 +14,33 @@ export class StoreItemRepository implements IStoreItemRepository {
     }
 
     // Create a new store item
-    async createStoreItem({ store_id, item_id, quantity, selling_price,
-        buying_price, item_unit, item_category }: StoreItem): Promise<StoreItem> {
+    async createStoreItem({ store_id, item_id, quantity,
+        buying_price, item_unit_id, item_category }: StoreItem): Promise<StoreItem> {
         try {
 
             const query = `
-                INSERT INTO store_item (store_id, item_id, quantity, selling_price, buying_price, item_unit, item_category)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+                INSERT INTO store_item (store_id, item_id, quantity,  buying_price, item_unit_id, item_category)
+VALUES ($1, $2, $3, $4, $5, $6 )
 RETURNING 
     store_item_id,
     store_id, 
     item_id, 
     quantity, 
-    selling_price, 
     buying_price, 
-    item_unit, 
+    item_unit_id, 
     item_category,
     TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
     (SELECT item_name FROM item_register WHERE item_id = store_item.item_id) AS item_name,
     (SELECT category_name from item_category where category_id = store_item.item_category) As category_name,
     (SELECT store_name FROM store_register WHERE store_id = store_item.store_id) AS store_name,
-    (SELECT standard_unit_name from item_unit where unit_id = store_item.item_unit) AS unit_name;
+    (SELECT standard_unit_name from item_unit where unit_id = store_item.item_unit_id) AS unit_name;
 
     
         
 
             `;
             const values = [store_id,
-                item_id, quantity, selling_price, buying_price, item_unit, item_category];
+                item_id, quantity, buying_price, item_unit_id, item_category];
             const result = await this.client.query(query, values);
 
             return result.rows[0];
@@ -59,9 +58,8 @@ RETURNING
     si.store_id, 
     si.item_id, 
     si.quantity, 
-    si.selling_price, 
     si.buying_price, 
-    si.item_unit, 
+    si.item_unit_id, 
     si.item_category,
     TO_CHAR(si.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
     ir.item_name,
@@ -72,7 +70,7 @@ FROM store_item si
 LEFT JOIN item_register ir ON ir.item_id = si.item_id
 LEFT JOIN item_category ic ON ic.category_id = si.item_category
 LEFT JOIN store_register sr ON sr.store_id = si.store_id
-LEFT JOIN item_unit iu ON iu.unit_id = si.item_unit
+LEFT JOIN item_unit iu ON iu.unit_id = si.item_unit_id
 
             `;
 
@@ -93,9 +91,8 @@ LEFT JOIN item_unit iu ON iu.unit_id = si.item_unit
     si.store_id, 
     si.item_id, 
     si.quantity, 
-    si.selling_price, 
     si.buying_price, 
-    si.item_unit, 
+    si.item_unit_id, 
     si.item_category,
     TO_CHAR(si.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
     ir.item_name,
@@ -106,7 +103,7 @@ FROM store_item si
 LEFT JOIN item_register ir ON ir.item_id = si.item_id
 LEFT JOIN item_category ic ON ic.category_id = si.item_category
 LEFT JOIN store_register sr ON sr.store_id = si.store_id
-LEFT JOIN item_unit iu ON iu.unit_id = si.item_unit
+LEFT JOIN item_unit iu ON iu.unit_id = si.item_unit_id
 WHERE si.store_item_id = $1
 LIMIT 1
             `;
@@ -164,21 +161,20 @@ ORDER BY
             }
 
             query += setClauses.join(', ');
-            query += ` WHERE item_id = $${values.length + 1} 
+            query += ` WHERE store_item_id = $${values.length + 1} 
                    RETURNING 
     store_item_id,
     store_id, 
     item_id, 
     quantity, 
-    selling_price, 
     buying_price, 
-    item_unit, 
+    item_unit_id, 
     item_category,
     TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
     (SELECT item_name FROM item_register WHERE item_id = store_item.item_id) AS item_name,
     (SELECT category_name from item_category where category_id = store_item.item_category) As category_name,
     (SELECT store_name FROM store_register WHERE store_id = store_item.store_id) AS store_name,
-    (SELECT standard_unit_name from item_unit where unit_id = store_item.item_unit) AS unit_name
+    (SELECT standard_unit_name from item_unit where unit_id = store_item.item_unit_id) AS unit_name
                     `;
             values.push(id);
 
@@ -190,6 +186,20 @@ ORDER BY
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error updating store item: ' + error, 500);
+        }
+    }
+
+    async deleteStoreItem(id: number): Promise<void> {
+        try {
+            const query = 'DELETE FROM store_item WHERE store_item_id = $1';
+            const values = [id];
+            const result = await this.client.query(query, values);
+            if (result.rowCount === 0) {
+                throw new AppError('Store item not found', 404);
+            }
+        }
+        catch (error) {
+            throw new AppError('Error deleting store item: ' + error, 500);
         }
     }
 }

@@ -16,4 +16,6 @@ export interface IStoreItemRepository {
 
 
     getItemtracking();
+
+    deleteStoreItem(id: number): Promise<void>;
 }
