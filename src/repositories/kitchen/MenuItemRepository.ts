@@ -102,23 +102,30 @@ ORDER BY
     }
     async updateMenuItem(id: number, menuItem: Partial<MenuItem>): Promise<MenuItem> {
         try {
+            const allowedFields = ['quantity', 'price', 'menu_category_id']; // List of fields allowed to update
             let query = `UPDATE menu_item SET `;
             const values: any[] = [];
-            let setClauses: string[] = [];
+            const setClauses: string[] = [];
+
+            // Filter the menuItem object to include only allowed fields
+            const filteredMenuItem = Object.entries(menuItem).filter(([key]) => allowedFields.includes(key));
 
             // Dynamically build the SET clause and values array
-            Object.entries(menuItem).forEach(([key, value], index) => {
+            filteredMenuItem.forEach(([key, value], index) => {
                 setClauses.push(`${key} = $${index + 1}`);
                 values.push(value);
             });
 
             if (setClauses.length === 0) {
-                throw new AppError('No fields to update', 400);
+                throw new AppError('No valid fields to update', 400);
             }
 
             query += setClauses.join(', ');
             query += ` WHERE menu_item_id = $${values.length + 1} RETURNING 
-                 quantity, price, menu_category_id, available
+                quantity, 
+                price, 
+                menu_category_id, 
+                available, 
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
             values.push(id);
@@ -134,4 +141,21 @@ ORDER BY
         }
     }
 
+    async deleteMenuItem(id: number): Promise<void> {
+        try {
+            const query = 'DELETE FROM menu_item WHERE menu_item_id = $1';
+            const values = [id];
+            const result = await this.client.query(query, values);
+            if (result.rowCount === 0) {
+                throw new AppError('Menu item not found', 404);
+            }
+        }
+        catch (error) {
+            throw new AppError('Error deleting menu item: ' + error, 500);
+        }
+    }
+
+
+
 }
+

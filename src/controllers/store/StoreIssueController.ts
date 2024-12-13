@@ -25,8 +25,7 @@ export class StoreIssueController {
     async onGetStoreIssues(req: Request, res: Response, next: NextFunction) {
         try {
             const offset = parseInt(req.query.offset as string) || 0;
-            const limit = parseInt(req.query.limit as string) || 10;
-
+            const limit = parseInt(req.query.limit as string) || 20;
             const data = await this.interactor.getStoreIssues(limit, offset);
             res.status(200).json({ status: 'success', data: data, message: 'Store issues fetched successfully' });
         } catch (error) {

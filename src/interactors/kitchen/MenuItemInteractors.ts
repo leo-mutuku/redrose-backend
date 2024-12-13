@@ -78,4 +78,16 @@ export class MenuItemInteractor implements IMenuItemInteractor {
 
         }
     }
+
+    async deleteMenuItem(id: number): Promise<any> {
+        try {
+            const result = await this.repository.deleteMenuItem(id);
+            return result;
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw new AppError(`Error deleting menu item in MenuItemInteractor: ${error.message}`, error.statusCode || 500);
+            }
+            throw new Error('Failed to delete menu item. Please try again later.');
+        }
+    }
 }

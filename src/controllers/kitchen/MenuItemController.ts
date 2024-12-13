@@ -70,4 +70,14 @@ export class MenuItemController {
 
         }
     }
+
+    async onDeleteMenuItem(req: Request, res: Response, next: NextFunction) {
+        try {
+            const id = parseInt(req.params.id);
+            const data = await this.interactor.deleteMenuItem(id);
+            res.status(200).json({ status: 'success', data: data, message: 'Menu Item Register deleted successfully' });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
