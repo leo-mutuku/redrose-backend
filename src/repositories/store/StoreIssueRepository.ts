@@ -26,38 +26,40 @@ export class StoreIssueRepository implements IStoreIssueRepository {
             if (!issue_list || issue_list.length === 0) {
                 throw new AppError("Issue list must not be empty", 400);
             }
-            const header = {
+
+            // SQL Query
+            const query = `
+                SELECT * FROM process_store_issue(
+                    $1::DATE,
+                    $2::TEXT,
+                    $3::VARCHAR,
+                    $4::INTEGER,
+                    $5::INTEGER,
+                    $6::JSONB
+                );
+            `;
+
+            // Parameters to match function signature
+            const values = [
                 issue_date,
                 description,
                 issue_type,
                 issued_by,
                 created_by,
-            }
-            console.log(header);
-            const query = `
-            select * from  process_store_issue(
-            $1::DATE,
-            $2::VARCHAR,
-            $3::VARCHAR,
-            $4::INTEGER,
-            $5::INTEGER,
-            $6::JSON);
-           
-        `;
-            const values = [
-                JSON.stringify(header.issue_date),
-                JSON.stringify(header.description),
-                JSON.stringify(header.issue_type),
-                JSON.stringify(header.issued_by),
-                JSON.stringify(header.created_by),
-                JSON.stringify(issue_list)];
+                JSON.stringify(issue_list), // Pass issue_list as JSONB
+            ];
+
+            // Execute the query
             const result = await this.client.query(query, values);
+
+            // Log and return the result
             console.log(result.rows);
-            return result.rows[0];
+            return result.rows[0]; // Return the first row
         } catch (error) {
             throw new AppError('Error creating store issue: ' + error, 500);
         }
     }
+
 
 
     // Get all store issues with pagination
