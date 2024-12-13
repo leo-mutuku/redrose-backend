@@ -136,7 +136,7 @@ LEFT JOIN
     item_register ir ON s.item_id = ir.item_id
 
 ORDER BY 
-    t.item_tracking_id DESC;  
+    t.item_tracking_id ASC;  
 `
 
         const result = await this.client.query(query)

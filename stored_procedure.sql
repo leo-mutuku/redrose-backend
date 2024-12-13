@@ -239,6 +239,8 @@ BEGIN
         -- Extract store_item_id and quantity
         pl_store_item_id := (item ->> 'store_item_id')::INT;
         pl_qty := (item ->> 'quantity')::NUMERIC;
+        pl_transfer_type := (item ->> 'transfer_type')::VARCHAR;
+        pl_destination_store_item_id := (item ->> 'destination_store_item_id')::INT;
 
         -- Lock and check quantity in store_item
         SELECT quantity
@@ -259,33 +261,139 @@ BEGIN
 
             -- Log in item_tracking
             INSERT INTO item_tracking(store_item_id, current_quantity, new_quantity, reason)
-            VALUES (pl_store_item_id, s_current_quantity, s_new_quantity, 'Transfer to hot kitchen');
+            VALUES (pl_store_item_id, s_current_quantity, s_new_quantity, 'Transfer to kitchen');
         END IF;
 
         -- Lock and update destination store_item
-        IF pl_transfer_type = 'hot_kitchen' THEN
-            SELECT quantity
-            INTO des_current_quantity
-            FROM kitchen_store
-            WHERE store_item_id = pl_store_item_id
-            FOR UPDATE;
-        -- Update or insert into kitchen_store
-           des_new_quantity := COALESCE(h_current_quantity, 0) + pl_qty;
-           IF des_current_quantity IS NULL THEN
-            INSERT INTO hot_kitchen_store (store_item_id, quantity)
-            VALUES (pl_store_item_id, pl_qty);
-        ELSE
-            UPDATE hot_kitchen_store
-            SET quantity = h_new_quantity
-            WHERE store_item_id = pl_store_item_id;
-        END IF;
+            IF pl_transfer_type = 'KITCHEN' THEN
+                    SELECT quantity
+                    INTO des_current_quantity
+                    FROM kitchen_store
+                    WHERE store_item_id = pl_destination_store_item_id
+                    FOR UPDATE;
+                -- Update or insert into kitchen_store
+                des_new_quantity := COALESCE(des_current_quantity, 0) + pl_qty;
+                IF des_current_quantity IS NULL THEN
+                    INSERT INTO kitchen_store (store_item_id, quantity)
+                    VALUES (pl_destination_store_item_id, pl_qty);
+                ELSE
+                    UPDATE kitchen_store
+                    SET quantity = des_new_quantity
+                    WHERE store_item_id = pl_destination_store_item_id;
+                END IF;
+                        -- Log in hot_kitchen_tracking
+                INSERT INTO hot_kitchen_tracking(store_item_id, current_quantity, new_quantity, reason)
+                VALUES (pl_destination_store_item_id, COALESCE(des_current_quantity, 0), des_new_quantity, 'Transfer from store');
 
-        -- Log in hot_kitchen_tracking
-        INSERT INTO hot_kitchen_tracking(store_item_id, current_quantity, new_quantity, reason)
-        VALUES (pl_store_item_id, COALESCE(h_current_quantity, 0), h_new_quantity, 'Transfer from store');
+            End IF;
+            IF pl_transfer_type = 'RESTAURANT' THEN
+                   SELECT quantity
+                    INTO des_current_quantity
+                    FROM restaurant_store
+                    WHERE store_item_id = pl_store_item_id
+                    FOR UPDATE;
+                -- Update or insert into kitchen_store
+                des_new_quantity := COALESCE(des_current_quantity, 0) + pl_qty;
+                IF des_current_quantity IS NULL THEN
+                    INSERT INTO restaurant_store (store_item_id, quantity)
+                    VALUES (pl_store_item_id, pl_qty);
+                ELSE
+                    UPDATE restaurant_store
+                    SET quantity = des_new_quantity
+                    WHERE store_item_id = pl_destination_store_item_id;
+                END IF;
+                    -- Log in hot_kitchen_tracking
+                INSERT INTO restaurant_tracking(store_item_id, current_quantity, new_quantity, reason)
+                VALUES (pl_store_item_id, COALESCE(des_current_quantity, 0), des_new_quantity, 'Transfer from store');
+
+            End IF;
+
+
+       
     END LOOP;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+
+
+
+
+
+
+------------------------------------------STORE ISSUE PROCEDURES----------------------------------------
+CREATE OR REPLACE FUNCTION process_store_issue(
+    issue_date DATE,
+    description TEXT,
+    issued_by INT,
+    created_by INT,
+    issue_list JSONB
+)
+RETURNS TABLE (
+    store_issue_header_id INT,
+    issue_date_out DATE,
+    description_out TEXT,
+    issued_by_out INT,
+    created_by_out INT
+) AS $$
+DECLARE
+    header_id INT;
+    item JSONB;
+    initial_quantity NUMERIC;
+    final_quantity NUMERIC;
+BEGIN
+    -- Insert into store_issue_header
+    INSERT INTO store_issue_header (issue_date, description, issued_by, created_by)
+    VALUES (issue_date, description, issued_by, created_by)
+    RETURNING store_issue_header_id, issue_date, description, issued_by, created_by
+    INTO header_id, issue_date_out, description_out, issued_by_out, created_by_out;
+
+    -- Loop through the issue_list array
+    FOR item IN SELECT * FROM jsonb_array_elements(issue_list)
+    LOOP
+        -- Fetch the current quantity for `store_item_id`
+        SELECT quantity
+        INTO initial_quantity
+        FROM store_item
+        WHERE store_item_id = (item ->> 'store_item_id')::INT
+        FOR UPDATE;
+
+        -- Check if sufficient quantity is available
+        IF initial_quantity IS NULL OR initial_quantity < (item ->> 'issue_quantity')::NUMERIC THEN
+            RAISE EXCEPTION 'Insufficient quantity for store_item_id: %', (item ->> 'store_item_id')::INT;
+        END IF;
+
+        -- Update the quantity in store_item
+        UPDATE store_item
+        SET quantity = quantity - (item ->> 'issue_quantity')::NUMERIC
+        WHERE store_item_id = (item ->> 'store_item_id')::INT
+        RETURNING quantity
+        INTO final_quantity;
+
+        -- Insert into store_issue_line
+        INSERT INTO store_issue_line (
+            store_issue_header_id,
+            store_item_id,
+            issue_quantity,
+            initial_value,
+            final_value
+        )
+        VALUES (
+            header_id,
+            (item ->> 'store_item_id')::INT,
+            (item ->> 'issue_quantity')::NUMERIC,
+            initial_quantity,
+            final_quantity
+        );
+    END LOOP;
+
+    RETURN QUERY
+    SELECT header_id, issue_date_out, description_out, issued_by_out, created_by_out;
+END;
+$$ LANGUAGE plpgsql;
+
+
 
 
 

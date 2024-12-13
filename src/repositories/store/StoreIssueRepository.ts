@@ -12,79 +12,47 @@ export class StoreIssueRepository implements IStoreIssueRepository {
     constructor() {
         this.client = pgClient();
     }
-
     // Create a new store issue
     async createStoreIssue({
         issue_date,
         description,
         issued_by,
+        issue_type,
         created_by,
-        isssue_list,
+        issue_list,
     }: StoreIssue): Promise<StoreIssue> {
         try {
             // Check if issue list is not empty
-            if (!isssue_list || isssue_list.length === 0) {
+            if (!issue_list || issue_list.length === 0) {
                 throw new AppError("Issue list must not be empty", 400);
             }
-
-            // Insert into store_issue_header
-            const query = `
-                INSERT INTO store_issue_header (issue_date, description, issued_by, created_by)
-                VALUES ($1, $2, $3, $4)
-                RETURNING store_issue_header_id, issue_date, description, issued_by, created_by;
-            `;
-            const values = [issue_date, description, issued_by, created_by];
-            const result = await this.client.query(query, values);
-            const header_id = result.rows[0].store_issue_header_id;
-
-            // Process each item in the issue list
-            for (const item of isssue_list) {
-                // Step 1: Fetch the current quantity for `store_item_id`
-                const fetchQuantityQuery = `
-                    SELECT quantity 
-                    FROM store_item 
-                    WHERE store_item_id = $1 
-                    FOR UPDATE;
-                `;
-                const fetchResult = await this.client.query(fetchQuantityQuery, [item.store_item_id]);
-                const initialQuantity = fetchResult.rows[0]?.quantity;
-
-                if (initialQuantity === undefined || initialQuantity < item.issue_quantity) {
-                    throw new AppError(
-                        `Insufficient quantity for store_item_id: ${item.store_item_id}`,
-                        400
-                    );
-                }
-
-                // Step 2: Update the quantity in store_item
-                const updateQuery = `
-                    UPDATE store_item 
-                    SET quantity = quantity - $1 
-                    WHERE store_item_id = $2 
-                    RETURNING quantity;
-                `;
-                const updateResult = await this.client.query(updateQuery, [
-                    item.issue_quantity,
-                    item.store_item_id,
-                ]);
-                const finalQuantity = updateResult.rows[0].quantity;
-
-                // Step 3: Insert into store_issue_line
-                const lineInsertQuery = `
-                    INSERT INTO store_issue_line 
-                    (store_issue_header_id, store_item_id, issue_quantity, initial_value, final_value)
-                    VALUES ($1, $2, $3, $4, $5);
-                `;
-                const lineValues = [
-                    header_id,
-                    item.store_item_id,
-                    item.issue_quantity,
-                    initialQuantity,
-                    finalQuantity,
-                ];
-                await this.client.query(lineInsertQuery, lineValues);
+            const header = {
+                issue_date,
+                description,
+                issue_type,
+                issued_by,
+                created_by,
             }
-
+            console.log(header);
+            const query = `
+            select * from  process_store_issue(
+            $1::DATE,
+            $2::VARCHAR,
+            $3::VARCHAR,
+            $4::INTEGER,
+            $5::INTEGER,
+            $6::JSON);
+           
+        `;
+            const values = [
+                JSON.stringify(header.issue_date),
+                JSON.stringify(header.description),
+                JSON.stringify(header.issue_type),
+                JSON.stringify(header.issued_by),
+                JSON.stringify(header.created_by),
+                JSON.stringify(issue_list)];
+            const result = await this.client.query(query, values);
+            console.log(result.rows);
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error creating store issue: ' + error, 500);

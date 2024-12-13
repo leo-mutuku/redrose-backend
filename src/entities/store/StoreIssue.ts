@@ -13,8 +13,9 @@ export class StoreIssue {
         public readonly description: string,
         public readonly issued_by: number,  // staff_id
         public readonly created_by: number,
+        public readonly issue_type: "KITCHEN" | "RESTAURANT",
         public readonly status: "New" | "In-Progress" | "Posted",
-        public readonly isssue_list: IssueList[],
+        public readonly issue_list: IssueList[],
         public readonly created_at?: Date,
 
     ) { }

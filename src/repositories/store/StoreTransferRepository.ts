@@ -16,7 +16,7 @@ export class StoreTransferRepository implements IStoreTransferRepository {
     async createStoreTransfer({ store_item_id, quantity, transfer_type, destination_store_item_id }: StoreTransfer): Promise<any> {
         try {
             // Prepare JSON payload
-            const store_item_json = JSON.stringify([{ store_item_id, quantity }]);
+            const store_item_json = JSON.stringify([{ store_item_id, quantity, transfer_type, destination_store_item_id }]);
             console.log('Store item JSON:', store_item_json);
             // validate the item_id match in the select store
 
@@ -30,9 +30,7 @@ export class StoreTransferRepository implements IStoreTransferRepository {
                     throw new AppError('Item mismatch in the selected stores', 404);
 
                 }
-                if (result1.rows[0].store_id != result2.rows[0].store_id) {
-                    throw new AppError('Store mismatch in the selected stores', 404);
-                }
+
                 if (result1.rows[0].quantity < quantity) {
                     throw new AppError('Insufficient quantity in the selected store', 404);
                 }
@@ -52,9 +50,7 @@ export class StoreTransferRepository implements IStoreTransferRepository {
                     throw new AppError('Item mismatch in the selected stores', 404);
 
                 }
-                if (result1.rows[0].store_id != result2.rows[0].store_id) {
-                    throw new AppError('Store mismatch in the selected stores', 404);
-                }
+
                 if (result1.rows[0].quantity < quantity) {
                     throw new AppError('Insufficient quantity in the selected store', 404);
                 }
@@ -96,7 +92,7 @@ LEFT JOIN
 LEFT JOIN 
     item_register ir ON s.item_id = ir.item_id
 WHERE 
-    t.reason = 'Transfer to hot kitchen'
+    t.reason = 'Transfer to kitchen'
 	order by t.item_tracking_id desc;
 
             `;
