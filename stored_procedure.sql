@@ -620,3 +620,88 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+-----------------KITCHEN SETUP REGISTER
+
+CREATE OR REPLACE FUNCTION process_kitchen_setup(
+    station_id INT,
+    menu_item_id INT,
+    managed VARCHAR(255),
+    ingredients_value JSONB
+) RETURNS VOID AS $$
+DECLARE
+    menu_name TEXT;
+    kitchen_setup_id INT;
+    ingredient JSONB;
+    store_item_exists BOOLEAN;
+BEGIN
+    -- Validate station_id
+    IF station_id IS NULL THEN
+        RAISE EXCEPTION 'Station ID is required';
+    END IF;
+
+    -- Validate menu_item_id
+    IF menu_item_id IS NULL THEN
+        RAISE EXCEPTION 'Menu item ID is required';
+    END IF;
+
+    -- Validate ingredients_value
+    IF jsonb_array_length(ingredients_value) = 0 THEN
+        RAISE EXCEPTION 'Ingredient value is required';
+    END IF;
+
+    -- Get menu name from menu_register
+    SELECT mr.name INTO menu_name
+    FROM menu_register AS mr
+    INNER JOIN menu_item AS mi ON mr.menu_register_id = mi.menu_register_id
+    WHERE mi.menu_item_id = process_kitchen_setup.menu_item_id; -- Explicitly reference the variable
+
+    IF menu_name IS NULL THEN
+        RAISE EXCEPTION 'Menu name not found for menu_item_id %', menu_item_id;
+    END IF;
+
+    -- Insert into kitchen_setup
+    INSERT INTO kitchen_setup (station_id, menu_item_id, name, managed)
+    VALUES (station_id, menu_item_id, menu_name, managed)
+    RETURNING kitchen_setup.kitchen_setup_id INTO kitchen_setup_id; -- Explicitly reference the column with table name
+
+    -- Iterate through the ingredients_value JSON array
+    FOR ingredient IN SELECT * FROM jsonb_array_elements(ingredients_value)
+    LOOP
+        -- Validate if source_type exists
+        IF ingredient->>'source_type' = 'HOT_KITCHEN' THEN
+            -- Check if store_item_id exists in kitchen_store
+            SELECT EXISTS(
+                SELECT 1 FROM kitchen_store WHERE store_item_id = (ingredient->>'store_item_id')::INT
+            ) INTO store_item_exists;
+
+            IF NOT store_item_exists THEN
+                RAISE EXCEPTION 'store_item_id % does not exist in kitchen_store', ingredient->>'store_item_id';
+            END IF;
+        ELSIF ingredient->>'source_type' = 'RESTAURANT' THEN
+            -- Check if store_item_id exists in restaurant_store
+            SELECT EXISTS(
+                SELECT 1 FROM restaurant_store WHERE store_item_id = (ingredient->>'store_item_id')::INT
+            ) INTO store_item_exists;
+
+            IF NOT store_item_exists THEN
+                RAISE EXCEPTION 'store_item_id % does not exist in restaurant_store', ingredient->>'store_item_id';
+            END IF;
+        ELSE
+            RAISE EXCEPTION 'Invalid source_type % for ingredient', ingredient->>'source_type';
+        END IF;
+
+        -- Insert into kitchen_ingredients
+        INSERT INTO kitchen_ingredients (ingredients_id, store_item_id, quantity, source_type)
+        VALUES (
+            kitchen_setup_id, -- Explicitly references the variable
+            (ingredient->>'store_item_id')::INT,
+            (ingredient->>'quantity')::NUMERIC,
+            ingredient->>'source_type'
+        );
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+

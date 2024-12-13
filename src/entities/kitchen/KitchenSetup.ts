@@ -3,6 +3,7 @@ export class KitchenSetup {
         public readonly station_id: number,
         public readonly menu_item_id: number,
         public readonly ingredients_value: IngredientValue[],
+        public readonly managed: "MANAGED" | "UNMANAGED",
 
     ) { }
 }
