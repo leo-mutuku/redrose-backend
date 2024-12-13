@@ -26,6 +26,7 @@ router.post("/createkitchensetup", controller.onCreateKitchenSetup.bind(controll
 router.get("/getkitchensetup/:id", controller.onGetKitchenSetup.bind(controller));
 router.get("/getkitchensetups", controller.onGetKitchenSetups.bind(controller));
 router.patch("/updatekitchensetup/:id", controller.onUpdateKitchenSetup.bind(controller));
+router.delete("/deletekitchensetup/:id", controller.onDeleteKitchenSetup.bind(controller));
 
 // Export the configured router
 export default router;

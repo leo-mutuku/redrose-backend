@@ -56,4 +56,16 @@ export class KitchenSetupController {
             next(error);
         }
     }
+
+    //onDeleteKitchenSetup
+    async onDeleteKitchenSetup(req: Request, res: Response, next: NextFunction) {
+        try {
+            const id = parseInt(req.params.id);
+            const data = await this.interactor.deleteKitchenSetup(id);
+            res.status(200).json({ status: 'success', data: data, message: 'Kitchen setup deleted successfully' });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
 }

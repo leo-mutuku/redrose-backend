@@ -64,4 +64,17 @@ export class KitchenSetupInteractor implements IKitchenSetupInteractor {
             throw new Error('Failed to retrieve kitchen setups. Please try again later.');
         }
     }
+
+    //deleteKitchenSetup
+    async deleteKitchenSetup(id: number): Promise<any> {
+        try {
+            const result = await this.repository.deleteKitchenSetup(id);
+            return result;
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw new AppError(`Error deleting kitchen setup in KitchenSetupInteractor: ${error.message}`, error.statusCode || 500);
+            }
+            throw new Error('Failed to delete kitchen setup. Please try again later.');
+        }
+    }
 }

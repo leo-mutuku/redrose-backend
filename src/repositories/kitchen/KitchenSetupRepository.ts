@@ -232,4 +232,28 @@ GROUP BY
             throw new AppError('Error updating kitchen setup: ' + error, 500);
         }
     }
+
+    //deleteKitchenSetup(id: number)
+    async deleteKitchenSetup(id: number): Promise<void> {
+        try {
+
+            // delete entries from kitchen_ingredients table
+            const deleteKitchenIngredientsQuery = `
+            DELETE FROM kitchen_ingredients WHERE ingredients_id = $1`;
+            const deleteKitchenIngredientsValues = [id];
+            await this.client.query(deleteKitchenIngredientsQuery, deleteKitchenIngredientsValues);
+            // delete entry from kitchen_setup table
+            const query = `
+                DELETE FROM kitchen_setup WHERE kitchen_setup_id = $1
+            `;
+            const values = [id];
+            const result = await this.client.query(query, values);
+            if (result.rowCount === 0) {
+                throw new AppError('Kitchen setup not found', 404);
+            }
+        }
+        catch (error) {
+            throw new AppError('Error deleting kitchen setup: ' + error, 500);
+        }
+    }
 }
