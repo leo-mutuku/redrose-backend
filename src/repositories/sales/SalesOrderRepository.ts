@@ -84,6 +84,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
             const store_json = JSON.stringify(updatedData);
 
             // Call the sales order processing function
+            console.log(menu_json, store_json)
             const result = await this.client.query(
                 `SELECT * FROM sales_order_processing($1::JSON, $2::JSON);`,
                 [menu_json, store_json]

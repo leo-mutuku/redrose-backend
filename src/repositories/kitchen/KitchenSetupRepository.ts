@@ -110,6 +110,7 @@ export class KitchenSetupRepository implements IKitchenSetupRepository {
     ks.name, 
     ks.menu_item_id, 
     ks.managed,
+    ks.station_id,
     TO_CHAR(ks.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
     COALESCE(
         JSON_AGG(
@@ -157,6 +158,8 @@ GROUP BY
     ks.kitchen_setup_id, 
     ks.name, 
     ks.menu_item_id, 
+    ks.managed,
+    ks.station_id,
     TO_CHAR(ks.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
     COALESCE(
         JSON_AGG(

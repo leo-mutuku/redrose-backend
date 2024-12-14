@@ -102,7 +102,7 @@ ORDER BY
     }
     async updateMenuItem(id: number, menuItem: Partial<MenuItem>): Promise<MenuItem> {
         try {
-            const allowedFields = ['quantity', 'price', 'menu_category_id']; // List of fields allowed to update
+            const allowedFields = ['price', 'menu_category_id']; // List of fields allowed to update
             let query = `UPDATE menu_item SET `;
             const values: any[] = [];
             const setClauses: string[] = [];

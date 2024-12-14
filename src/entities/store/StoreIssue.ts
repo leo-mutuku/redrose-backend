@@ -4,7 +4,7 @@ type IssueList = {
     issue_quantity: number;
     initial_value?: number; // backend
     final_value?: number;   //backend
-    store_issue_header_id?: number; //backend
+    store_isssue_header_id?: number; //backend
 };
 
 export class StoreIssue {
@@ -15,7 +15,7 @@ export class StoreIssue {
         public readonly created_by: number,
         public readonly issue_type: "KITCHEN" | "RESTAURANT",
         public readonly status: "New" | "In-Progress" | "Posted",
-        public readonly issue_list: IssueList[],
+        public readonly isssue_list: IssueList[],
         public readonly created_at?: Date,
 
     ) { }

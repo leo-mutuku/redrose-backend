@@ -225,12 +225,15 @@ DECLARE
     item JSON;
     pl_store_item_id INT; -- Variable to store store_item_id
     pl_destination_store_item_id INT; -- Variable to store destination_store_item_id
-    pl_qty NUMERIC(15, 2); -- Variable to store quantity
+    pl_qty NUMERIC(15, 4); -- Variable to store quantity
     pl_transfer_type VARCHAR(200); -- Variable to store transfer_type
-    s_current_quantity NUMERIC(15, 2); -- Current quantity in store_item
+    s_current_quantity NUMERIC(15, 4); -- Current quantity in store_item
     s_new_quantity NUMERIC(15, 2); -- New quantity in store_item
-    des_current_quantity NUMERIC(15, 2); -- Current quantity in hot_kitchen_store
-    des_new_quantity NUMERIC(15, 2); -- New quantity in hot_kitchen_store
+    des_current_quantity NUMERIC(15, 4); -- Current quantity in destination store
+    des_new_quantity NUMERIC(15, 4); -- New quantity in destination store
+    tracking_reason VARCHAR(255); -- Reason for tracking
+    des_table_name VARCHAR(50); -- Destination store table name
+    tracking_table_name VARCHAR(50); -- Tracking table name
 BEGIN
     -- Loop through the JSON array to process each item
     FOR item IN
@@ -261,55 +264,42 @@ BEGIN
 
             -- Log in item_tracking
             INSERT INTO item_tracking(store_item_id, current_quantity, new_quantity, reason)
-            VALUES (pl_store_item_id, s_current_quantity, s_new_quantity, 'Transfer to kitchen');
+            VALUES (pl_store_item_id, s_current_quantity, s_new_quantity, 'Transfer to ' || pl_transfer_type);
+        END IF;
+
+        -- Determine the destination store and tracking table based on transfer type
+        IF pl_transfer_type = 'KITCHEN' THEN
+            des_table_name := 'kitchen_store';
+            tracking_table_name := 'hot_kitchen_tracking';
+            tracking_reason := 'Transfer from store to kitchen';
+        ELSIF pl_transfer_type = 'RESTAURANT' THEN
+            des_table_name := 'restaurant_store';
+            tracking_table_name := 'restaurant_tracking';
+            tracking_reason := 'Transfer from store to restaurant';
+        ELSE
+            RAISE EXCEPTION 'Invalid transfer type: %', pl_transfer_type;
         END IF;
 
         -- Lock and update destination store_item
-            IF pl_transfer_type = 'KITCHEN' THEN
-                    SELECT quantity
-                    INTO des_current_quantity
-                    FROM kitchen_store
-                    WHERE store_item_id = pl_destination_store_item_id
-                    FOR UPDATE;
-                -- Update or insert into kitchen_store
-                des_new_quantity := COALESCE(des_current_quantity, 0) + pl_qty;
-                IF des_current_quantity IS NULL THEN
-                    INSERT INTO kitchen_store (store_item_id, quantity)
-                    VALUES (pl_destination_store_item_id, pl_qty);
-                ELSE
-                    UPDATE kitchen_store
-                    SET quantity = des_new_quantity
-                    WHERE store_item_id = pl_destination_store_item_id;
-                END IF;
-                        -- Log in hot_kitchen_tracking
-                INSERT INTO hot_kitchen_tracking(store_item_id, current_quantity, new_quantity, reason)
-                VALUES (pl_destination_store_item_id, COALESCE(des_current_quantity, 0), des_new_quantity, 'Transfer from store');
+        EXECUTE format('SELECT quantity FROM %I WHERE store_item_id = $1 FOR UPDATE', des_table_name)
+        INTO des_current_quantity
+        USING pl_destination_store_item_id;
 
-            End IF;
-            IF pl_transfer_type = 'RESTAURANT' THEN
-                   SELECT quantity
-                    INTO des_current_quantity
-                    FROM restaurant_store
-                    WHERE store_item_id = pl_store_item_id
-                    FOR UPDATE;
-                -- Update or insert into kitchen_store
-                des_new_quantity := COALESCE(des_current_quantity, 0) + pl_qty;
-                IF des_current_quantity IS NULL THEN
-                    INSERT INTO restaurant_store (store_item_id, quantity)
-                    VALUES (pl_store_item_id, pl_qty);
-                ELSE
-                    UPDATE restaurant_store
-                    SET quantity = des_new_quantity
-                    WHERE store_item_id = pl_destination_store_item_id;
-                END IF;
-                    -- Log in hot_kitchen_tracking
-                INSERT INTO restaurant_tracking(store_item_id, current_quantity, new_quantity, reason)
-                VALUES (pl_store_item_id, COALESCE(des_current_quantity, 0), des_new_quantity, 'Transfer from store');
+        -- Update or insert into destination store
+        des_new_quantity := COALESCE(des_current_quantity, 0) + pl_qty;
 
-            End IF;
+        IF des_current_quantity IS NULL THEN
+            EXECUTE format('INSERT INTO %I (store_item_id, quantity) VALUES ($1, $2)', des_table_name)
+            USING pl_destination_store_item_id, pl_qty;
+        ELSE
+            EXECUTE format('UPDATE %I SET quantity = $1 WHERE store_item_id = $2', des_table_name)
+            USING des_new_quantity, pl_destination_store_item_id;
+        END IF;
 
+        -- Log in destination tracking table
+        EXECUTE format('INSERT INTO %I (store_item_id, current_quantity, new_quantity, reason) VALUES ($1, $2, $3, $4)', tracking_table_name)
+        USING pl_destination_store_item_id, COALESCE(des_current_quantity, 0), des_new_quantity, tracking_reason;
 
-       
     END LOOP;
 END;
 $$ LANGUAGE plpgsql;
@@ -386,6 +376,10 @@ BEGIN
             initial_quantity,
             final_quantity
         );
+
+        -- instert into item_tracking
+        INSERT INTO item_tracking(store_item_id, current_quantity, new_quantity, reason)
+        VALUES ((item ->> 'store_item_id')::INT, initial_quantity, final_quantity, 'Issue');
     END LOOP;
 
     RETURN QUERY
@@ -510,7 +504,7 @@ $$ LANGUAGE plpgsql;
 
 
 
------order processing
+----------------------------------------- sale order processing
 
 CREATE OR REPLACE FUNCTION sales_order_processing(
     menu_items JSON,      -- First JSON array for menu items
@@ -537,20 +531,17 @@ BEGIN
         pl_menu_item_id := (item->>'menu_item_id')::INT;
         pl_menu_qty := (item->>'quantity')::NUMERIC;
 
-        -- Lock the row and update the quantity for menu_item
-        WITH current_data AS (
-            SELECT quantity
-            FROM menu_item
-            WHERE menu_item_id = pl_menu_item_id
-            FOR UPDATE
-        )
-        UPDATE menu_item
-        SET quantity = current_data.quantity + pl_menu_qty
-        FROM current_data
-        WHERE menu_item.menu_item_id = pl_menu_item_id
-        RETURNING menu_item.quantity INTO new_quantity;
+        -- Lock the row and fetch the current quantity for menu_item
+        SELECT quantity INTO current_quantity
+        FROM menu_item
+        WHERE menu_item_id = pl_menu_item_id
+        FOR UPDATE;
 
-        SELECT quantity INTO current_quantity FROM current_data;
+        -- Update the menu item quantity
+        UPDATE menu_item
+        SET quantity = current_quantity + pl_menu_qty
+        WHERE menu_item_id = pl_menu_item_id
+        RETURNING quantity INTO new_quantity;
 
         -- Insert into menu tracking
         INSERT INTO menu_tracking (menu_item_id, current_quantity, new_quantity, reason)
@@ -565,47 +556,41 @@ BEGIN
         pl_source_type := (item->>'source_type')::VARCHAR;
         pl_store_qty := (item->>'quantity')::NUMERIC;
 
-        IF pl_source_type = 'MAIN_STORE' THEN
-            -- Lock and update MAIN_STORE items
-            WITH store_current_data AS (
-                SELECT quantity
-                FROM store_item
-                WHERE store_item_id = pl_store_item_id
-                FOR UPDATE
-            )
-            UPDATE store_item
-            SET quantity = store_current_data.quantity - pl_store_qty
-            FROM store_current_data
-            WHERE store_item.store_item_id = pl_store_item_id
-            RETURNING store_item.quantity INTO store_new_quantity;
+        IF pl_source_type = 'RESTAURANT' THEN
+            -- Lock and fetch current quantity for MAIN_STORE items
+            SELECT quantity INTO store_current_quantity
+            FROM restaurant_store
+            WHERE store_item_id = pl_store_item_id
+            FOR UPDATE;
 
-            SELECT quantity INTO store_current_quantity FROM store_current_data;
+            -- Update MAIN_STORE item quantity
+            UPDATE restaurant_store
+            SET quantity = store_current_quantity - pl_store_qty
+            WHERE store_item_id = pl_store_item_id
+            RETURNING quantity INTO store_new_quantity;
 
             -- Insert into item tracking
-            INSERT INTO item_tracking (store_item_id, current_quantity, new_quantity, reason)
+            INSERT INTO restaurant_tracking (store_item_id, current_quantity, new_quantity, reason)
             VALUES (pl_store_item_id, store_current_quantity, store_new_quantity, 'Sales order processing');
 
             -- Raise exception if quantity goes negative
             IF store_current_quantity - pl_store_qty < 0 THEN
-                RAISE EXCEPTION 'Quantity for store_item_id % would be negative', pl_store_item_id;
+                RAISE EXCEPTION 'Quantity for store_item_id % in restaunt would be negative', pl_store_item_id;
             END IF;
         END IF;
 
-        IF pl_source_type = 'HOT_KITCHEN' THEN
-            -- Lock and update HOT_KITCHEN items
-            WITH store_current_data AS (
-                SELECT quantity
-                FROM hot_kitchen_store
-                WHERE store_item_id = pl_store_item_id
-                FOR UPDATE
-            )
-            UPDATE hot_kitchen_store
-            SET quantity = store_current_data.quantity - pl_store_qty
-            FROM store_current_data
-            WHERE hot_kitchen_store.store_item_id = pl_store_item_id
-            RETURNING hot_kitchen_store.quantity INTO store_new_quantity;
+        IF pl_source_type = 'KITCHEN' THEN
+            -- Lock and fetch current quantity for HOT_KITCHEN items
+            SELECT quantity INTO store_current_quantity
+            FROM kitchen_store
+            WHERE store_item_id = pl_store_item_id
+            FOR UPDATE;
 
-            SELECT quantity INTO store_current_quantity FROM store_current_data;
+            -- Update HOT_KITCHEN item quantity
+            UPDATE kitchen_store
+            SET quantity = store_current_quantity - pl_store_qty
+            WHERE store_item_id = pl_store_item_id
+            RETURNING quantity INTO store_new_quantity;
 
             -- Insert into hot kitchen tracking
             INSERT INTO hot_kitchen_tracking (store_item_id, current_quantity, new_quantity, reason)
@@ -613,13 +598,14 @@ BEGIN
 
             -- Raise exception if quantity goes negative
             IF store_current_quantity - pl_store_qty < 0 THEN
-                RAISE EXCEPTION 'Quantity for store_item_id % would be negative', pl_store_item_id;
+                RAISE EXCEPTION 'Quantity for store_item_id % in kitch would be negative', pl_store_item_id;
             END IF;
         END IF;
     END LOOP;
 
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 

@@ -34,7 +34,7 @@ export class MenuCategoryRepository implements IMenuCategoryRepository {
     async getMenuCategories(limit: number, offset: number): Promise<MenuCategory[]> {
         try {
             const query = `
-                SELECT 
+                 SELECT 
     mc.menu_category_id, 
     mc.category_name, 
     mc.description, 
@@ -44,7 +44,7 @@ export class MenuCategoryRepository implements IMenuCategoryRepository {
         JSON_AGG(
             JSONB_BUILD_OBJECT(
                 'menu_item_id', mi.menu_item_id,
-                'item_name', ir.item_name,
+                'item_name', mr.name,
                 'price', mi.price
             )
         ) FILTER (WHERE mi.menu_item_id IS NOT NULL), 
@@ -57,9 +57,9 @@ LEFT JOIN
 ON 
     mc.menu_category_id = mi.menu_category_id
 LEFT JOIN 
-    item_register ir
+    menu_register mr
 ON 
-    mi.menu_register_id = ir.item_id
+    mi.menu_register_id = mr.menu_register_id
 GROUP BY 
     mc.menu_category_id
             `;
@@ -76,7 +76,7 @@ GROUP BY
     async getMenuCategory(id: number): Promise<MenuCategory> {
         try {
             const query = `
-                SELECT 
+           SELECT 
     mc.menu_category_id, 
     mc.category_name, 
     mc.description, 
@@ -86,7 +86,7 @@ GROUP BY
         JSON_AGG(
             JSONB_BUILD_OBJECT(
                 'menu_item_id', mi.menu_item_id,
-                'item_name', ir.item_name,
+                'item_name', mr.name,
                 'price', mi.price
             )
         ) FILTER (WHERE mi.menu_item_id IS NOT NULL), 
@@ -99,11 +99,11 @@ LEFT JOIN
 ON 
     mc.menu_category_id = mi.menu_category_id
 LEFT JOIN 
-    item_register ir
+    menu_register mr
 ON 
-    mi.menu_register_id = ir.item_id
+    mi.menu_register_id = mr.menu_register_id
 GROUP BY 
-    mc.menu_category_id;
+    mc.menu_category_id
                 WHERE mc.menu_category_id = $1
             `;
             const values = [id];

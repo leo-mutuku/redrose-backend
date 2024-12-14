@@ -16,6 +16,10 @@ export class StoreTransferRepository implements IStoreTransferRepository {
     async createStoreTransfer({ store_item_id, quantity, transfer_type, destination_store_item_id }: StoreTransfer): Promise<any> {
         try {
             // Prepare JSON payload
+            if (transfer_type != "KITCHEN" && transfer_type != "RESTAURANT") {
+                throw new AppError("Invalid transfer type transfer type must be either KITCHEN or RESTAURANT", 400);
+
+            }
             const store_item_json = JSON.stringify([{ store_item_id, quantity, transfer_type, destination_store_item_id }]);
             console.log('Store item JSON:', store_item_json);
             // validate the item_id match in the select store
@@ -30,8 +34,9 @@ export class StoreTransferRepository implements IStoreTransferRepository {
                     throw new AppError('Item mismatch in the selected stores', 404);
 
                 }
-
-                if (result1.rows[0].quantity < quantity) {
+                console.log("result1", result1.rows[0].quantity, quantity);
+                console.log(result1.rows[0].quantity < quantity)
+                if (parseFloat(result1.rows[0].quantity) < quantity) {
                     throw new AppError('Insufficient quantity in the selected store', 404);
                 }
                 if (result1.rows[0].item_id != result2.rows[0].item_id) {
@@ -50,8 +55,8 @@ export class StoreTransferRepository implements IStoreTransferRepository {
                     throw new AppError('Item mismatch in the selected stores', 404);
 
                 }
-
-                if (result1.rows[0].quantity < quantity) {
+                console.log("result1", result1.rows[0].quantity, quantity);
+                if (parseFloat(result1.rows[0].quantity) < quantity) {
                     throw new AppError('Insufficient quantity in the selected store', 404);
                 }
                 if (result1.rows[0].item_id != result2.rows[0].item_id) {

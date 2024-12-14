@@ -19,11 +19,15 @@ export class StoreIssueRepository implements IStoreIssueRepository {
         issued_by,
         issue_type,
         created_by,
-        issue_list,
+        isssue_list,
     }: StoreIssue): Promise<StoreIssue> {
         try {
+            if (issue_type !== "KITCHEN" && issue_type !== "RESTAURANT") {
+                throw new AppError("Issue type must be 'KITCHEN' or 'RESTAURANT'", 400);
+            }
             // Check if issue list is not empty
-            if (!issue_list || issue_list.length === 0) {
+            console.log(isssue_list, "isssue_list");
+            if (!isssue_list.length) {
                 throw new AppError("Issue list must not be empty", 400);
             }
 
@@ -46,14 +50,12 @@ export class StoreIssueRepository implements IStoreIssueRepository {
                 issue_type,
                 issued_by,
                 created_by,
-                JSON.stringify(issue_list), // Pass issue_list as JSONB
+                JSON.stringify(isssue_list), // Pass issue_list as JSONB
             ];
 
             // Execute the query
             const result = await this.client.query(query, values);
-
             // Log and return the result
-            console.log(result.rows);
             return result.rows[0]; // Return the first row
         } catch (error) {
             throw new AppError('Error creating store issue: ' + error, 500);
@@ -70,6 +72,7 @@ export class StoreIssueRepository implements IStoreIssueRepository {
             sih.store_issue_header_id,
             sih.created_at, 
             sih.issued_by, 
+            sih.issue_type,
             sih.created_by,
             us.first_name AS created_by_name,  -- Add first_name from users table
             st.first_name AS issued_by_name,  -- Add first_name from staff table
