@@ -90,6 +90,11 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                 [menu_json, store_json]
             );
 
+
+            //  Prepare sales order data
+            // select from menu item 
+
+            // Prepare 
             // Build and return the result
             const salesOrder: SalesOrder = {
                 order_items,
