@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import helmet from "helmet";
-import express, { Application, NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler"; // Adjust path
 import routers from "./routes";
 import cors from "cors";
@@ -32,11 +32,12 @@ app.use("/api/v1", routers);
 
 
 // Error handling middleware (should be after all other middlewares and routes)
-app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log("Listening to: ", PORT);
 });
+app.use(globalErrorHandler);
+
 
 
 // Graceful shutdown logic

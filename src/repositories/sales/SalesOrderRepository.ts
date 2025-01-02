@@ -13,6 +13,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
     // Create a new sales order
     async createSalesOrder({
         order_items,
+        waitstaff_id
     }: SalesOrder): Promise<SalesOrder> {
         try {
             // Prepare store item JSON
@@ -66,8 +67,6 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                         store_item_id: item.store_item_id,
                         source_type: item.source_type
                     })
-
-
                 }
 
                 console.log(stores, "stores")
@@ -85,6 +84,51 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
             // Call the sales order processing function
             console.log(menu_json, store_json)
+
+            //  sales order start here 
+            // get order items and prices from menu item 
+            type OrderDetails = {
+                menu_item_id: number,
+                quantity: number,
+                price: number,
+                total_price: number
+            }
+            let order_details: OrderDetails[] = []
+
+            for (let item of order_items) {
+                let qry4 = `select * from menu_item where menu_item_id = $1`
+                let v4 = [item.menu_item_id]
+                let r4 = await this.client.query(qry4, v4)
+
+                order_details.push({
+                    menu_item_id: r4.rows[0].menu_item_id,
+                    quantity: item.quantity,
+                    price: r4.rows[0].price,
+                    total_price: parseFloat(r4.rows[0].price) * item.quantity
+                })
+            }
+            type sales_order_type = {
+                order_details: OrderDetails[],
+                sales_order_id: number,
+                total: number,
+                cat: number,
+                vat: number,
+                status: "New",
+            }
+            let sales_order: sales_order_type = {
+                order_details,
+                sales_order_id: 0,
+                cat: (order_details.reduce((acc, item) => acc + item.total_price, 0)) * 0.02,
+                vat: (order_details.reduce((acc, item) => acc + item.total_price, 0)) * 0.16,
+                total: order_details.reduce((acc, item) => acc + item.total_price, 0),
+                status: "New"
+            }
+
+            let order_query = `INSERT INTO sales_order 
+            (order_details, total, cat, vat, status) VALUES ($1, $2, $3, $4, $5) RETURNING sales_order_id`
+            console.log(sales_order, "sales order")
+
+            // I
             const result = await this.client.query(
                 `SELECT * FROM sales_order_processing($1::JSON, $2::JSON);`,
                 [menu_json, store_json]
@@ -97,7 +141,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
             // Prepare 
             // Build and return the result
             const salesOrder: SalesOrder = {
-                order_items,
+                order_items, waitstaff_id
                 // Include additional properties if necessary
             };
 

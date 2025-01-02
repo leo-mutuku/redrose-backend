@@ -97,7 +97,7 @@ LEFT JOIN
 LEFT JOIN 
     item_register ir ON s.item_id = ir.item_id
 WHERE 
-    t.reason = 'Transfer to kitchen'
+    t.reason = 'Transfer to KITCHEN'
 	order by t.item_tracking_id desc;
 
             `;

@@ -19,6 +19,7 @@ export class ShiftRepository implements IShiftRepository {
                 RETURNING *`,
                 [shift.shift_start, shift.shift_end, shift.created_by]
             )
+
             return result.rows[0]
 
 

@@ -2,7 +2,7 @@
 export class SalesOrder {
     constructor(
         public readonly order_items: Items[],
-
+        public readonly waitstaff_id: number,
     ) { }
 }
 
