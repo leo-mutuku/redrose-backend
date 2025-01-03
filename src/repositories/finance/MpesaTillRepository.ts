@@ -13,8 +13,6 @@ export class MpesaTillRepository implements IMpesaTillRepository {
         this.client = pgClient();
     }
 
-
-
     async createMpesaTill(input: any): Promise<any> {
         try {
             const query = `

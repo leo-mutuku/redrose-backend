@@ -28,7 +28,7 @@ export class AuthInteractor implements IAuthInteractor {
         // jwt token
         let userId = result.user_id ? result.user_id : "";
         const token = jwt.sign(
-            { userId: userId, userName: result.username, roles: result.roles }, // Payload
+            { userId: userId, userName: result.username, roles: result.roles, shift_id: result.shift_id, staff_id: result.staff_id }, // Payload
             process.env.JWT_SECRET!,                 // Secret key from environment
             { expiresIn: "24h" }                      // Token expiration
         );

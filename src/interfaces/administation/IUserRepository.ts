@@ -4,4 +4,5 @@ export interface IUserRepository {
     getUsers(limit: number, offset: number): Promise<User[]>
     getUser(id: number): Promise<User>
     updateUser(id: number, user: User): Promise<User>
+    changePassword(input: any): Promise<User>
 }

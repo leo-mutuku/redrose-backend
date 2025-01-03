@@ -5,6 +5,8 @@ export class Auth {
         public readonly user_id?: string,
         public readonly token?: string,
         public readonly roles?: [number],
+        public readonly shift_id?: number,
+        public readonly staff_id?: number
 
     ) { }
 }

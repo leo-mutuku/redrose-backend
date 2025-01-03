@@ -30,7 +30,7 @@ export class ShiftInteractor implements IShiftInteractor {
 
         } catch (error) {
             throw new AppError(
-                `Failed to get shift. Reason: ${(error as AppError).message}`,
+                `${(error as AppError).message}`,
                 (error as AppError).statusCode || 500
             );
 

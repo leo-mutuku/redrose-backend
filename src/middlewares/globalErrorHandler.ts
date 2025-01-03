@@ -11,7 +11,7 @@ export const globalErrorHandler = (
     // Handle known operational errors
     if (err instanceof AppError) {
         return res.status(err.statusCode).json({
-            success: false,
+            status: "failed",
             message: err.message,
         });
     }
@@ -30,7 +30,7 @@ export const globalErrorHandler = (
     console.error("Unexpected error:", err); // Log for debugging purposes
 
     return res.status(500).json({
-        success: false,
+        staus: "failed",
         message: "Internal Server Error",
     });
 };

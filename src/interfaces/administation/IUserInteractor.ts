@@ -3,4 +3,5 @@ export interface IUserInteractor {
     getUser(id: number);
     updateUser(id: number, input: any);
     getUsers(limit: number, offset: number);
+    changePassword(input: any)
 }

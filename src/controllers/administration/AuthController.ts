@@ -13,6 +13,7 @@ export class AuthController {
 
     async onLogin(req: Request, res: Response, next: NextFunction) {
         try {
+
             const body = req.body;
             const result = await this.authInteractor.login(body);
 

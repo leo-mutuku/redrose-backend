@@ -95,7 +95,7 @@ export class AccountRepository implements IAccountRepository {
 
             return result.rows[0];
         } catch (error) {
-            throw new AppError("Failed to update account: " + error, 500);
+            throw new AppError("" + error, 500);
         }
     }
 

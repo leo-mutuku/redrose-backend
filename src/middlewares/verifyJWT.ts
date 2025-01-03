@@ -1,8 +1,11 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+import { Auth } from "../entities/administration/Auth";
 
 const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     // Skip JWT verification for auth routes
+
+    console.log("Received request path:", req.path);
     if (req.path.startsWith("/auth") || req.path.startsWith("/posterminal") || req.path.startsWith("/posterminalprintbill") || req.path.startsWith("/sales")) {
         return next();
     }
@@ -17,7 +20,8 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
 
         const secretKey = process.env.JWT_SECRET || "your-default-secret";
         const decoded = jwt.verify(token, secretKey);
-        (req as any).user = decoded; // Attach the decoded payload to the request object
+
+        req.body.user = decoded
         next();
     } catch (error) {
         return res.status(401).json({ success: false, message: "Invalid token." });

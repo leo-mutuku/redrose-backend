@@ -52,8 +52,12 @@ export class UserRepository implements IUserRepository {
 
     async getUsers(limit: number, offset: number): Promise<User[]> {
         try {
-            const query = `SELECT user_id, username, first_name, last_name, created_by, 
-            TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at FROM users WHERE is_active = true LIMIT $1 OFFSET $2`;
+            const query =
+                `SELECT u.user_id, u.username, s.first_name, s.last_name, s.first_name as created_by, 
+            TO_CHAR(u.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at 
+            FROM users  as u
+            inner join staff as s  on s.staff_id = u.staff_id
+            WHERE u.is_active = true LIMIT $1 OFFSET $2`;
             const values = [limit, offset];
             const result = await this.client.query(query, values);
             return result.rows;
@@ -66,8 +70,12 @@ export class UserRepository implements IUserRepository {
         try {
 
 
-            const query = `SELECT  user_id, username, first_name, last_name, created_by,  is_active,
-            TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at FROM users  WHERE user_id = $1`;
+            const query =
+                `SELECT  u.user_id, u.username, u.username as email, s.phone, s.first_name, s.last_name , u.is_active, u.created_by,
+            TO_CHAR(u.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at 
+            FROM users as u
+            inner join staff as s on s.staff_id = u.staff_id
+             WHERE u.user_id = $1`;
             const values = [id];
 
             const result = await this.client.query(query, values);
@@ -143,6 +151,26 @@ export class UserRepository implements IUserRepository {
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error updating user ' + error, 400)
+        }
+    }
+
+    async changePassword({ user_id, password }: User): Promise<User> {
+        try {
+
+            // hash password
+            const hashed_password = ""
+
+            // save hashed_password
+            const query = `
+            update users set password = $1  where user_id = $2 
+            `
+            const values = [hashed_password, user_id]
+            const result = await this.client.query(query, values)
+            return result.rows[0]
+
+        } catch (error) {
+            throw new AppError('Error: ' + error, 400)
+
         }
     }
 

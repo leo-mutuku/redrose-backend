@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { INTERFACE_TYPE } from "../../utils";
 import { IStoreItemInteractor } from "../../interfaces/store/IStoreItemInteractor";
+import { Auth } from "../../entities/administration/Auth";
 
 @injectable()
 export class StoreItemController {
@@ -58,6 +59,11 @@ export class StoreItemController {
 
     async onGetItemtracking(req: Request, res: Response, next: NextFunction) {
         try {
+            //const Loggineduser: Auth = req.user
+            console.log(req.body.user)
+
+
+
             const data = await this.interactor.getItemtracking()
             res.status(200).json({
                 status: "success",

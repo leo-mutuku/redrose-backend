@@ -51,4 +51,19 @@ export class UserController {
             next(error)
         }
     }
+    async onChangePassword(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user_id = req.body.user.user_id
+            const password = req.body.new_password
+            const body = { user_id, password }
+            const data = await this.interactor.changePassword(body)
+            res.status(200).json({
+                status: "success",
+                message: "Passord changes",
+                data: data
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 }

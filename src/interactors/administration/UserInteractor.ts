@@ -41,12 +41,12 @@ export class UserInteractor implements IUserInteractor {
         } catch (error) {
             if (error instanceof AppError) {
                 throw new AppError(
-                    `Failed to retrieve user with ID ${id}. Reason: ${(error as AppError).message}`,
+                    ` ${(error as AppError).message}`,
                     (error as AppError).statusCode || 500
                 );
             }
 
-            throw new Error('Error caught at interator class. Please try again later.');
+            throw new Error(' Please try again later.');
         }
     }
     async updateUser(id: number, input: any): Promise<any> {
@@ -62,7 +62,18 @@ export class UserInteractor implements IUserInteractor {
             const result = await this.repository.getUsers(limit, offset)
             return result
         } catch (error) {
-            throw error
+            throw new AppError("Error" + error, 400)
+        }
+    }
+
+    async changePassword(input: any) {
+        try {
+            const result = await this.repository.changePassword(input)
+            return result
+
+        } catch (error) {
+            throw new AppError("Error" + error, 400)
+
         }
     }
 

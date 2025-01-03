@@ -36,6 +36,8 @@ export class StoreTransferController {
 
     async onGetStoreTransfer(req: Request, res: Response, next: NextFunction) {
         try {
+
+
             const id = parseInt(req.params.id);
             const data = await this.interactor.getStoreTransfer(id);
             res.status(200).json({ status: 'success', data: data, message: 'Store transfer fetched successfully' });
