@@ -16,7 +16,7 @@ export class AuthRepository implements IAuthRepository {
         try {
 
             const query =
-                `SELECT u.user_id, u.username, s.first_name,u.password, s.last_name, 
+                `SELECT u.user_id, u.username,u.staff_id, s.first_name,u.password, s.last_name, 
                 s.first_name as created_by, 
             TO_CHAR(u.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at 
             FROM users as u
@@ -32,6 +32,7 @@ export class AuthRepository implements IAuthRepository {
             }
 
             // Return get user roles
+            const staff_id = result.rows[0].staff_id
             const user = result.rows[0];
             const query2 = "SELECT role_id FROM user_roles WHERE user_id = $1";
             const values2 = [user.user_id];
@@ -40,10 +41,10 @@ export class AuthRepository implements IAuthRepository {
             console.log(roles)
 
             // Get shift
-            const query3 = "SELECT shift_id, staff_id FROM active_shift limit 1";
+            const query3 = "SELECT shift_id FROM active_shift limit 1";
             const result3 = await this.client.query(query3);
             const shift_id = result3.rows[0]?.shift_id || null;
-            const staff_id = result3.rows[0].staff_id || null;
+
             if (!shift_id) {
                 throw new AppError("No active shift found", 404);
             }

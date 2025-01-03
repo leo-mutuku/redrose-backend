@@ -61,7 +61,9 @@ export class StaffRepository implements IStaffRepository {
         }
     }
     async updateStaff(id: number, staff: Staff): Promise<Staff> {
+        console.log("hi")
         try {
+
             // Step 1: Fetch the existing staff details from the database
             const existingQuery = 'SELECT * FROM staff WHERE staff_id = $1';
             const existingResult = await this.client.query(existingQuery, [id]);
@@ -71,6 +73,7 @@ export class StaffRepository implements IStaffRepository {
             }
 
             const existingData = existingResult.rows[0];
+
 
             // Step 2: Dynamically construct the update query
             const updates: string[] = [];
@@ -103,6 +106,7 @@ export class StaffRepository implements IStaffRepository {
                 RETURNING *;
             `;
             values.push(id); // Add the staff_id as the last parameter
+            console.log(updateQuery)
 
             const result = await this.client.query(updateQuery, values);
 

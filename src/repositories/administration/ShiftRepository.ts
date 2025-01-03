@@ -14,11 +14,14 @@ export class ShiftRepository implements IShiftRepository {
     async createShift(shift: Shift): Promise<Shift> {
         try {
             const result = await this.client.query(
-                `INSERT INTO shift (shift_start, shift_end, created_by)
-                 VALUES ($1, $2, $3) 
+                `INSERT INTO shift (shift_start,  created_by)
+                 VALUES ($1,  $2) 
                 RETURNING *`,
-                [shift.shift_start, shift.shift_end, shift.created_by]
+                [shift.shift_start, shift.created_by]
             )
+
+            // shift activities new shift, close shift, close shift activities ,
+            //  open new shift activities
 
             return result.rows[0]
 

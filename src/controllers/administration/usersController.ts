@@ -59,7 +59,7 @@ export class UserController {
             const data = await this.interactor.changePassword(body)
             res.status(200).json({
                 status: "success",
-                message: "Passord changes",
+                message: "Passord changed successfully",
                 data: data
             })
         } catch (error) {

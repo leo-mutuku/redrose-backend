@@ -1,4 +1,4 @@
 export interface ISMSInteractor {
     sendBulky(target: any, message: string);
-    sendSingle(to: string, product: unknown);
+    sendSingle(to: string, message: unknown);
 }

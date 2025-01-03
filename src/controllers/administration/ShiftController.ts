@@ -14,7 +14,9 @@ export class ShiftController {
 
     async onCreateShift(req: Request, res: Response, next: NextFunction) {
         try {
-            const body = req.body;
+            const created_by = req.body.user.staff_id
+            const body = { ...req.body, created_by };
+            console.log(body)
             const result = await this.shiftInteractor.createShift(body);
             res.status(201).json({
                 status: "success",
