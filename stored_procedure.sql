@@ -451,10 +451,6 @@ $$ LANGUAGE plpgsql;
 
 
 
---- Sales procedure to update sales order 
-
-
---sales person balance/ waiter
 
 CREATE OR REPLACE FUNCTION update_waitstaff_balance(
     p_waitstaff_id INT,

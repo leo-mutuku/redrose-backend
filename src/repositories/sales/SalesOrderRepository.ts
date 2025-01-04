@@ -124,9 +124,14 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                 status: "New"
             }
 
-            let order_query = `INSERT INTO sales_order 
-            (order_details, total, cat, vat, status) VALUES ($1, $2, $3, $4, $5) RETURNING sales_order_id`
-            console.log(sales_order, "sales order")
+            let order_query = `INSERT INTO sales_order_entry 
+            (status, waitstaff_id) VALUES ($1, $2,) RETURNING sales_order_id RETURNING *`;
+            let order_values = ["New", waitstaff_id];
+            let order_result = await this.client.query(order_query, order_values);
+            console.log(order_result.rows[0]);
+
+
+
 
             // I
             const result = await this.client.query(

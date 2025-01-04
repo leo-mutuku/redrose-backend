@@ -3,13 +3,14 @@ import { IUserInteractor } from "../../interfaces/administation/IUserInteractor"
 import { IUserRepository } from "../../interfaces/administation/IUserRepository";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
-import e from "express";
+
 
 
 @injectable()
 export class UserInteractor implements IUserInteractor {
 
     private repository: IUserRepository
+
 
     constructor(@inject(INTERFACE_TYPE.UserRepository) repository: IUserRepository) {
         this.repository = repository
@@ -21,6 +22,8 @@ export class UserInteractor implements IUserInteractor {
 
             // do some business logic here
             // send email and sms
+
+
             return result
         } catch (error) {
             if (error instanceof AppError) {
