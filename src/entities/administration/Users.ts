@@ -8,6 +8,7 @@ export class User {
         public readonly password: string,
         public readonly phone: string,
         public readonly is_active?: boolean,
+        public readonly staff_id?: number,
         public readonly roles?: [],
     ) { }
 } 

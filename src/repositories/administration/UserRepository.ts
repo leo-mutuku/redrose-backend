@@ -14,15 +14,15 @@ export class UserRepository implements IUserRepository {
     constructor() {
         this.client = pgClient()
     }
-    async createUser({ username, password, roles }: User): Promise<User> {
+    async createUser({ username, password, staff_id, roles }: User): Promise<User> {
         try {
             const saltRounds = 10; // Number of hashing rounds
             const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-            const query = `INSERT INTO users (username, password)
-             VALUES ($1, $2) RETURNING *  `;
+            const query = `INSERT INTO users (username, password, staff_id)
+             VALUES ($1, $2, $3) RETURNING *  `;
 
-            const values = [username, hashedPassword];
+            const values = [username, hashedPassword, staff_id];
             const result = await this.client.query(query, values);
             // create user roles
             const user_id = parseInt(result.rows[0].user_id)
