@@ -32,4 +32,4 @@ C:\Program Files\PostgreSQL\15\bin>>pg_restore -U postgres -d red_rose -v -F t D
 
 
 ### Command to take backup of the database
-pg_dump -U postgres -h localhost -p 5432 -F t red_rose > C:\Users\Leonel\Documents\redrose\bkd\redrose-backend
+pg_dump -U postgres -h localhost -p 5432 -F t red_rose > C:\Users\Leonel\Documents\redrose\bkd\redrose-backend\red_rose.tar

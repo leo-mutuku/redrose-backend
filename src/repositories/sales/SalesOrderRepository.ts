@@ -16,7 +16,10 @@ export class SalesOrderRepository implements ISalesOrderRepository {
         waitstaff_id
     }: SalesOrder): Promise<any> {
         try {
-            waitstaff_id = 4
+
+            // validate inputs  --
+
+            waitstaff_id = 4  // pin
             // Prepare store item JSON
             const get_active_shift_qry = `SELECT shift_id FROM active_shift`;
             const get_active_shift_values = [];
