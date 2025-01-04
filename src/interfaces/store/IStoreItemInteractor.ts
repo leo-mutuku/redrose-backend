@@ -14,7 +14,7 @@ export interface IStoreItemInteractor {
     // Method to update a store item by its ID
     updateStoreItem(id: number, item: Partial<StoreItem>);
 
-    getItemtracking();
+    getItemtracking(search: string);
 
     deleteStoreItem(id: number);
 }
