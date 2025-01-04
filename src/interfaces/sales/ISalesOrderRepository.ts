@@ -27,7 +27,7 @@ export interface ISalesOrderRepository {
      * @param offset - The starting index for fetching sales orders.
      * @returns A promise resolving to a collection of sales orders.
      */
-    getSalesOrders(limit: number, offset: number): Promise<any>;
+    getSalesOrders(search: string, limit: number, offset: number): Promise<any>;
 
     /**
      * Deletes a specific sales order.

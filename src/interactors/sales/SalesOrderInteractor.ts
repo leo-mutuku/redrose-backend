@@ -14,13 +14,18 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
 
     async createSalesOrder(input: any): Promise<any> {
         try {
+            // Perform any necessary business logic or validation here
             const result = await this.repository.createSalesOrder(input);
 
+
+
+            // print the result for debugging purposes  - to fail silently with sms notification
+            console.log('ptint');
             // Business logic can be added here if needed
             return result;
         } catch (error) {
             if (error instanceof AppError) {
-                throw new AppError(`Error occurred in SalesOrderInteractor: ${error.message}`, error.statusCode || 500);
+                throw new AppError(` `, error.statusCode || 500);
             }
             throw new Error('Failed to create sales order. Please try again later.');
         }
@@ -33,7 +38,7 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
         } catch (error) {
             if (error instanceof AppError) {
                 throw new AppError(
-                    `Failed to retrieve sales order with ID ${id}. Reason: ${error.message}`,
+                    `${error.message}`,
                     error.statusCode || 500
                 );
             }
@@ -41,21 +46,22 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
         }
     }
 
+
     async updateSalesOrder(id: number, input: any): Promise<any> {
         try {
             const result = await this.repository.updateSalesOrder(id, input);
             return result;
         } catch (error) {
             if (error instanceof AppError) {
-                throw new AppError(`Error updating sales order in SalesOrderInteractor: ${error.message}`, error.statusCode || 500);
+                throw new AppError(` ${error.message}`, error.statusCode || 500);
             }
             throw new Error('Failed to update sales order. Please try again later.');
         }
     }
 
-    async getSalesOrders(limit: number, offset: number): Promise<any> {
+    async getSalesOrders(search: string, limit: number, offset: number): Promise<any> {
         try {
-            const result = await this.repository.getSalesOrders(limit, offset);
+            const result = await this.repository.getSalesOrders(search, limit, offset);
             return result;
         } catch (error) {
             if (error instanceof AppError) {

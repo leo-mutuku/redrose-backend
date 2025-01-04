@@ -16,7 +16,7 @@ export class SalesOrderController {
             const body = req.body;
 
             const data = await this.interactor.createSalesOrder(body);
-            res.status(201).json({ status: 'success', data: data, message: 'Sales order created successfully' });
+            res.status(201).json({ status: 'success', data: data, message: 'Success thanks!' });
         } catch (error) {
             next(error);
         }
@@ -24,10 +24,8 @@ export class SalesOrderController {
 
     async onGetSalesOrders(req: Request, res: Response, next: NextFunction) {
         try {
-            const offset = parseInt(req.query.offset as string) || 0;
-            const limit = parseInt(req.query.limit as string) || 10;
-
-            const data = await this.interactor.getSalesOrders(limit, offset);
+            const { search, offset, limit } = req.body;
+            const data = await this.interactor.getSalesOrders(search, limit, offset);
             res.status(200).json({ status: 'success', data: data, message: 'Sales orders fetched successfully' });
         } catch (error) {
             next(error);

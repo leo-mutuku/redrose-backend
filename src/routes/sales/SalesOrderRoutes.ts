@@ -25,7 +25,7 @@ const controller = container.get<SalesOrderController>(INTERFACE_TYPE.SalesOrder
 // Define the routes and bind controller methods
 router.post("/createsalesorder", controller.onCreateSalesOrder.bind(controller));
 router.get("/getsalesorder/:id", controller.onGetSalesOrder.bind(controller));
-router.get("/getsalesorders", controller.onGetSalesOrders.bind(controller));
+router.post("/getsalesorders", controller.onGetSalesOrders.bind(controller));
 router.patch("/updatesalesorder/:id", controller.onUpdateSalesOrder.bind(controller));
 
 // Export the configured router
