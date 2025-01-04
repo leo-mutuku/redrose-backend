@@ -15,7 +15,7 @@ export interface IStoreItemRepository {
     updateStoreItem(id: number, item: Partial<StoreItem>): Promise<StoreItem>;
 
 
-    getItemtracking();
+    getItemtracking(search: string)
 
     deleteStoreItem(id: number): Promise<void>;
 }

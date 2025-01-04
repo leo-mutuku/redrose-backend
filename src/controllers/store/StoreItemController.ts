@@ -60,11 +60,15 @@ export class StoreItemController {
     async onGetItemtracking(req: Request, res: Response, next: NextFunction) {
         try {
             //const Loggineduser: Auth = req.user
+
+             const {search} =req.body
+             console.log(search,'search')
             console.log(req.body.user)
 
 
 
-            const data = await this.interactor.getItemtracking()
+            const data = await this.interactor.getItemtracking(search)
+
             res.status(200).json({
                 status: "success",
                 data: data,
