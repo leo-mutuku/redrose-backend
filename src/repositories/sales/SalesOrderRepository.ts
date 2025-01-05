@@ -217,45 +217,20 @@ export class SalesOrderRepository implements ISalesOrderRepository {
     // Get a list of sales orders with pagination
     async getSalesOrders(search: number, status: string, limit: number, offset: number): Promise<any[]> {
         try {
-            // Log the incoming request parameters to verify their correctness
-            console.log("Search:", search);
-            console.log("Status:", status);
-            console.log("Limit:", limit);
-            console.log("Offset:", offset);
-
-            // Initialize the WHERE conditions array and query parameters array
-            let conditions: string[] = [];
-            let queryParams: (string | number)[] = [];
-
-            // Handle search (a single number for sales_order_entry_id, optional)
-            if (search !== undefined && search !== null) {
-                conditions.push(`so.sales_order_entry_id = $${queryParams.length + 1}`);
-                queryParams.push(search);  // Push the search parameter
-            }
-
-            // Handle status (optional, only if it's provided)
-            if (status) {
-                conditions.push(`so.status = $${queryParams.length + 1}`);
-                queryParams.push(status);  // Push the status parameter only if it's provided
-            }
-
-            // Build the WHERE clause by joining conditions with 'AND' if any condition exists
-            const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
-
-            // Log the dynamic query to verify the correctness
-
-
-            // Build the query dynamically with the WHERE clause and parameters
+            console.log("test")
             const query = `
-                SELECT 
+              SELECT 
                     so.sales_order_entry_id,
                     so.total_value,
                     s.first_name as waiter,
                     so.status,
+					so.vat,
+					so.cat,
                     jsonb_agg(
                         jsonb_build_object(
                             'menu_item_id', mi.menu_item_id,
                             'menu_name', mr.name,
+							'sales_order_entry_id', so.sales_order_entry_id,
                             'quantity', sod.quantity,
                             'price', sod.price,
                             'total', sod.quantity * sod.price
@@ -271,21 +246,16 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                     menu_item mi ON mi.menu_item_id = sod.menu_item_id
                 LEFT JOIN 
                     menu_register mr ON mr.menu_register_id = mi.menu_register_id
-                
-                GROUP BY 
+				        GROUP BY 
                     so.sales_order_entry_id, so.total_value, s.first_name
-                LIMIT $1 OFFSET $1  -- Dynamically add limit and offset placeholders
+					LIMIT $1 OFFSET $2
             `;
 
             // Add limit and offset as the last parameters in queryParams
-            queryParams.push(limit, offset);
 
-            // Log the final query and parameters
-            console.log("Generated Query:", query);
-            console.log("Query Parameters:", queryParams);
 
             // Execute the query with the dynamic parameters
-            const result = await this.client.query(query, queryParams);
+            const result = await this.client.query(query, [limit, offset]);
 
             return result.rows;
         } catch (error) {
