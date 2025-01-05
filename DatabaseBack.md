@@ -17,7 +17,7 @@ C:\Program Files\PostgreSQL\15>cd bin
 
 C:\Program Files\PostgreSQL\15\bin>
 
-#### Step 2
+### Step 2
 -- Drop the current database
 -- Note: The -U postgres -h localhost -p 5432 is the connection details for the database server
 -- Note: The redrose is the name of the database you want to restore
@@ -31,5 +31,7 @@ C:\Program Files\PostgreSQL\15\bin>>pg_restore -U postgres -d red_rose -v -F t D
 
 
 
-### Command to take backup of the database
+### set 5 Command to take backup of the database
 pg_dump -U postgres -h localhost -p 5432 -F t red_rose > C:\Users\Leonel\Documents\redrose\bkd\redrose-backend\red_rose.tar
+
+### Command to restore the database

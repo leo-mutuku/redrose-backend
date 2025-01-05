@@ -30,7 +30,7 @@ export const globalErrorHandler = (
     console.error("Unexpected error:", err); // Log for debugging purposes
 
     return res.status(500).json({
-        staus: "failed",
+        status: "failed",
         message: "Internal Server Error",
     });
 };

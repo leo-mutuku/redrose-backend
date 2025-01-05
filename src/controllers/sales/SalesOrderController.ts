@@ -13,7 +13,16 @@ export class SalesOrderController {
 
     async onCreateSalesOrder(req: Request, res: Response, next: NextFunction) {
         try {
-            const body = req.body;
+
+            const secure_staff_id = req.body?.user?.staff_id;
+            let body = req.body;
+            if (secure_staff_id) {
+                body = {
+                    ...req.body,
+                    secure_staff_id: secure_staff_id
+                }
+            }
+
 
             const data = await this.interactor.createSalesOrder(body);
             res.status(201).json({ status: 'success', data: data, message: 'Success thanks!' });
@@ -24,8 +33,11 @@ export class SalesOrderController {
 
     async onGetSalesOrders(req: Request, res: Response, next: NextFunction) {
         try {
-            const { search, offset, limit } = req.body;
-            const data = await this.interactor.getSalesOrders(search, limit, offset);
+            let { search, status, offset, limit } = req.body;
+            search = parseInt(search) || 0;
+            offset = parseInt(offset) || 0;
+            limit = parseInt(limit) || 50;
+            const data = await this.interactor.getSalesOrders(search, status, limit, offset);
             res.status(200).json({ status: 'success', data: data, message: 'Sales orders fetched successfully' });
         } catch (error) {
             next(error);

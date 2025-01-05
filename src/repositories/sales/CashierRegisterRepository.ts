@@ -48,8 +48,8 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
     async getCashierRegisters(limit: number, offset: number): Promise<CashierRegister[]> {
         try {
             const query = `
-                 SELECT  sc.sales_cashier_id, sc.balance, sc.created_by, sc.created_at,
-                s.first_name || ''||  s.last_name as cashier_name
+                 SELECT  sc.sales_cashier_id, sc.balance,sc.till, sc.cash, sc.txn_charges, sc.staff_id, sc.created_by, sc.created_at,
+                s.first_name || ' '||  s.last_name as cashier_name
                 FROM sales_cashiers sc
                 inner join staff s on s.staff_id = sc.staff_id
                 LIMIT $1 OFFSET $2
@@ -67,8 +67,8 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
     async getCashierRegister(id: number): Promise<CashierRegister> {
         try {
             const query = `
-                SELECT  sc.sales_cashier_id, sc.balance, sc.created_by, sc.created_at,
-                s.first_name || ''||  s.last_name as cashier_name
+                SELECT  sc.sales_cashier_id, sc.balance, sc.till, sc.cash, sc.txn_charges, sc.staff_id, sc.created_by, sc.created_at,
+                s.first_name || ' '||  s.last_name as cashier_name
                 FROM sales_cashiers sc
                 inner join staff s on s.staff_id = sc.staff_id
                 WHERE sales_cashier_id = $1

@@ -131,14 +131,14 @@ LIMIT 1
     }
   }
 
-  async getItemtracking(search:string): Promise<any> {
-    
-    const conditions:string[] = [];
+  async getItemtracking(search: string): Promise<any> {
+
+    const conditions: string[] = [];
     const values: any[] = [];
 
     if (search) {
-        conditions.push("ir.item_name ILIKE $1"); 
-        values.push(`%${search}%`);
+      conditions.push("ir.item_name ILIKE $1");
+      values.push(`%${search}%`);
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -164,7 +164,7 @@ LIMIT 1
 
     const result = await this.client.query(query, values);
     return result.rows;
-}
+  }
 
   // Update a store item by its ID
   async updateStoreItem(
@@ -189,18 +189,18 @@ LIMIT 1
       query += setClauses.join(", ");
       query += ` WHERE store_item_id = $${values.length + 1} 
                    RETURNING 
-    store_item_id,
-    store_id, 
-    item_id, 
-    quantity, 
-    buying_price, 
-    item_unit_id, 
-    item_category,
-    TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
-    (SELECT item_name FROM item_register WHERE item_id = store_item.item_id) AS item_name,
-    (SELECT category_name from item_category where category_id = store_item.item_category) As category_name,
-    (SELECT store_name FROM store_register WHERE store_id = store_item.store_id) AS store_name,
-    (SELECT standard_unit_name from item_unit where unit_id = store_item.item_unit_id) AS unit_name
+      store_item_id,
+      store_id, 
+      item_id, 
+      quantity, 
+      buying_price, 
+      item_unit_id, 
+      item_category,
+      TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
+      (SELECT item_name FROM item_register WHERE item_id = store_item.item_id) AS item_name,
+      (SELECT category_name from item_category where category_id = store_item.item_category) As category_name,
+      (SELECT store_name FROM store_register WHERE store_id = store_item.store_id) AS store_name,
+      (SELECT standard_unit_name from item_unit where unit_id = store_item.item_unit_id) AS unit_name
                     `;
       values.push(id);
 

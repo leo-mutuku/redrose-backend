@@ -13,10 +13,48 @@ export class SalesOrderRepository implements ISalesOrderRepository {
     // Create a new sales order
     async createSalesOrder({
         order_items,
-        waitstaff_id
+        waitstaff_id,
+        secure_staff_id,
+        pin
     }: SalesOrder): Promise<any> {
         try {
+            // validate order_items
+            // validate waitstaff_id
+            waitstaff_id = 4
+            if (!waitstaff_id) {
+                if (!secure_staff_id) {
+                    throw new Error(`Waiter Account not verified!`);
+                }
+            }
+            if (waitstaff_id) {
+                // validate pin
+                console.log("validate pin")
+                const qry = `SELECT pin FROM waitstaff WHERE waitstaff_id = $1`;
+                const values = [waitstaff_id];
+                const result = await this.client.query(qry, values);
+                if (!result.rows.length) {
+                    throw new AppError('Invalid waitstaff_id', 400);
+                }
+                if (result.rows[0].pin !== pin) {
+                    throw new AppError('Invalid pin', 400);
+                }
+            }
+            // authorize staff using secure_staff_id
+            if (secure_staff_id) {
+                const qry = `SELECT pin FROM waitstaff WHERE waitstaff_id = $1`;
+                const values = [secure_staff_id];
+                const result = await this.client.query(qry, values);
+                if (result.rows.length === 0) {
+                    throw new AppError('Invalid secure_staff_id', 400);
 
+                }
+                if (result.rows[0].pin !== pin) {
+                    throw new AppError('Invalid pin', 400);
+                }
+                waitstaff_id = secure_staff_id;
+            }
+
+            console.log(waitstaff_id, secure_staff_id);
             // validate inputs  --
 
             waitstaff_id = 4  // pin
@@ -169,26 +207,97 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
             return sales_order;
         } catch (error) {
-            throw new AppError('Error creating sales order: ' + error, 500);
+            if (error instanceof AppError) {
+                throw new AppError(error.message, error.statusCode);
+            }
+            throw new Error('Error creating sales order: ' + error);
         }
     }
 
     // Get a list of sales orders with pagination
-    async getSalesOrders(search: string, limit: number, offset: number): Promise<SalesOrder[]> {
+    async getSalesOrders(search: number, status: string, limit: number, offset: number): Promise<any[]> {
         try {
+            // Log the incoming request parameters to verify their correctness
+            console.log("Search:", search);
+            console.log("Status:", status);
+            console.log("Limit:", limit);
+            console.log("Offset:", offset);
+
+            // Initialize the WHERE conditions array and query parameters array
+            let conditions: string[] = [];
+            let queryParams: (string | number)[] = [];
+
+            // Handle search (a single number for sales_order_entry_id, optional)
+            if (search !== undefined && search !== null) {
+                conditions.push(`so.sales_order_entry_id = $${queryParams.length + 1}`);
+                queryParams.push(search);  // Push the search parameter
+            }
+
+            // Handle status (optional, only if it's provided)
+            if (status) {
+                conditions.push(`so.status = $${queryParams.length + 1}`);
+                queryParams.push(status);  // Push the status parameter only if it's provided
+            }
+
+            // Build the WHERE clause by joining conditions with 'AND' if any condition exists
+            const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+
+            // Log the dynamic query to verify the correctness
+
+
+            // Build the query dynamically with the WHERE clause and parameters
             const query = `
-                SELECT sales_order_id, customer_id, order_date, total_amount, status, created_by, created_at
-                FROM sales_order
-                LIMIT $1 OFFSET $2
+                SELECT 
+                    so.sales_order_entry_id,
+                    so.total_value,
+                    s.first_name as waiter,
+                    so.status,
+                    jsonb_agg(
+                        jsonb_build_object(
+                            'menu_item_id', mi.menu_item_id,
+                            'menu_name', mr.name,
+                            'quantity', sod.quantity,
+                            'price', sod.price,
+                            'total', sod.quantity * sod.price
+                        )
+                    ) AS order_details
+                FROM 
+                    sales_order_entry so
+                INNER JOIN 
+                    staff s ON s.staff_id = so.waitstaff_id
+                LEFT JOIN 
+                    sales_order_details sod ON sod.sales_order_details_id = so.sales_order_entry_id
+                LEFT JOIN 
+                    menu_item mi ON mi.menu_item_id = sod.menu_item_id
+                LEFT JOIN 
+                    menu_register mr ON mr.menu_register_id = mi.menu_register_id
+                
+                GROUP BY 
+                    so.sales_order_entry_id, so.total_value, s.first_name
+                LIMIT $1 OFFSET $1  -- Dynamically add limit and offset placeholders
             `;
-            const values = [limit, offset];
-            const result = await this.client.query(query, values);
+
+            // Add limit and offset as the last parameters in queryParams
+            queryParams.push(limit, offset);
+
+            // Log the final query and parameters
+            console.log("Generated Query:", query);
+            console.log("Query Parameters:", queryParams);
+
+            // Execute the query with the dynamic parameters
+            const result = await this.client.query(query, queryParams);
 
             return result.rows;
         } catch (error) {
             throw new AppError('Error fetching sales orders: ' + error, 500);
         }
     }
+
+
+
+
+
+
 
     // Get a single sales order by ID
     async getSalesOrder(id: number): Promise<SalesOrder> {

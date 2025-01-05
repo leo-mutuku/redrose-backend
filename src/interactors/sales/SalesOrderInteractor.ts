@@ -25,7 +25,7 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
             return result;
         } catch (error) {
             if (error instanceof AppError) {
-                throw new AppError(` `, error.statusCode || 500);
+                throw new AppError(`${error.message}`, error.statusCode || 500);
             }
             throw new Error('Failed to create sales order. Please try again later.');
         }
@@ -59,9 +59,9 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
         }
     }
 
-    async getSalesOrders(search: string, limit: number, offset: number): Promise<any> {
+    async getSalesOrders(search: number, status: string, limit: number, offset: number): Promise<any> {
         try {
-            const result = await this.repository.getSalesOrders(search, limit, offset);
+            const result = await this.repository.getSalesOrders(search, status, limit, offset);
             return result;
         } catch (error) {
             if (error instanceof AppError) {

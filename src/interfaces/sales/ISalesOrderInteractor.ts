@@ -27,7 +27,7 @@ export interface ISalesOrderInteractor {
      * @param offset - The starting index for fetching sales orders.
      * @returns A promise resolving to a collection of sales orders.
      */
-    getSalesOrders(search: string, limit: number, offset: number);
+    getSalesOrders(search: number, status: string, limit: number, offset: number);
 
     /**
      * Deletes a specific sales order.
