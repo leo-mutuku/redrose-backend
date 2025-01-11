@@ -69,35 +69,47 @@ export class MenuRegisterRepository implements IMenuRegisterRepository {
 
     async updateMenuRegister(id: number, menuRegister: Partial<MenuRegister>): Promise<MenuRegister> {
         try {
-            let query = `UPDATE menu_register SET `;
-            const values: any[] = [];
-            let setClauses: string[] = [];
+            // Define allowed fields for updates
+            const allowedFields = ["name", "description", "created_by"]; // Replace with actual fields
 
-            // Dynamically build the SET clause and values array
-            Object.entries(menuRegister).forEach(([key, value], index) => {
-                setClauses.push(`${key} = $${index + 1}`);
-                values.push(value);
-            });
-
-            if (setClauses.length === 0) {
-                throw new AppError('No fields to update', 400);
+            // Fetch the existing menu register record
+            const existingRecordResult = await this.client.query('SELECT * FROM menu_register WHERE menu_register_id = $1', [id]);
+            if (existingRecordResult.rows.length === 0) {
+                throw new AppError(`Menu register with id ${id} not found`, 404);
             }
 
-            query += setClauses.join(', ');
-            query += ` WHERE menu_register_id = $${values.length + 1} RETURNING 
-                menu_register_id,name, description, created_by ,
+            const existingRecord = existingRecordResult.rows[0];
+
+            // Filter fields that are both allowed and have changed
+            const fieldsToUpdate = Object.keys(menuRegister).filter(
+                (field) => allowedFields.includes(field) && menuRegister[field] !== existingRecord[field]
+            );
+
+            // If no fields are allowed or changed, return the existing record
+            if (fieldsToUpdate.length === 0) {
+                return existingRecord;
+            }
+
+            // Construct the dynamic query
+            const setClauses = fieldsToUpdate.map((field, index) => `${field} = $${index + 1}`);
+            const query = `UPDATE menu_register SET ${setClauses.join(', ')} WHERE menu_register_id = $${fieldsToUpdate.length + 1} RETURNING 
+                menu_register_id, name, description, created_by,
                 TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at`;
 
-            values.push(id);
+            // Prepare the values array
+            const values = [...fieldsToUpdate.map((field) => menuRegister[field]), id];
 
+            // Execute the query
             const result = await this.client.query(query, values);
             if (result.rows.length === 0) {
                 throw new AppError('Menu register not found', 404);
             }
 
+            // Return the updated record
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error updating menu register: ' + error, 500);
         }
     }
+
 }

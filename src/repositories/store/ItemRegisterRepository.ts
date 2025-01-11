@@ -96,41 +96,42 @@ LIMIT 20 OFFSET 0
 
     async updateRegister(id: number, register: Partial<ItemRegister>): Promise<ItemRegister> {
         try {
-            let query = `UPDATE item_register SET `;
-            const values: any[] = [];
-            let setClauses: string[] = [];
+            // Define allowed fields for updates
+            const allowedFields = ["item_name", "item_description"]; // Replace with actual fields
 
-            // Dynamically build the SET clause and values array
-            Object.entries(register).forEach(([key, value], index) => {
-                setClauses.push(`${key} = $${index + 1}`);
-                values.push(value);
-            });
-
-            if (setClauses.length === 0) {
-                throw new AppError('No fields to update', 400);
+            // Fetch the existing register record
+            const existingRecordResult = await this.client.query('SELECT * FROM item_register WHERE item_id = $1', [id]);
+            if (existingRecordResult.rows.length === 0) {
+                throw new AppError(`Register with id ${id} not found`, 404);
             }
 
-            query += setClauses.join(', ');
-            query += ` WHERE item_id = $${values.length + 1} RETURNING 
-                 item_id, 
-                item_name, 
-                item_description, 
-                created_by, 
-                created_at, 
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
-                (SELECT first_name || ' ' || last_name AS fullname 
-                 FROM users 
-                 WHERE user_id = item_register.created_by) AS created_by_name`;
-            values.push(id);
+            const existingRecord = existingRecordResult.rows[0];
 
+            // Filter fields that are both allowed and have changed
+            const fieldsToUpdate = Object.keys(register).filter(
+                (field) => allowedFields.includes(field) && register[field] !== existingRecord[field]
+            );
+
+            // If no fields are allowed or changed, return the existing record
+            if (fieldsToUpdate.length === 0) {
+                return existingRecord;
+            }
+
+            // Construct the dynamic query
+            const setClauses = fieldsToUpdate.map((field, index) => `${field} = $${index + 1}`);
+            const query = `UPDATE item_register SET ${setClauses.join(', ')} WHERE item_id = $${fieldsToUpdate.length + 1} RETURNING *`;
+
+            // Prepare the values array
+            const values = [...fieldsToUpdate.map((field) => register[field]), id];
+
+            // Execute the query
             const result = await this.client.query(query, values);
-            if (result.rows.length === 0) {
-                throw new AppError('Item register not found', 404);
-            }
 
+            // Return the updated record
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error updating item register: ' + error, 500);
         }
     }
+
 }

@@ -44,7 +44,8 @@ export class MenuRegisterController {
         try {
             const id = parseInt(req.params.id);
             const body = req.body;
-
+            body.created_by = req.body.user.staff_id
+            console.log(body)
             const data = await this.interactor.updateMenuRegister(id, body);
             res.status(200).json({ status: 'success', data: data, message: 'Menu Register updated successfully' });
         } catch (error) {
