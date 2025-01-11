@@ -11,7 +11,9 @@ export class RoleController {
     }
     async onCreateRole(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log(req.body)
             const role = req.body
+            role.created_by = req.body.user.staff_id
             const createdRole = await this.roleInteractor.createRole(role)
             res.status(201).json({ status: "success", data: createdRole, message: "Role created successfully" })
 

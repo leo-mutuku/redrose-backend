@@ -21,7 +21,6 @@ export class AuthRepository implements IAuthRepository {
             TO_CHAR(u.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at 
             FROM users as u
             inner join staff as s on s.staff_id = u.staff_id
-            
              WHERE u.username = $1`;
             const values = [username];
             const result = await this.client.query(query, values);

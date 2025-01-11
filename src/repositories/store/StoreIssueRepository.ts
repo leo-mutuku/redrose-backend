@@ -74,8 +74,8 @@ export class StoreIssueRepository implements IStoreIssueRepository {
             sih.issued_by, 
             sih.issue_type,
             sih.created_by,
-            us.first_name AS created_by_name,  -- Add first_name from users table
-            st.first_name AS issued_by_name,  -- Add first_name from staff table
+            s.first_name AS created_by_name,  -- Add first_name from users table
+            s.first_name AS issued_by_name,  -- Add first_name from staff table
             json_agg(
                 json_build_object(
                     'issue_line_id', sil.store_issue_line_id,
@@ -90,8 +90,8 @@ export class StoreIssueRepository implements IStoreIssueRepository {
         FROM 
             store_issue_header sih
         INNER JOIN 
-            users us
-            ON sih.created_by = us.user_id  -- Join on created_by and user_id
+            staff s
+            ON sih.created_by = s.staff_id  -- Join on created_by and user_id
         INNER JOIN 
             staff st
             ON sih.issued_by = st.staff_id  -- Join on issued_by and staff_id
@@ -106,8 +106,8 @@ export class StoreIssueRepository implements IStoreIssueRepository {
             ON si.item_id = ir.item_id
         GROUP BY
             sih.store_issue_header_id, 
-            us.first_name,
-            st.first_name
+            s.first_name,
+            s.first_name
         ORDER BY
             sih.created_at DESC
         LIMIT $1 OFFSET $2;  -- Add LIMIT and OFFSET with placeholders
@@ -131,8 +131,8 @@ SELECT
     sih.created_at, 
     sih.issued_by, 
     sih.created_by,
-    us.first_name AS created_by_name,  -- Add first_name from users table
-    st.first_name AS issued_by_name,  -- Add first_name from staff table
+    s.first_name AS created_by_name,  -- Add first_name from users table
+    s.first_name AS issued_by_name,  -- Add first_name from staff table
     json_agg(
         json_build_object(
             'issue_line_id', sil.store_issue_line_id,
@@ -147,8 +147,8 @@ SELECT
 FROM 
     store_issue_header sih
 INNER JOIN 
-    users us
-    ON sih.created_by = us.user_id  -- Join on created_by and user_id
+    staff s
+    ON sih.created_by = s.staff_id  -- Join on created_by and user_id
 INNER JOIN 
     staff st
     ON sih.issued_by = st.staff_id  -- Join on issued_by and staff_id
@@ -164,8 +164,8 @@ LEFT JOIN
     WHERE sih.store_issue_header_id = $1
 GROUP BY
     sih.store_issue_header_id, 
-    us.first_name,
-    st.first_name
+    s.first_name,
+    s.first_name
 ORDER BY
     sih.created_at DESC;  -- Add ORDER BY clause to sort by created_at in descending order
             `;

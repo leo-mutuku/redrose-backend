@@ -20,7 +20,7 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
 
 
             // print the result for debugging purposes  - to fail silently with sms notification
-            console.log('ptint');
+            console.log('ptint', result);
             // Business logic can be added here if needed
             return result;
         } catch (error) {
@@ -70,4 +70,15 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
             throw new Error('Failed to retrieve sales orders. Please try again later.');
         }
     }
+    async authWaiter(pin: number, staff_id: number): Promise<any> {
+        try {
+            const result = await this.repository.authWaiter(pin, staff_id);
+            return result;
+        } catch (error) {
+            // if (error instanceof AppError) {
+            throw new AppError(`Error fetching sales orders in SalesOrderInteractor: ${error}`, 500);
+        }
+        throw new Error('Failed to retrieve sales orders. Please try again later.');
+    }
 }
+

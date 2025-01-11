@@ -14,6 +14,7 @@ export class StoreIssueController {
     async onCreateStoreIssue(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body;
+            body.created_by = req.body.user.staff_id
 
             const data = await this.interactor.createStoreIssue(body);
             res.status(201).json({ status: 'success', data: data, message: 'Store issue created successfully' });

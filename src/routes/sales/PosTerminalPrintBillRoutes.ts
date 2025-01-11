@@ -27,6 +27,7 @@ router.post("/createsalesorder", controller.onCreateSalesOrder.bind(controller))
 router.get("/getsalesorder/:id", controller.onGetSalesOrder.bind(controller));
 router.get("/getsalesorders", controller.onGetSalesOrders.bind(controller));
 router.patch("/updatesalesorder/:id", controller.onUpdateSalesOrder.bind(controller));
+router.post("/authwaiter", controller.onAuthWaiter.bind(controller));
 
 // Export the configured router
 export default router;

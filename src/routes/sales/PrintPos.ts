@@ -17,6 +17,7 @@ router.post('/printpos', controller.printPos.bind(controller))
 
 
 
+
 export default router;
 
 

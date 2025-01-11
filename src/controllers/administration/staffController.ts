@@ -12,6 +12,7 @@ export class StaffController {
     async onCreateStaff(req: Request, res: Response, next: NextFunction) {
         try {
             const staff = req.body
+            staff.created_by = req.body.user.staff_id
             const createdStaff = await this.staffInteractor.createStaff(staff)
             res.status(201).json({ status: "success", data: createdStaff, message: "Staff created successfully" })
         }
@@ -44,6 +45,7 @@ export class StaffController {
         try {
             const staffId = parseInt(req.params.id)
             const staff = req.body
+
             const updatedStaff = await this.staffInteractor.updateStaff(staffId, staff)
             res.status(200).json({ status: "success", data: updatedStaff, message: "Staff updated successfully" })
         }

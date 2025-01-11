@@ -22,8 +22,6 @@ export class SalesOrderController {
                     secure_staff_id: secure_staff_id
                 }
             }
-
-
             const data = await this.interactor.createSalesOrder(body);
             res.status(201).json({ status: 'success', data: data, message: 'Success thanks!' });
         } catch (error) {
@@ -67,14 +65,20 @@ export class SalesOrderController {
         }
     }
 
-    // async onDeleteSalesOrder(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const id = parseInt(req.params.id);
+    async onAuthWaiter(req: Request, res: Response, next: NextFunction) {
+        try {
 
-    //         await this.interactor.deleteSalesOrder(id);
-    //         res.status(200).json({ status: 'success', message: 'Sales order deleted successfully' });
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // }
+            const { pin, staff_id } = req.body;
+            const data = await this.interactor.authWaiter(pin, staff_id);
+            res.status(200).json({
+                status: 'success', data: data, message:
+                    'Sales order updated successfully'
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
+
 }

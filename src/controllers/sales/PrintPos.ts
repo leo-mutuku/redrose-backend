@@ -23,6 +23,9 @@ export class PrintPosController {
         } catch (error) {
             next(error);
         }
+
     }
+
+
 
 }

@@ -58,55 +58,47 @@ export class SupplierRepository implements ISupplierRepository {
         }
     }
 
-    async updateSupplier(id: number, supplier: Supplier): Promise<Supplier> {
+    async updateSupplier(supplier_id: number, supplier: Supplier): Promise<Supplier> {
         try {
-            // Step 1: Fetch the existing supplier details from the database
-            const existingQuery = `SELECT * FROM suppliers WHERE supplier_id = $1`;
-            const existingResult = await this.client.query(existingQuery, [id]);
+            // Define allowed fields for updates
+            const allowedFields = ["suppplier_name", "address", "email", "phone"]; // Add allowed fields here
 
-            if (existingResult.rows.length === 0) {
-                throw new AppError('Supplier not found', 404);
+            // Fetch the existing supplier record
+            const existingRecordResult = await this.client.query(
+                'SELECT * FROM suppliers WHERE supplier_id = $1',
+                [supplier_id]
+            );
+
+            if (existingRecordResult.rows.length === 0) {
+                throw new AppError(`Supplier with id ${supplier_id} not found`, 404);
             }
 
-            const existingData = existingResult.rows[0];
+            const existingRecord = existingRecordResult.rows[0];
 
-            // Step 2: Dynamically construct the UPDATE query
-            const updates: string[] = [];
-            const values: any[] = [];
-            let index = 1; // Positional parameter index for PostgreSQL ($1, $2, ...)
+            // Filter fields that are both allowed and have changed
+            const fieldsToUpdate = Object.keys(supplier).filter(
+                (field) => allowedFields.includes(field) && supplier[field] !== existingRecord[field]
+            );
 
-            for (const key in supplier) {
-                if (Object.prototype.hasOwnProperty.call(supplier, key)) {
-                    const newValue = supplier[key as keyof SupplierInput];
-                    if (newValue !== undefined && newValue !== existingData[key]) {
-                        updates.push(`${key} = $${index}`);
-                        values.push(newValue);
-                        index++;
-                    }
-                }
+            // If no fields are allowed or changed, return the existing record
+            if (fieldsToUpdate.length === 0) {
+                return existingRecord;
             }
 
-            // Step 3: If no fields have changed, throw an error
-            if (updates.length === 0) {
-                throw new AppError('No fields were changed', 400);
-            }
+            // Construct the dynamic query
+            const setClauses = fieldsToUpdate.map((field, index) => `${field} = $${index + 1}`);
+            const query = `UPDATE suppliers SET ${setClauses.join(', ')} WHERE supplier_id = $${fieldsToUpdate.length + 1} RETURNING *`;
 
-            // Step 4: Construct and execute the UPDATE query
-            const updateQuery = `
-                UPDATE suppliers
-                SET ${updates.join(', ')}
-                WHERE supplier_id = $${index}
-                RETURNING *;
-            `;
-            values.push(id); // Add the supplier_id as the last parameter
+            // Prepare the values array
+            const values = [...fieldsToUpdate.map((field) => supplier[field]), supplier_id];
 
-            const result = await this.client.query(updateQuery, values);
+            // Execute the query
+            const result = await this.client.query(query, values);
 
-            // Step 5: Return the updated record
+            // Return the updated record
             return result.rows[0];
         } catch (error) {
-            throw new AppError("Error while updating supplier: " + error, 400)
-
+            throw new AppError('Error updating supplier: ' + error, 400);
         }
     }
 

@@ -20,8 +20,7 @@ export class ShiftRepository implements IShiftRepository {
                 [shift.shift_start, shift.created_by]
             )
 
-            // shift activities new shift, close shift, close shift activities ,
-            //  open new shift activities
+
 
             return result.rows[0]
 
@@ -35,17 +34,15 @@ export class ShiftRepository implements IShiftRepository {
         try {
             const result = await this.client.query(`SELECT * FROM shift WHERE shift_id = $1`, [id])
             return result.rows[0]
-
         } catch (error) {
             throw new AppError("Error getting shift" + error, 500)
-
         }
     }
     async getShifts(limit: number, offset: number): Promise<Shift[]> {
         try {
             console.log(limit, offset)
             const result = await this.client.query(
-                `SELECT * FROM shift  Limit $1  OFFSET $2`,
+                `SELECT * FROM shift  order by shift_start  desc Limit $1  OFFSET $2 `,
                 [limit, offset])
             console.log(result.rows)
             return result.rows
@@ -57,7 +54,6 @@ export class ShiftRepository implements IShiftRepository {
         try {
             const result = await this.client.query(`UPDATE shifts SET shift_start = $1, shift_end = $2 WHERE shift_id = $3 RETURNING *`, [shift.shift_start, shift.shift_end, id])
             return result.rows[0]
-
         } catch (error) {
             throw new AppError("Error updating shift", 500)
         }

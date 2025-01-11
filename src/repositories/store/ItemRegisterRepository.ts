@@ -24,10 +24,8 @@ export class ItemRegisterRepository implements IItemRegisterRepository {
                 item_description, 
                 created_by, 
                 created_at, 
-                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
-                (SELECT first_name || ' ' || last_name AS fullname 
-                 FROM users 
-                 WHERE user_id = item_register.created_by) AS created_by_name
+                TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at
+                
         `;
             const values = [item_name, item_description, created_by];
             const result = await this.client.query(query, values);
@@ -47,12 +45,12 @@ export class ItemRegisterRepository implements IItemRegisterRepository {
     ir.item_description, 
     TO_CHAR(ir.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
     CASE
-        WHEN u.first_name IS NOT NULL AND u.last_name IS NOT NULL THEN u.first_name || ' ' || u.last_name
+        WHEN s.first_name IS NOT NULL AND s.last_name IS NOT NULL THEN s.first_name || ' ' || s.last_name
         ELSE 'Unknown'  -- Return 'Unknown' if the user is not found
     END AS created_by_name
 FROM item_register ir
 
-LEFT JOIN users u ON ir.created_by = u.user_id
+LEFT JOIN staff s ON ir.created_by = s.staff_id
 
 
             `
@@ -74,12 +72,12 @@ LEFT JOIN users u ON ir.created_by = u.user_id
     ir.item_description, 
     TO_CHAR(ir.created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
     CASE
-        WHEN u.first_name IS NOT NULL AND u.last_name IS NOT NULL THEN u.first_name || ' ' || u.last_name
+        WHEN s.first_name IS NOT NULL AND s.last_name IS NOT NULL THEN s.first_name || ' ' || s.last_name
         ELSE 'Unknown'  -- Return 'Unknown' if the user is not found
     END AS created_by_name
 FROM item_register ir
 
-LEFT JOIN users u ON ir.created_by = u.user_id
+LEFT JOIN staff s ON ir.created_by = s.staff_id
 where ir.item_id = $1
 LIMIT 20 OFFSET 0
             `;

@@ -28,6 +28,7 @@ export interface ISalesOrderRepository {
      * @returns A promise resolving to a collection of sales orders.
      */
     getSalesOrders(search: number, status: string, limit: number, offset: number): Promise<any>;
+    authWaiter(pin: number, staff_id: number): Promise<any>;
 
     /**
      * Deletes a specific sales order.

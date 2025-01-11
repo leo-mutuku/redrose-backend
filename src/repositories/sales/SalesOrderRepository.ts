@@ -20,41 +20,41 @@ export class SalesOrderRepository implements ISalesOrderRepository {
         try {
             // validate order_items
             // validate waitstaff_id
-            waitstaff_id = 4
-            if (!waitstaff_id) {
-                if (!secure_staff_id) {
-                    throw new Error(`Waiter Account not verified!`);
-                }
-            }
-            if (waitstaff_id) {
-                // validate pin
-                console.log("validate pin")
-                const qry = `SELECT pin FROM waitstaff WHERE waitstaff_id = $1`;
-                const values = [waitstaff_id];
-                const result = await this.client.query(qry, values);
-                if (!result.rows.length) {
-                    throw new AppError('Invalid waitstaff_id', 400);
-                }
-                if (result.rows[0].pin !== pin) {
-                    throw new AppError('Invalid pin', 400);
-                }
-            }
-            // authorize staff using secure_staff_id
-            if (secure_staff_id) {
-                const qry = `SELECT pin FROM waitstaff WHERE waitstaff_id = $1`;
-                const values = [secure_staff_id];
-                const result = await this.client.query(qry, values);
-                if (result.rows.length === 0) {
-                    throw new AppError('Invalid secure_staff_id', 400);
+            // waitstaff_id = 4
+            // if (!waitstaff_id) {
+            //     if (!secure_staff_id) {
+            //         throw new Error(`Waiter Account not verified!`);
+            //     }
+            // }
+            // if (waitstaff_id) {
+            //     // validate pin
+            //     console.log("validate pin")
+            //     const qry = `SELECT pin FROM waitstaff WHERE waitstaff_id = $1`;
+            //     const values = [waitstaff_id];
+            //     const result = await this.client.query(qry, values);
+            //     if (!result.rows.length) {
+            //         throw new AppError('Invalid waitstaff_id', 400);
+            //     }
+            //     if (result.rows[0].pin !== pin) {
+            //         throw new AppError('Invalid pin', 400);
+            //     }
+            // }
+            // // authorize staff using secure_staff_id
+            // if (secure_staff_id) {
+            //     const qry = `SELECT pin FROM waitstaff WHERE waitstaff_id = $1`;
+            //     const values = [secure_staff_id];
+            //     const result = await this.client.query(qry, values);
+            //     if (result.rows.length === 0) {
+            //         throw new AppError('Invalid secure_staff_id', 400);
 
-                }
-                if (result.rows[0].pin !== pin) {
-                    throw new AppError('Invalid pin', 400);
-                }
-                waitstaff_id = secure_staff_id;
-            }
+            //     }
+            //     if (result.rows[0].pin !== pin) {
+            //         throw new AppError('Invalid pin', 400);
+            //     }
+            //     waitstaff_id = secure_staff_id;
+            // }
 
-            console.log(waitstaff_id, secure_staff_id);
+            // console.log(waitstaff_id, secure_staff_id);
             // validate inputs  --
 
             waitstaff_id = 4  // pin
@@ -261,9 +261,24 @@ export class SalesOrderRepository implements ISalesOrderRepository {
         } catch (error) {
             throw new AppError('Error fetching sales orders: ' + error, 500);
         }
+
+
     }
 
 
+    async authWaiter(pin: number, staff_id: number): Promise<any> {
+
+        try {
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw new AppError(error.message, error.statusCode);
+            }
+            throw new Error('Error creating sales order: ' + error);
+
+        }
+
+    }
 
 
 

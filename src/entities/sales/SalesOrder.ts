@@ -5,7 +5,8 @@ export class SalesOrder {
         public readonly waitstaff_id: number,
         public readonly secure_staff_id: number,
         public readonly pin?: number,
-        public readonly status?: string
+        public readonly status?: string,
+        public readonly staff_id?: number
     ) { }
 }
 

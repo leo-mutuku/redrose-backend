@@ -20,8 +20,8 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
 
         const secretKey = process.env.JWT_SECRET || "your-default-secret";
         const decoded = jwt.verify(token, secretKey);
-
         req.body.user = decoded
+
         next();
     } catch (error) {
         return res.status(401).json({ success: false, message: "Invalid token." });

@@ -15,6 +15,9 @@ export class ItemRegisterController {
         try {
             const body = req.body;
 
+            body.created_by = req.body.user.staff_id
+            console.log(body)
+
             const data = await this.interactor.createRegister(body);
             res.status(201).json({ status: 'success', data: data, message: 'Item registered successfully' });
         } catch (error) {

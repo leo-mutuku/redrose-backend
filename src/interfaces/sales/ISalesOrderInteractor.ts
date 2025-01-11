@@ -29,6 +29,8 @@ export interface ISalesOrderInteractor {
      */
     getSalesOrders(search: number, status: string, limit: number, offset: number);
 
+    authWaiter(pin: number, staff_id: number);
+
     /**
      * Deletes a specific sales order.
      * @param id - The unique ID of the sales order to delete.
