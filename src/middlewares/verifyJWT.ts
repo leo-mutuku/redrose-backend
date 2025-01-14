@@ -6,7 +6,7 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     // Skip JWT verification for auth routes
 
     console.log("Received request path:", req.path);
-    if (req.path.startsWith("/auth") || req.path.startsWith("/posterminal") || req.path.startsWith("/posterminalprintbill") || req.path.startsWith("/sales")) {
+    if (req.path.startsWith("/auth") || req.path.startsWith("/posterminal") || req.path.startsWith("/validatewaiter") || req.path.startsWith("/posterminalprintbill") || req.path.startsWith("/sales")) {
         return next();
     }
 

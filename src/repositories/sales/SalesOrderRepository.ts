@@ -59,6 +59,21 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
             waitstaff_id = 4  // pin
             // Prepare store item JSON
+
+            // validate   managed menu non managed menu
+            // menu setup must exist
+            for (let item of order_items) {
+                const qry = `select menu_item_id from kitchen_setup where menu_item_id = $1`
+                const values = [item.menu_item_id]
+                const res = await this.client.query(qry, values)
+                if (!res.rows.length) {
+                    throw new AppError("Missing menu setup!")
+                }
+
+            }
+
+            // check if item stock exist if managed
+
             const get_active_shift_qry = `SELECT shift_id FROM active_shift`;
             const get_active_shift_values = [];
             const get_active_shift_result = await this.client.query(get_active_shift_qry);

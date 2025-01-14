@@ -294,4 +294,9 @@ export const INTERFACE_TYPE = {
   POSPrintRepository: Symbol.for("POSPrintRepository"),
   POSPrinterExternalLibrary: Symbol.for("POSPrinterExternalLibrary"),
 
+  //pos terminal
+  POSTerminalPrintBillRepository: Symbol.for("POSTerminalPrintBillRepository"),
+  POSTerminalPrintBillInteractor: Symbol.for("POSTerminalPrintBillInteractor"),
+  POSTerminalPrintBillController: Symbol.for("POSTerminalPrintBillController"),
+
 };

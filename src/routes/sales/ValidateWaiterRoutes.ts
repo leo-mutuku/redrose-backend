@@ -17,9 +17,7 @@ import { IPOSTerminalPrintBillRepository } from "../../interfaces/sales/IPOSTerm
 const container = new Container();
 
 // Bind SalesOrder-related interfaces to their implementations
-container.bind<ISalesOrderRepository>(INTERFACE_TYPE.SalesOrderRepository).to(SalesOrderRepository);
-container.bind<ISalesOrderInteractor>(INTERFACE_TYPE.SalesOrderInteractor).to(SalesOrderInteractor);
-container.bind(INTERFACE_TYPE.SalesOrderController).to(SalesOrderController);
+
 container.bind(INTERFACE_TYPE.POSTerminalPrintBillController).to(POSTerminalPrintBillController);
 container.bind<IPOSTerminalPrintBillInteractor>(INTERFACE_TYPE.POSTerminalPrintBillInteractor).to(POSTerminalPrintBillInteractor);
 container.bind<IPOSTerminalPrintBillRepository>(INTERFACE_TYPE.POSTerminalPrintBillRepository).to(POSTerminalPrintBillRepository);
@@ -28,11 +26,12 @@ container.bind<IPOSTerminalPrintBillRepository>(INTERFACE_TYPE.POSTerminalPrintB
 const router = Router();
 
 // Get the controller instance
-const controller = container.get<SalesOrderController>(INTERFACE_TYPE.SalesOrderController);
-const controller2 = container.get<POSTerminalPrintBillController>(INTERFACE_TYPE.POSTerminalPrintBillController);
+
+const controller = container.get<POSTerminalPrintBillController>(INTERFACE_TYPE.POSTerminalPrintBillController);
 
 // Define the routes and bind controller methods
-router.post("/createsalesorder", controller.onCreateSalesOrder.bind(controller));
+
+router.post("/validatewaiter", controller.onValidateWaiter.bind(controller));
 
 
 // Export the configured router

@@ -12,7 +12,9 @@ export class MenuRegisterController {
 
     async onCreateMenuRegister(req: Request, res: Response, next: NextFunction) {
         try {
+
             const body = req.body;
+            body.created_by = req.body.user.staff_id
 
             const data = await this.interactor.createMenuRegister(body);
             res.status(201).json({ status: 'success', data: data, message: 'Menu Register created successfully' });

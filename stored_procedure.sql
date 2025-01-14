@@ -605,6 +605,20 @@ $$ LANGUAGE plpgsql;
 
 
 
+
+SELECT sales_order_processing(
+    '[
+        {"menu_item_id": 70, "quantity": 800}
+    ]'::json,  -- First JSON array for menu items
+
+    '[
+       
+        {"store_item_id": 45, "source_type": "KITCHEN", "quantity": 4}
+    ]'::json   -- Second JSON array for store items
+);
+
+
+
 -----------------KITCHEN SETUP REGISTER
 
 CREATE OR REPLACE FUNCTION process_kitchen_setup(
