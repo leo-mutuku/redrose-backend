@@ -23,10 +23,10 @@ const router = Router();
 const controller = container.get<PaymentVoucherController>(INTERFACE_TYPE.PaymentVoucherController);
 
 // Define the routes and bind controller methods
-router.post("/create", controller.onCreatePaymentVoucher.bind(controller));
-router.get("/:id", controller.onGetPaymentVoucher.bind(controller));
-router.get("/", controller.onGetPaymentVouchers.bind(controller));
-router.patch("/:id", controller.onUpdatePaymentVoucher.bind(controller));
+router.post("/createpayment", controller.onCreatePaymentVoucher.bind(controller));
+router.get("/payment:id", controller.onGetPaymentVoucher.bind(controller));
+router.get("/payment", controller.onGetPaymentVouchers.bind(controller));
+router.patch("/payment:id", controller.onUpdatePaymentVoucher.bind(controller));
 
 // Export the configured router
 export default router;

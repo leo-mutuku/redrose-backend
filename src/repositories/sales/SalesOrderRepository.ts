@@ -78,14 +78,14 @@ export class SalesOrderRepository implements ISalesOrderRepository {
             const get_active_shift_values = [];
             const get_active_shift_result = await this.client.query(get_active_shift_qry);
             const shift_id = get_active_shift_result.rows[0]?.shift_id;
-            console.log(shift_id);
+
             if (!shift_id) {
                 throw new AppError('No active shift found.', 404);
             }
             const qry = `SELECT * FROM kitchen_setup WHERE menu_item_id = $1`;
             const v1 = [order_items[0].menu_item_id];
             const r1 = await this.client.query(qry, v1);
-            console.log(r1.rows[0]);
+
 
             const menu_json = JSON.stringify(order_items);
 
@@ -192,7 +192,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
             const sales_order_entry_id = parseInt(order_result.rows[0].sales_order_entry_id)
             console.log("-----before sales order processing")
             const result = await this.client.query(
-                `SELECT * FROM sales_order_processing($1::JSON, $2::JSON);`,
+                `SELECT * FROM sales_order_process($1::JSON, $2::JSON);`,
                 [menu_json, store_json]
             );
             if (!result) {

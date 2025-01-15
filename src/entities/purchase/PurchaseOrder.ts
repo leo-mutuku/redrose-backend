@@ -2,27 +2,22 @@ export class PurchaseOrder {
     constructor(
         public readonly purchase_date: Date,
         public readonly total: number,
-        public readonly from: string,
+        public readonly from_: "VENDOR" | "SUPPLIER",
         public readonly from_id: number,
-        public readonly cash: Boolean,
-        public readonly cash_details: CashDetail[],
-        public readonly order_details: OrderDetail[]
-
-
+        public readonly pay_mode: "CASH" | "CREDIT",
+        public readonly order_details: OrderDetail[],
+        public readonly total_vat: number,
+        public readonly shift_id: number,
+        public readonly created_by: number,
+        public readonly bank_id?: number | 0,
+        public readonly cash_account_id?: number | 0
     ) { }
-}
-
-type CashDetail = {
-    store_item_id: number,
-    quantity: number,
-    total_price: number,
-    vat_type: string
-
 }
 type OrderDetail = {
     store_item_id: number,
-    "quantity": number,
-    "total_price": number,
-    "vat_type": string
-
+    bying_price: number,
+    quantity: number,
+    total_price: number,
+    vat_type: string,
+    vat: number
 }

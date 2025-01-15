@@ -16,11 +16,11 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
 
     // Create a new purchase order record
     async createPurchaseOrder({
-        purchase_date, total, from, from_id, cash, cash_details, order_details
+        purchase_date, total, from_, from_id, pay_mode, bank_id, cash_account_id, order_details
 
-    }: PurchaseOrder): Promise<PurchaseOrder> {
+    }: PurchaseOrder): Promise<any> {
         try {
-            console.log(purchase_date, total, from, from_id, cash, cash_details, order_details)
+
 
             // update store items
 
@@ -34,15 +34,7 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
             // payment   
 
 
-            const query = `
-                INSERT INTO purchase_order (order_number, supplier_id, order_date, total_amount, status, created_by)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING purchase_order_id, order_number, supplier_id, order_date, total_amount, status, created_by, created_at
-            `;
-            const values = [];
-            const result = await this.client.query(query, values);
 
-            return result.rows[0];
         } catch (error) {
             throw new AppError('Error creating purchase order: ' + error, 500);
         }
