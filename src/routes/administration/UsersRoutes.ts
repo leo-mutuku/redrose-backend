@@ -24,6 +24,6 @@ router.post("/register", controller.onCreateUser.bind(controller));
 router.get("/getuser/:id", controller.onGetUser.bind(controller));
 router.get("/getusers", controller.onGetUsers.bind(controller));
 router.patch("/updateuser/:id", controller.onUpdateUser.bind(controller));
-router.patch("/changepassword", controller.onChangePassword.bind(controller))
+router.post("/changepassword", controller.onChangePassword.bind(controller))
 
 export default router;

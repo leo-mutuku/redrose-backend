@@ -53,9 +53,10 @@ export class UserController {
     }
     async onChangePassword(req: Request, res: Response, next: NextFunction) {
         try {
-            const user_id = req.body.user.user_id
+            const user_id = parseInt(req.body.user.userId)
             const password = req.body.new_password
-            const body = { user_id, password }
+            const old_password = req.body.old_password
+            const body = { user_id, password, old_password }
             const data = await this.interactor.changePassword(body)
             res.status(200).json({
                 status: "success",

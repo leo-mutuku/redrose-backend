@@ -151,24 +151,58 @@ export class UserRepository implements IUserRepository {
         }
     }
 
-    async changePassword({ user_id, password }: User): Promise<User> {
+
+
+    async changePassword({ user_id, password, old_password }: User): Promise<any> {
         try {
+            // Ensure old_password is defined
+            if (!old_password) {
+                throw new AppError('Old password is required', 400); // Handle missing old password
+            }
 
-            // hash password
-            const hashed_password = ""
+            // Step 1: Retrieve the current password from the database
+            const getPasswordQuery = `SELECT password FROM users WHERE user_id = $1`;
+            const getUserParams = [user_id];
+            const res = await this.client.query(getPasswordQuery, getUserParams);
 
-            // save hashed_password
-            const query = `
-            update users set password = $1  where user_id = $2 
-            `
-            const values = [hashed_password, user_id]
-            const result = await this.client.query(query, values)
-            return result.rows[0]
+            if (res.rows.length === 0) {
+                throw new AppError('User not found', 404);  // Handle user not found
+            }
 
+            const current_password = res.rows[0].password;
+
+
+            // Step 2: Compare old_password with the stored hashed password using bcrypt
+            const isOldPasswordValid = await bcrypt.compare(old_password, current_password);
+
+            if (!isOldPasswordValid) {
+                throw new AppError('Old password is incorrect', 400);  // Handle invalid old password
+            }
+            if (!password) {
+                throw new AppError("password not provided!", 400)
+            }
+            // Step 3: Hash the new password
+            const saltRounds = 10; // Number of hashing rounds
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+            // Step 4: Update the password in the database
+            const updatePasswordQuery = `
+                UPDATE users SET password = $1 WHERE user_id = $2
+            `;
+            const updateValues = [hashedPassword, user_id];
+            const updateResult = await this.client.query(updatePasswordQuery, updateValues);
+
+            // Check if update was successful
+            if (updateResult.rowCount === 0) {
+                throw new AppError('Password update failed', 500);  // Handle update failure
+            }
+
+            // Return a success message or other relevant response
+            return { message: 'Password updated successfully' };
         } catch (error) {
-            throw new AppError('Error: ' + error, 400)
-
+            throw new AppError('Error: ' + error, 400);
         }
     }
+
 
 }
