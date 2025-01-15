@@ -234,8 +234,9 @@ export class SalesOrderRepository implements ISalesOrderRepository {
         try {
             console.log("test")
             const query = `
-              SELECT 
+               SELECT 
                     so.sales_order_entry_id,
+					so.created_at,
                     so.total_value,
                     s.first_name as waiter,
                     so.status,
@@ -263,6 +264,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                     menu_register mr ON mr.menu_register_id = mi.menu_register_id
 				        GROUP BY 
                     so.sales_order_entry_id, so.total_value, s.first_name
+					ORDER BY so.created_at DESC
 					LIMIT $1 OFFSET $2
             `;
 
