@@ -37,7 +37,14 @@ export class WaitStaffRegisterRepository implements IWaitStaffRegisterRepository
                 pin, created_by,];
             const result = await this.client.query(query, values);
 
-            return result.rows[0];
+            const waitPhoneQuery = `SELECT * FROM staff WHERE staff_id = $1`;
+            const waitPhoneResult = await this.client.query(waitPhoneQuery, [staff_id]);
+
+            const waitPhone = waitPhoneResult.rows[0];
+            return {
+                ...result.rows[0],
+                waitPhone,
+            };
         } catch (error) {
             throw new AppError('Error creating wait staff registration: ' + error, 500);
         }

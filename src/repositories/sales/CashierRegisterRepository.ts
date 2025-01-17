@@ -37,8 +37,12 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
                 pin,
                 created_by];
             const result = await this.client.query(query, values);
+            // get staff phone from staff table
+            const staffQuery = `SELECT phone FROM staff WHERE staff_id = $1`;
+            const staffResult = await this.client.query(staffQuery, [staff_id]);
+            const staffPhone = staffResult.rows[0].phone;
 
-            return result.rows[0];
+            return { ...result.rows[0], staffPhone };
         } catch (error) {
             throw new AppError('Error creating cashier register: ' + error, 500);
         }

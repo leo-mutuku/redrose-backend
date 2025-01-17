@@ -3,6 +3,7 @@ import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
 import { ICashierRegisterInteractor } from "../../interfaces/sales/ICashierRegisterInteractor";
 import { ICashierRegisterRepository } from "../../interfaces/sales/ICashierRegisterRepository";
+import { SMSService } from "../../external-libraries/SMSService";
 
 @injectable()
 export class CashierRegisterInteractor implements ICashierRegisterInteractor {
@@ -15,8 +16,14 @@ export class CashierRegisterInteractor implements ICashierRegisterInteractor {
     async createCashierRegister(input: any): Promise<any> {
         try {
             const result = await this.repository.createCashierRegister(input);
-
+            console.log(result)
             // Business logic can be added here if needed
+            const smsService = new SMSService();
+            const message = `Your Cashier Account has been created successfully. Your cashier account balance is ${result.balance}.`;
+            const phoneNumber = result.staffPhone;
+            await smsService.sendSingle(phoneNumber, message);
+
+
             return result;
         } catch (error) {
             if (error instanceof AppError) {
