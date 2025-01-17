@@ -17,10 +17,9 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
             // Perform any necessary business logic or validation here
             const result = await this.repository.createSalesOrder(input);
 
-
-
             // print the result for debugging purposes  - to fail silently with sms notification
-            console.log('ptint', result);
+            // logic to prin here 
+
             // Business logic can be added here if needed
             return result;
         } catch (error) {

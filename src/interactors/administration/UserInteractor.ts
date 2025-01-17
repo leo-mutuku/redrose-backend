@@ -3,6 +3,7 @@ import { IUserInteractor } from "../../interfaces/administation/IUserInteractor"
 import { IUserRepository } from "../../interfaces/administation/IUserRepository";
 import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
+import { SMSService } from "../../external-libraries/SMSService";
 
 
 
@@ -22,6 +23,12 @@ export class UserInteractor implements IUserInteractor {
 
             // do some business logic here
             // send email and sms
+
+            // send sms
+            const smsService = new SMSService();
+            const message = `Welcome to REDROSE POS System! Your user account has been created successfully.Your username is ${result.username} and your password is ${result.password}. Your staff id is ${result.staff_id}.Please keep this information confidential. Thank you for choosing REDROSE.`;
+            const phoneNumber = result.phone
+            smsService.sendSingle(phoneNumber, message);
 
 
             return result

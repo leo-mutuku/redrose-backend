@@ -14,7 +14,7 @@ export class UserRepository implements IUserRepository {
     constructor() {
         this.client = pgClient()
     }
-    async createUser({ username, password, staff_id, roles }: User): Promise<User> {
+    async createUser({ username, password, staff_id, roles }: User): Promise<any> {
         try {
             const saltRounds = 10; // Number of hashing rounds
             const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -41,7 +41,13 @@ export class UserRepository implements IUserRepository {
                 }
             }
 
-            return { ...result.rows[0], roles };
+            // get phone number from staff table
+            const staffQuery = `SELECT phone FROM staff WHERE staff_id = $1`;
+            const staffValues = [parseInt(result.rows[0].staff_id)];
+            const staffResult = await this.client.query(staffQuery, staffValues);
+            const phone = staffResult.rows[0].phone;
+
+            return { ...result.rows[0], roles, password, phone };
         } catch (error) {
             throw new AppError('Error creating user ' + error)
         }

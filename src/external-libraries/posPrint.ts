@@ -68,16 +68,16 @@ export class POSPrinter {
 
     private formatHeader(header: Record<string, string | number>): void {
         this.printer.drawLine("*");
-        this.printer.leftRight("NOVENA MAIZE MILLER LTD", "CASH SALE");
+        this.printer.leftRight("RED ROSE", "CASH SALE");
         this.printer.leftRight("PO BOX 238 MERU", `${header["date"]}`);
-        this.printer.println("novenamaizemillerltd@gmail.com");
+        this.printer.println("redrose@gmail.com");
         this.printer.println("Dealers in: All types of cereals, Animal feeds");
         this.printer.println("");
         this.printer.leftRight("Tel: 0793306004", "PIN PIN P052132641M");
         this.printer.drawLine();
         this.printer.leftRight(
-            `BATCH NO: ${header["batch_number"]}`,
-            `SALES.ORDER.NO: ${header["sales_order_number"]}`
+            `DATE: ${header["date"]}`,
+            `BILL.NO: ${header["sales_order_number"]}`
         );
         this.printer.drawLine();
     }

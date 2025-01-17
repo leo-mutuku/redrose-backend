@@ -1,21 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
-import { IPOSPrintInteractor } from "../../interfaces/IPOSPrintInteractor";
+import { IPrintBillInteractor } from "../../interfaces/sales/IPrintBillInteractor";
 import { INTERFACE_TYPE } from "../../utils";
 
 @injectable()
-export class PrintPosController {
-    private readonly interactor: IPOSPrintInteractor;
-    constructor(@inject(INTERFACE_TYPE.POSPrintInteractor) interactor: IPOSPrintInteractor) {
+export class PrintBillController {
+    private readonly interactor: IPrintBillInteractor;
+    constructor(@inject(INTERFACE_TYPE.PrintBillInteractor) interactor: IPrintBillInteractor) {
         this.interactor = interactor;
     }
     async printPos(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log("print pos controller");
-            const header: {} = {}
-            const body: [] = []
-            const footer: {} = {}
-            const result = this.interactor.print(header, body, footer);
+            const { bill_id } = req.body;
+            const result = this.interactor.printBill(bill_id);
             res.status(200).json({
                 status: "success",
                 data: result
