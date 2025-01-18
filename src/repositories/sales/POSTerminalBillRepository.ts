@@ -100,11 +100,14 @@ export class POSTerminalPrintBillRepository implements IPOSTerminalPrintBillRepo
     async validateWaiter(input: POSTerminalBill): Promise<any> {
         try {
             const query = `
-                SELECT * FROM waitstaff WHERE staff_id = $1 AND pin = $2
+                SELECT * FROM waitstaff where  staff_id = $1 and pin = $2
             `;
             const values = [input.waiterstaff_id, input.pin];
             const result = await this.client.query(query, values);
-            return result.rows;
+            if (!result.rows.length) {
+                throw new AppError('Invalid waiter ID or PIN', 400);
+            }
+            return result.rows[0];
         }
         catch (error) {
             throw new AppError('Error validating waiter: ' + error, 500);

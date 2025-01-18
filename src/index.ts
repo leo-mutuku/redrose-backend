@@ -20,6 +20,7 @@ const allowedOrigins: string[] = [
   "http://localhost:80",
   "http://localhost",
   "http://localhost:5173",
+  "http://localhost:5174",
   "http://localhost:9000",
   "http://192.168.88.234:8081",
   "http://192.168.88.234:8082",

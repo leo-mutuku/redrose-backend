@@ -47,7 +47,12 @@ export class POSTerminalPrintBillController {
     async onValidateWaiter(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
 
-            const body = req.body
+            const staff_id = parseInt(req.body.staff_id)
+            const pin = parseInt(req.body.pin)
+            const body = {
+                waiterstaff_id: staff_id,
+                pin: pin
+            }
 
             const data = await this.interactor.validateWaiter(body)
 

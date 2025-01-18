@@ -14,14 +14,16 @@ export class SalesOrderController {
     async onCreateSalesOrder(req: Request, res: Response, next: NextFunction) {
         try {
 
-            const secure_staff_id = req.body?.user?.staff_id;
-            let body = req.body;
-            if (secure_staff_id) {
-                body = {
-                    ...req.body,
-                    secure_staff_id: secure_staff_id
-                }
+            let staff_id = req.body?.user?.staff_id;
+            if (!staff_id) {
+                staff_id = req.body?.staff_id
             }
+            if (!staff_id) {
+                return res.status(400).json({ status: 'error', message: 'Missing staff_id' });
+            }
+            req.body.staff_id = staff_id;
+            const body = req.body;
+
             const data = await this.interactor.createSalesOrder(body);
             res.status(201).json({ status: 'success', data: data, message: 'Success thanks!' });
         } catch (error) {

@@ -71,7 +71,7 @@ export class POSTerminalPrintBillInteractor implements IPOSTerminalPrintBillInte
             return result;
         } catch (error) {
             if (error instanceof AppError) {
-                throw new AppError(`Error validating waiter in POSTerminalPrintBillInteractor: ${error}`, error.statusCode || 500);
+                throw new AppError(` ${error}`, error.statusCode || 500);
             }
             throw new Error('Failed to validate waiter. Please try again later.');
         }

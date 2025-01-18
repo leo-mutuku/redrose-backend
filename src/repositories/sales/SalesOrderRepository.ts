@@ -13,214 +13,220 @@ export class SalesOrderRepository implements ISalesOrderRepository {
     // Create a new sales order
     async createSalesOrder({
         order_items,
-        waitstaff_id,
-        secure_staff_id,
-        pin
+        staff_id,
     }: SalesOrder): Promise<any> {
         try {
-            // validate order_items
-            // validate waitstaff_id
-            // waitstaff_id = 4
-            // if (!waitstaff_id) {
-            //     if (!secure_staff_id) {
-            //         throw new Error(`Waiter Account not verified!`);
-            //     }
-            // }
-            // if (waitstaff_id) {
-            //     // validate pin
-            //     console.log("validate pin")
-            //     const qry = `SELECT pin FROM waitstaff WHERE waitstaff_id = $1`;
-            //     const values = [waitstaff_id];
-            //     const result = await this.client.query(qry, values);
-            //     if (!result.rows.length) {
-            //         throw new AppError('Invalid waitstaff_id', 400);
-            //     }
-            //     if (result.rows[0].pin !== pin) {
-            //         throw new AppError('Invalid pin', 400);
-            //     }
-            // }
-            // // authorize staff using secure_staff_id
-            // if (secure_staff_id) {
-            //     const qry = `SELECT pin FROM waitstaff WHERE waitstaff_id = $1`;
-            //     const values = [secure_staff_id];
-            //     const result = await this.client.query(qry, values);
-            //     if (result.rows.length === 0) {
-            //         throw new AppError('Invalid secure_staff_id', 400);
 
-            //     }
-            //     if (result.rows[0].pin !== pin) {
-            //         throw new AppError('Invalid pin', 400);
-            //     }
-            //     waitstaff_id = secure_staff_id;
-            // }
-
-            // console.log(waitstaff_id, secure_staff_id);
-            // validate inputs  --
-
-            waitstaff_id = 4  // pin
-            // Prepare store item JSON
-
-            // validate   managed menu non managed menu
-            // menu setup must exist
-            for (let item of order_items) {
-                const qry = `select menu_item_id from kitchen_setup where menu_item_id = $1`
-                const values = [item.menu_item_id]
-                const res = await this.client.query(qry, values)
-                if (!res.rows.length) {
-                    throw new AppError("Missing menu setup!")
-                }
-
+            // check if order items is empty
+            if (!order_items) {
+                throw new Error(`Cart is empty!`);
             }
 
-            // check if item stock exist if managed
+            // check if waitstaff_id is empty
 
-            const get_active_shift_qry = `SELECT shift_id FROM active_shift`;
-            const get_active_shift_values = [];
-            const get_active_shift_result = await this.client.query(get_active_shift_qry);
-            const shift_id = get_active_shift_result.rows[0]?.shift_id;
-
-            if (!shift_id) {
-                throw new AppError('No active shift found.', 404);
+            if (!staff_id) {
+                throw new Error(`Waitstaff id is required!`);
             }
-            const qry = `SELECT * FROM kitchen_setup WHERE menu_item_id = $1`;
-            const v1 = [order_items[0].menu_item_id];
-            const r1 = await this.client.query(qry, v1);
-
-
-            const menu_json = JSON.stringify(order_items);
-
-            // Get array of setup IDs
-            const setupids: number[] = [];
-            if (order_items) {
-                for (const item of order_items) {
-                    setupids.push(item.menu_item_id);
-                }
+            // check if staff has waitstaff  account
+            const qry = `select * from waitstaff where staff_id = $1`
+            const values = [staff_id]
+            const res = await this.client.query(qry, values)
+            if (!res.rows.length) {
+                throw new AppError(`We could not verify your waiter account `, 404);
             }
 
-
-            const setupid = r1.rows[0]?.kitchen_setup_id;
-            if (!setupid) {
-                throw new AppError('Kitchen setup ID not found.', 404);
-            }
-            // Fetch ingredients for the setup
-            type StoreObject = {
-                quantity: number,
-                store_item_id: number,
-                source_type: string
-            }
-            let stores: StoreObject[] = []
-            for (let item of setupids) {
-                console.log(item, "item")
-                const qry2 = `SELECT * FROM kitchen_setup WHERE menu_item_id = $1`;
-                const v2 = [item];
-                const r2 = await this.client.query(qry2, v2);
-                let ingredients_id = parseInt(r2.rows[0].kitchen_setup_id)
-                // get ingredients seting , pick, store_item, quantity and source_type
-                let qry3 = `select * from kitchen_ingredients where ingredients_id = $1`
-                let v3 = [ingredients_id]
-                let r3 = await this.client.query(qry3, v3)
-                if (!r3.rows.length) {
-                    throw new AppError("Error in ingredients setup, one of the item in the menu is not set well", 500)
-                }
-                for (let item of r3.rows) {
-                    console.log(item, "item")
-                    stores.push({
-                        quantity: parseFloat(item.quantity),
-                        store_item_id: parseFloat(item.store_item_id),
-                        source_type: item.source_type
-                    })
-                }
-            }
-            if (!stores.length) {
-                throw new AppError("Store item in one of tour chosen meal is not setup properly", 500)
-            };
-            const updatedData = stores.map((item) => ({
-                ...item,
-                quantity: (item.quantity * order_items[0].quantity).toFixed(4), // Multiply and format
-            }));
-            const store_json = JSON.stringify(updatedData);
-            // Call the sales order processing function
-            //  sales order start here 
-            // get order items and prices from menu item 
-            type OrderDetails = {
+            // menu details
+            type menu_detail = {
                 menu_item_id: number,
+                name: string,
                 quantity: number,
                 price: number,
                 total_price: number,
-                shift_id: number,
-                waittstaff_id: number,
-            }
-            let order_details: OrderDetails[] = []
-            for (let item of order_items) {
-                let qry4 = `select * from menu_item where menu_item_id = $1`
-                let v4 = [item.menu_item_id]
-                let r4 = await this.client.query(qry4, v4)
-                order_details.push({
-                    menu_item_id: parseInt(r4.rows[0].menu_item_id),
-                    quantity: item.quantity,
-                    price: r4.rows[0].price,
-                    total_price: parseFloat(r4.rows[0].price) * item.quantity
-                    , shift_id: shift_id,
-                    waittstaff_id: waitstaff_id
-                })
-            }
-            type sales_order_type = {
-                order_details: OrderDetails[],
-                sales_order_id: number,
-                total: number,
-                cat: number,
-                vat: number,
                 status: string,
-                waitstaff_id: number,
-                shift_id: number
             }
-            let sales_order: sales_order_type = {
-                order_details,
-                sales_order_id: 0,
-                cat: (order_details.reduce((acc, item) => acc + item.total_price, 0)) * 0.02,
-                vat: (order_details.reduce((acc, item) => acc + item.total_price, 0)) * 0.16,
-                total: order_details.reduce((acc, item) => acc + item.total_price, 0),
-                status: "New",
-                waitstaff_id: waitstaff_id,
-                shift_id: shift_id
-            }
-            let order_query = `INSERT INTO sales_order_entry 
-            (status, waitstaff_id, shift_id) VALUES ($1, $2,$3 ) RETURNING *`;
-            let order_values = ["New", waitstaff_id, shift_id];
-            let order_result = await this.client.query(order_query, order_values);
+            let menu_details: menu_detail[] = [];
 
-            const sales_order_entry_id = parseInt(order_result.rows[0].sales_order_entry_id)
-            console.log("-----before sales order processing")
-            const result = await this.client.query(
-                `SELECT * FROM sales_order_process($1::JSON, $2::JSON);`,
-                [menu_json, store_json]
-            );
-            if (!result) {
-                throw new AppError("Sorry one of menu entry is out of stock", 500)
-            }
-            // update sales order entry table
-            let update_query =
-                `UPDATE sales_order_entry SET 
-                status = $1, total_value = $2, cat = $3, vat = $4
-                WHERE sales_order_entry_id = $5`;
-            let update_values =
-                ['Posted', sales_order.total, sales_order.cat, sales_order.vat, sales_order_entry_id];
-            let update_result = await this.client.query(update_query, update_values);
-            // insert into sales order detail
-            for (let item of order_details) {
-                console.log(item)
-                let sales_order_detail_query =
-                    `INSERT INTO sales_order_details
-            (menu_item_id, quantity, price, total, shift_id, waitstaff_id, sales_order_entry_id) VALUES ($1, $2, $3, $4, $5, $6, $7)`;
-                let sales_order_detail_values =
-                    [item.menu_item_id, item.quantity, item.price, item.total_price, item.shift_id, item.waittstaff_id, sales_order_entry_id];
-                await this.client.query(sales_order_detail_query, sales_order_detail_values);
-            }
-            // sales object
-            sales_order.sales_order_id = sales_order_entry_id
-            sales_order.status = "Posted"
+            // get menu setup from kitchen_setup
+            for (let item of order_items) {
+                const qry = `select * from menu_item as mi inner join menu_register as mr on mi.menu_register_id 
+                = mr.menu_register_id where mi.menu_item_id = $1`
+                const values = [item.menu_item_id]
+                const res = await this.client.query(qry, values)
+                if (!res.rows.length) {
+                    throw new AppError("Menu item does not exist!", 400);
+                }
+                // update menu details with menu_item_id
+                menu_details.push({
+                    menu_item_id: item.menu_item_id,
+                    name: res.rows[0].name,
+                    quantity: item.quantity,
+                    price: parseFloat(res.rows[0].price),
+                    total_price: item.quantity * res.rows[0].price,
+                    status: "pending"
+                })
 
-            return sales_order;
+            }
+
+            // group managed menu and not managed menu
+            // get menu source type setup from kitchen setup
+
+
+            let managed_menus: menu_detail[] = [];
+            let unmanaged_menu: menu_detail[] = [];
+            for (let item of menu_details) {
+                const qry = `select * from kitchen_setup where menu_item_id = $1`
+                const values = [item.menu_item_id]
+                const res = await this.client.query(qry, values)
+                if (!res.rows.length) {
+                    throw new AppError(`${item.name} does not have kitchen settings!`, 400);
+                }
+                if (res.rows[0].managed === "MANAGED") {
+                    managed_menus.push(item)
+                }
+                if (res.rows[0].managed === "UNMANAGED") {
+                    unmanaged_menu.push(item)
+                }
+            }
+            // for the managed group required store time based on store item source
+            type ingredient_detail = {
+                store_item_id: number,
+                name?: string,
+                quantity: number,
+                source: string,
+                unit_value: number,
+                total_quantity: number,
+            }
+            let ingredient_details: ingredient_detail[] = [];
+            for (let item of managed_menus) {
+                // get ingredient details from kitchen setup where menu_item_id = item.menu_item_id
+                let menu_order_quantity = item.quantity;
+                const qry = `select * from kitchen_setup where menu_item_id = $1`
+                const values = [item.menu_item_id]
+                const res = await this.client.query(qry, values)
+                if (!res.rows.length) {
+                    throw new AppError(`${item.name} does not have kitchen settings!`, 400);
+
+                    // update ingredient details with store_item_id
+                }
+                // get ingredients_id
+                const ingredients_id = parseInt(res.rows[0].kitchen_setup_id);
+
+                // get ingredients from ingredients_id
+                const ingredients_qry = `select ki.ingredients_id, ki.quantity, ki.source_type, ki.store_item_id from kitchen_ingredients as ki
+inner join  store_item as 
+si on ki.store_item_id = si.store_item_id 
+                 where ki.ingredients_id = $1`
+                const ingredients_values = [ingredients_id]
+                const ingredients_res = await this.client.query(ingredients_qry, ingredients_values)
+                if (!ingredients_res.rows.length) {
+                    const qry = `select ir.item_name from store_item as si   inner join item_register as ir on si.item_id = ir.item_id where si.store_item_id = $1`
+                    const values = [ingredients_id]
+                    const res = await this.client.query(qry, values)
+                    throw new AppError(`${res.rows[0].item_name} does not have ingredients!`, 400);
+
+                }
+                for (let ingredient of ingredients_res.rows) {
+                    ingredient_details.push({
+                        store_item_id: parseInt(ingredient.store_item_id),
+                        name: ingredient.item_name,
+                        quantity: menu_order_quantity,
+                        source: ingredient.source_type,
+                        unit_value: parseFloat(ingredient.quantity),
+                        total_quantity: parseFloat(ingredient.quantity) * menu_order_quantity
+                    })
+                }
+
+            }
+
+
+
+            function groupAndVerifyData(data: ingredient_detail[]): any[] {
+                // Group the data by store_item_id and source
+                const groupedData: { [key: string]: { quantity: number; total_quantity: number } } = {};
+
+                data.forEach(item => {
+                    const key = `${item.store_item_id}-${item.source}`;
+
+                    if (!groupedData[key]) {
+                        groupedData[key] = { quantity: 0, total_quantity: 0 };
+                    }
+
+                    // Sum up the quantities and total quantities
+                    groupedData[key].quantity += item.quantity;
+                    groupedData[key].total_quantity += item.total_quantity;
+                });
+
+                // Convert the grouped data back into an array and verify
+                return Object.keys(groupedData).map(key => {
+                    const [store_item_id, source] = key.split('-');
+                    const group = groupedData[key];
+                    return {
+                        store_item_id: parseInt(store_item_id),
+                        source,
+                        quantity: group.quantity,
+                        total_quantity: group.total_quantity,
+                        // Verify the expected values based on the input data
+                        verified_quantity: group.quantity, // This is the expected sum of quantities
+                        verified_total_quantity: group.total_quantity // This is the expected sum of total_quantities
+                    };
+                });
+            }
+
+            // Running the function with the provided data
+            const verifiedData = groupAndVerifyData(ingredient_details);
+
+            console.log(verifiedData);
+
+            // check stock id available or not
+            for (let item of verifiedData) {
+                // if source = KITTCHEN
+                if (item.source === 'KITCHEN') {
+                    // check stock id available or not
+                    const qry = `select * from kitchen_store where store_item_id = $1`
+                    const values = [item.store_item_id]
+                    const res = await this.client.query(qry, values)
+                    if (!res.rows.length) {
+                        throw new AppError(`${item.name} does not have kitchen settings!`, 400);
+                    }
+                    // compare qantity and total_quantity shoul be greater than item.total_quantity
+                    if (item.total_quantity > parseFloat(res.rows[0].quantity)) {
+                        // get item name
+                        const qry = `select ir.item_name from store_item as si   inner join item_register as ir on si.item_id = ir.item_id where si.store_item_id = $1`
+                        const values = [item.store_item_id]
+                        const res = await this.client.query(qry, values)
+                        throw new AppError(`${res.rows[0].item_name} does not have enough quantity!`, 400);
+
+
+                    }
+
+                }
+                if (item.source === 'RESTAURANT') {
+
+                    console.log("------------rest")
+                    // check stock id available or not
+                    const qry = `select * from restaurant_store where store_item_id = $1`
+                    const values = [item.store_item_id]
+                    const res = await this.client.query(qry, values)
+                    if (!res.rows.length) {
+                        const qry = `select ir.item_name from store_item as si   inner join item_register as ir on si.item_id = ir.item_id where si.store_item_id = $1`
+                        const values = [item.store_item_id]
+                        const res = await this.client.query(qry, values)
+                        throw new AppError(`${res.rows[0].item_name} does not have restaurant settings!`, 400);
+                    }
+                    // compare qantity and total_quantity shoul be greater than item.total_quantity
+                    if (item.total_quantity > parseFloat(res.rows[0].quantity)) {
+                        // get item name
+                        const qry = `select ir.item_name from store_item as si   inner join item_register as ir on si.item_id = ir.item_id where si.store_item_id = $1`
+                        const values = [item.store_item_id]
+                        const res = await this.client.query(qry, values)
+                        throw new AppError(`${res.rows[0].item_name} does not have enough quantity!`, 400);
+                    }
+
+                }
+            }
+
+
+            return
         } catch (error) {
             if (error instanceof AppError) {
                 throw new AppError(error.message, error.statusCode);
