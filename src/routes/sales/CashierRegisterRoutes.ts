@@ -28,6 +28,8 @@ router.post("/createcashierregister", controller.onCreateCashierRegister.bind(co
 router.get("/getcashierregister/:id", controller.onGetCashierRegister.bind(controller));
 router.get("/getcashierregisters", controller.onGetCashierRegisters.bind(controller));
 router.patch("/updatecashierregister/:id", controller.onUpdateCashierRegister.bind(controller));
+router.post("/dispose", controller.onDispose.bind(controller))
+router.post("/clearbill", controller.onClearBill.bind(controller))
 
 // Export the configured router
 export default router;

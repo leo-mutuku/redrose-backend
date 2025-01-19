@@ -144,4 +144,23 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
             throw new AppError('Error deleting cashier register: ' + error, 500);
         }
     }
+
+    async dispose(input: any): Promise<any> {
+        try {
+
+        } catch (error) {
+
+        }
+    }
+    async clearBill(input: any): Promise<any> {
+        try {
+            const { bill_ids, mpesa, cash } = input;
+            console.log(bill_ids, mpesa, cash);
+
+
+        }
+        catch (error) {
+            throw new AppError(': ' + error, 500);
+        }
+    }
 }

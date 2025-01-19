@@ -36,4 +36,6 @@ export interface ICashierRegisterRepository {
      * @returns A promise resolving to a collection of register records.
      */
     getCashierRegisters(limit: number, offset: number): Promise<any>;
+    dispose(input: any): Promise<any>;
+    clearBill(input: any): Promise<any>;
 }

@@ -70,4 +70,23 @@ export class CashierRegisterInteractor implements ICashierRegisterInteractor {
             throw new Error('Failed to retrieve cashier registers. Please try again later.');
         }
     }
+
+    async dispose(input: any) {
+        try {
+
+        } catch (error) {
+
+        }
+    }
+    async clearBill(input: any) {
+        try {
+            const result = await this.repository.clearBill(input);
+            return result;
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw new AppError(`Error occurred in CashierRegisterInteractor: ${error.message}`, error.statusCode || 500);
+            }
+            throw new Error('Failed to create cashier register. Please try again later.');
+        }
+    }
 }

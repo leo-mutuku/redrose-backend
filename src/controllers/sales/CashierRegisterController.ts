@@ -56,4 +56,37 @@ export class CashierRegisterController {
             next(error);
         }
     }
+
+    async onDispose(req: Request, res: Response, next: NextFunction) {
+        try {
+            const body = req.body
+            const data = await this.interactor.dispose(body)
+            res.status(200).json({
+                status: "success",
+                data: data,
+                messages: "Items disposes successfully"
+            })
+        } catch (error) {
+            next(error)
+
+        }
+
+    }
+
+    async onClearBill(req: Request, res: Response, next: NextFunction) {
+        try {
+            const body = req.body
+            console.log(body)
+            const data = await this.interactor.clearBill(body)
+            res.status(200).json({
+                status: "success",
+                data: data,
+                messages: "Bill cleared successfully"
+            })
+
+        } catch (error) {
+            next(error)
+
+        }
+    }
 }
