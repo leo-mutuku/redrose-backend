@@ -29,6 +29,9 @@ export interface ISalesOrderRepository {
      */
     getSalesOrders(search: number, status: string, limit: number, offset: number): Promise<any>;
     authWaiter(pin: number, staff_id: number): Promise<any>;
+    voidedBill(input: any): Promise<any>
+    printBill(input: any): Promise<any>
+    cancelBill(input: any): Promise<any>
 
     /**
      * Deletes a specific sales order.

@@ -81,6 +81,63 @@ export class SalesOrderController {
             next(error);
         }
     }
+    async onVoidedBill(req: Request, res: Response, next: NextFunction) {
+        try {
+            let body = req.body.bill_id
+            if (!body) {
+                res.status(400).json({
+                    status: 'error',
+                    message: 'No data provided, please provide bill id'
+                })
+            }
+            const data = await this.interactor.voidedBill(body)
+            res.status(200).json({
+                status: 'success',
+                data: data,
+                message: "Billed voided"
+            })
+
+
+
+
+        } catch (error) {
+            next(error)
+
+        }
+    }
+
+    async onPrintBill(req: Request, res: Response, next: NextFunction) {
+        try {
+            const body = req.body.bill_id
+            const data = await this.interactor.printBill(body)
+            res.status(200).json({
+                status: "success",
+                data: data,
+                message: "Printed successfully"
+            })
+
+        } catch (error) {
+            next(error)
+
+        }
+
+    }
+
+
+    //onCancelBill
+    async onCancelBill(req: Request, res: Response, next: NextFunction) {
+        try {
+            const body = req.body.bill_id
+            const data = await this.interactor.cancelBill(body)
+            res.status(200).json({
+                status: "success",
+                data: data,
+                message: "Bill cancelled"
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 
 
 }

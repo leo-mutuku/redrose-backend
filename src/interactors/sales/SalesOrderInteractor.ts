@@ -113,9 +113,42 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
             return result;
         } catch (error) {
             // if (error instanceof AppError) {
-            throw new AppError(`Error fetching sales orders in SalesOrderInteractor: ${error}`, 500);
+            throw new AppError(`: ${error}`, 500);
         }
-        throw new Error('Failed to retrieve sales orders. Please try again later.');
+
+    }
+
+    async voidedBill(input: any) {
+        try {
+            const result = await this.repository.voidedBill(input)
+            return result
+
+        } catch (error) {
+            throw new AppError(`: ${error}`, 500)
+
+        }
+    }
+
+    async printBill(input: any) {
+        try {
+            const result = await this.repository.printBill(input)
+            return result
+
+        }
+        catch (error) {
+            throw new AppError(`: ${error}`, 500)
+        }
+    }
+
+    async cancelBill(input: any) {
+        try {
+            const result = await this.repository.cancelBill(input)
+            return result
+
+        } catch (error) {
+            throw new AppError("" + error, 400)
+
+        }
     }
 }
 
