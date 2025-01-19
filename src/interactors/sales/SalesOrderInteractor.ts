@@ -3,13 +3,17 @@ import { INTERFACE_TYPE } from "../../utils";
 import { AppError } from "../../utils/AppError";
 import { ISalesOrderInteractor } from "../../interfaces/sales/ISalesOrderInteractor";
 import { ISalesOrderRepository } from "../../interfaces/sales/ISalesOrderRepository";
+import SalesReceipt from "../../external-libraries/posPrint";
+import CustomerReceipt from "../../external-libraries/posPrint2";
 
 @injectable()
 export class SalesOrderInteractor implements ISalesOrderInteractor {
     private repository: ISalesOrderRepository;
 
+
     constructor(@inject(INTERFACE_TYPE.SalesOrderRepository) repository: ISalesOrderRepository) {
         this.repository = repository;
+
     }
 
     async createSalesOrder(input: any): Promise<any> {
@@ -21,6 +25,40 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
             // logic to prin here 
 
             // Business logic can be added here if needed
+            const print = new SalesReceipt();
+            const print2 = new CustomerReceipt();
+            const header = {
+                title: "BILL RECEIPT",
+                date: new Date().toLocaleString(),
+                customer: "customer",
+                order_id: "988",
+                staff_id: 99,
+                total: 9000,
+                payment_method: "cash",
+                payment_status: "paid",
+                status: "paid",
+            }
+            const body = result.map((item: any) => {
+                return {
+                    item_id: item.item_id,
+                    item_name: item.item_name,
+                    quantity: item.quantity,
+                    price: item.price,
+                    total: item.total,
+                }
+            })
+            const footer = {
+                total: 9000,
+                paid: 9000,
+                change: 0,
+                balance: 0,
+            }
+
+            print.receipt(header, body, footer)
+            print2.receipt(header, body, footer)
+
+
+
             return result;
         } catch (error) {
             if (error instanceof AppError) {

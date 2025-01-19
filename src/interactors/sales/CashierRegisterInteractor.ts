@@ -4,7 +4,7 @@ import { AppError } from "../../utils/AppError";
 import { ICashierRegisterInteractor } from "../../interfaces/sales/ICashierRegisterInteractor";
 import { ICashierRegisterRepository } from "../../interfaces/sales/ICashierRegisterRepository";
 import { SMSService } from "../../external-libraries/SMSService";
-import { POSPrinter } from "../../external-libraries/posPrint";
+
 
 @injectable()
 export class CashierRegisterInteractor implements ICashierRegisterInteractor {

@@ -7,7 +7,7 @@ import {
 
 const printer = new ThermalPrinter({
     type: PrinterTypes.STAR, // 'star' or 'epson'
-    interface: "tcp://192.168.88.5", // Printer IP or serial port
+    interface: "tcp://192.168.88.7", // Printer IP or serial port
     options: {
         timeout: 1000,
     },
@@ -17,20 +17,20 @@ const printer = new ThermalPrinter({
     removeSpecialCharacters: false, // Removes special characters - default: false
     lineCharacter: "-", // Use custom character for drawing lines - default: -
 });
-class SalesReceipt {
+class CustomerReceipt {
     async receipt(header, body, footer) {
         let isConnected = await printer.isPrinterConnected(); // Check if printer is connected, return bool of status
         printer.clear();
         printer.drawLine("*");
         printer.leftRight("RED ROSE HOTEL", "CASH RECEIPT");
-        printer.println("Opposite Kensiliver Bus Station Maua meru");
+        printer.println("Opposite Kensiliver Bus Station Maua Meru");
         printer.println("Tel: 0720220892/0718147498");
         printer.leftRight("BILL NO: ", `Date: ${header.date}`);
 
-        printer.println('Location: RESTAURANT');
+        printer.println('Location: MAIN KITCHEN');
         printer.println("");
 
-        printer.println("CAPTAIN ORDER RECEIPT");
+        printer.println("CUSTOMER ORDER RECEIPT");
 
         printer.drawLine();
 
@@ -60,7 +60,7 @@ class SalesReceipt {
         printer.println(`Customer : ${footer.customer_name}`);
         printer.leftRight(
             `Served By: ${footer.served_by}`,
-            `Sales Person: ${footer.sales_person}`
+            `: ${footer.sales_person}`
         );
         printer.println("Goods once sold cannot be returned");
         printer.println("");
@@ -73,6 +73,7 @@ class SalesReceipt {
         try {
             await printer.execute();
 
+
             // console.log("Print success.");
         } catch (error) {
             // console.error("Print error:", error);
@@ -80,4 +81,4 @@ class SalesReceipt {
     }
 }
 
-export default SalesReceipt;
+export default CustomerReceipt;

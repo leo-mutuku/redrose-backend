@@ -16,7 +16,13 @@ export class SalesOrderRepository implements ISalesOrderRepository {
         staff_id,
     }: SalesOrder): Promise<any> {
         try {
-
+            // get active shift
+            const shift_qry = `select shift_id from active_shift limit 1`
+            const shift_res = await this.client.query(shift_qry)
+            if (!shift_res.rows.length) {
+                throw new AppError(`No active shift found`, 404);
+            }
+            const shift_id = shift_res.rows[0].shift_id
             // check if order items is empty
             if (!order_items) {
                 throw new Error(`Cart is empty!`);
@@ -113,9 +119,9 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
                 // get ingredients from ingredients_id
                 const ingredients_qry = `select ki.ingredients_id, ki.quantity, ki.source_type, ki.store_item_id from kitchen_ingredients as ki
-inner join  store_item as 
-si on ki.store_item_id = si.store_item_id 
-                 where ki.ingredients_id = $1`
+                    inner join  store_item as 
+                    si on ki.store_item_id = si.store_item_id 
+                    where ki.ingredients_id = $1`
                 const ingredients_values = [ingredients_id]
                 const ingredients_res = await this.client.query(ingredients_qry, ingredients_values)
                 if (!ingredients_res.rows.length) {
@@ -225,8 +231,44 @@ si on ki.store_item_id = si.store_item_id
                 }
             }
 
+            // actual transaction start here
+            // 1 create sales order entry
+            // update kitchen store, reestaurant store and tracking tables
+            // update sales order details
 
-            return
+            // unmanaged menu
+            const sales_order_query = `insert into sales_order_entry ( total_value, vat, cat, waitstaff_id, status, shift_id)
+             values ($1, $2, $3, $4, $5, $6) returning sales_order_entry_id`
+            let tv = menu_details.reduce((acc, item) => acc + item.price * item.quantity, 0);
+            let vat = tv * 0.16;
+            let cat = tv * 0.05;
+
+            const sales_order_values = [tv, vat, cat, staff_id, 'Posted', shift_id]
+            console.log(sales_order_values, sales_order_query)
+
+            const sales_order_res = await this.client.query(sales_order_query, sales_order_values)
+
+
+            const sales_order_id = parseInt(sales_order_res.rows[0].sales_order_entry_id)
+            // create sales order details
+            for (let item of menu_details) {
+                const sales_order_details_query = `insert into sales_order_details 
+                (sales_order_entry_id, menu_item_id, price, quantity, total, shift_id, waitstaff_id, status)
+                 values ($1, $2, $3, $4, $5, $6, $7,$8) returning sales_order_details_id`
+                const sales_order_details_values = [sales_order_id, item.menu_item_id, item.price, item.quantity, item.total_price, shift_id, staff_id, "Posted"]
+                console.log(sales_order_details_values, sales_order_details_query)
+
+                await this.client.query(sales_order_details_query, sales_order_details_values)
+            }
+            // // update kitchen store
+
+
+
+
+            console.log(menu_details)
+
+
+            return menu_details
         } catch (error) {
             if (error instanceof AppError) {
                 throw new AppError(error.message, error.statusCode);
