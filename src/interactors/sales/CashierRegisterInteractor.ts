@@ -26,7 +26,7 @@ export class CashierRegisterInteractor implements ICashierRegisterInteractor {
             return result;
         } catch (error) {
             if (error instanceof AppError) {
-                throw new AppError(`Error occurred in CashierRegisterInteractor: ${error.message}`, error.statusCode || 500);
+                throw new AppError(`: ${error.message}`, error.statusCode || 500);
             }
             throw new Error('Failed to create cashier register. Please try again later.');
         }
@@ -53,7 +53,7 @@ export class CashierRegisterInteractor implements ICashierRegisterInteractor {
             return result;
         } catch (error) {
             if (error instanceof AppError) {
-                throw new AppError(`Error updating cashier register in CashierRegisterInteractor: ${error.message}`, error.statusCode || 500);
+                throw new AppError(`: ${error.message}`, error.statusCode || 500);
             }
             throw new Error('Failed to update cashier register. Please try again later.');
         }
@@ -65,7 +65,7 @@ export class CashierRegisterInteractor implements ICashierRegisterInteractor {
             return result;
         } catch (error) {
             if (error instanceof AppError) {
-                throw new AppError(`Error fetching cashier registers in CashierRegisterInteractor: ${error.message}`, error.statusCode || 500);
+                throw new AppError(`: ${error.message}`, error.statusCode || 500);
             }
             throw new Error('Failed to retrieve cashier registers. Please try again later.');
         }
@@ -84,7 +84,7 @@ export class CashierRegisterInteractor implements ICashierRegisterInteractor {
             return result;
         } catch (error) {
             if (error instanceof AppError) {
-                throw new AppError(`Error occurred in CashierRegisterInteractor: ${error.message}`, error.statusCode || 500);
+                throw new AppError(`: ${error.message}`, error.statusCode || 500);
             }
             throw new Error('Failed to create cashier register. Please try again later.');
         }

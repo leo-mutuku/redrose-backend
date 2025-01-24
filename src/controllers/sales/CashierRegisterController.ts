@@ -76,7 +76,7 @@ export class CashierRegisterController {
     async onClearBill(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body
-            console.log(body)
+
             const data = await this.interactor.clearBill(body)
             res.status(200).json({
                 status: "success",

@@ -5,6 +5,7 @@ import { AppError } from "../../utils/AppError";
 
 import { IPurchaseOrderRepository } from "../../interfaces/purchase/IpurchaseOrderRepository";
 import { PurchaseOrder } from "../../entities/purchase/PurchaseOrder";
+import { Account } from "../../entities/finance/Accounts";
 
 @injectable()
 export class PurchaseOrderRepository implements IPurchaseOrderRepository {
@@ -16,10 +17,72 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
 
     // Create a new purchase order record
     async createPurchaseOrder({
-        purchase_date, total, from_, from_id, pay_mode, bank_id, cash_account_id, order_details
+        purchase_date, total, from_, from_id, account_type, pay_mode, bank_id, cash_account_id, order_details
 
     }: PurchaseOrder): Promise<any> {
         try {
+            // check if total = to sum of total_price from order_details
+            console.log(total !== order_details.reduce((sum, item) => sum + item.total_price, 0))
+            if (total !== order_details.reduce((sum, item) => sum + item.total_price, 0)) {
+                throw new AppError("Possible error notice, the total value must be exactly equal to sum of item's values ")
+            }
+            // account status
+            if (pay_mode == "CASH") {
+                if (account_type == "CASH" && !cash_account_id) {
+                    throw new AppError("cash account required for cash payment mode")
+                }
+                if (account_type == "BANK" && !bank_id) {
+                    throw new AppError("bank account required for bank payment mode")
+                }
+            }
+            //from supplier || vendor
+            let supplier_id = 0
+            let supplier_balance = 0
+            let vendor_id = 0
+            let vendor_balance = 0
+            //from = SUPPLIER
+            if (from_ == "SUPPLIER") {
+                const supplier_query = `select * from suppliers where supplier_id = $1`
+                const values = [from_id]
+                const supplier_res = await this.client.query(supplier_query, values)
+                supplier_balance = supplier_res.rows[0].balance
+                supplier_id = from_id
+            }
+            if (from_ == "VENDOR") {
+                const vendor_query = `select * from vendors where vendor_id = $1`
+                const values = [from_id]
+                const supplier_res = await this.client.query(vendor_query, values)
+                vendor_balance = supplier_res.rows[0].balance
+                vendor_id = from_id
+            }
+
+
+            // bank 
+            let bank_balance = 0
+            //cash
+            let cash_account_balance = 0
+
+            // update paying account balance
+            if (pay_mode == "CASH") {
+                if (account_type == "CASH") {
+                    const get_cash_account = `select * from cash_accounts where cash_account_id = $1`
+                    const get_values = [cash_account_id]
+                    const cash_account_res = await this.client.query(get_cash_account, get_values)
+                    cash_account_balance = cash_account_res.rows[0].balance
+                }
+                if (account_type == "BANK") {
+                    const get_bank = `select * from banks where banks = $1`
+                    const get_values = [bank_id]
+                    const bank_res = await this.client.query(get_bank, get_values)
+                    bank_balance = bank_res.rows[0].balance
+                }
+            }
+
+
+
+
+
+
 
 
             // update store items
@@ -46,7 +109,7 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
             const query = `
                 SELECT purchase_order_id, order_number, supplier_id, order_date, total_amount, status, created_by, created_at
                 FROM purchase_order
-                LIMIT $1 OFFSET $2
+                LIMIT $1 OFFSET $2z
             `;
             const values = [limit, offset];
             const result = await this.client.query(query, values);

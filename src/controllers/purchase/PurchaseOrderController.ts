@@ -14,6 +14,7 @@ export class PurchaseOrderController {
     async onCreatePurchaseOrder(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body;
+            console.log(body)
 
             const data = await this.interactor.createPurchaseOrder(body);
             res.status(201).json({ status: 'success', data: data, message: 'Purchase order created successfully' });

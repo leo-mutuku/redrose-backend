@@ -5,6 +5,7 @@ export class PurchaseOrder {
         public readonly from_: "VENDOR" | "SUPPLIER",
         public readonly from_id: number,
         public readonly pay_mode: "CASH" | "CREDIT",
+        public readonly account_type: "CASH" | "BANK",
         public readonly order_details: OrderDetail[],
         public readonly total_vat: number,
         public readonly shift_id: number,

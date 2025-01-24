@@ -407,11 +407,8 @@ export class SalesOrderRepository implements ISalesOrderRepository {
     //voidedBill
     async voidedBill(bill_id: any): Promise<any> {
         try {
-            console.log(bill_id)
-
             const qry = `select * from sales_order_entry where sales_order_entry_id = $1`;
             const result = await this.client.query(qry, [bill_id]);
-
 
             if (result.rows.length === 0) {
                 throw new AppError('Sales order not found', 404);
@@ -419,10 +416,34 @@ export class SalesOrderRepository implements ISalesOrderRepository {
             if (result.rows[0].status !== 'Posted') {
                 throw new AppError('Bill must be Poisted before void!', 404);
             }
+
+            // logic to return kitchen or restaurant items
+            // get sales order details
+            const qry1 = `select * from sales_order_details where sales_order_entry_id = $1`;
+            const result1 = await this.client.query(qry1, [bill_id]);
+            // get menu_item_id and quantity
+            type Item = {
+                menu_item_id: number;
+                quantity: number;
+            };
+            const Items: Item[] = [];
+            // details must  exist
+            if (!result1.rows.length) {
+                throw new AppError('Bill must have items!', 404);
+            }
+            for (let x of result1.rows) {
+                Items.push(x.menu_item_id, x.quantity);
+            }
+
+            //  menu items 
+            console.log(Items)
+
             const qry2 = `update sales_order_entry set status = 'Voided' where sales_order_entry_id = $1`;
             const result2 = await this.client.query(qry2, [bill_id]);
 
             return { message: 'Bill voided successfully', rowCount: result2.rowCount };
+
+
 
 
         } catch (error) {

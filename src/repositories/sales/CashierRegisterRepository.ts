@@ -154,10 +154,29 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
     }
     async clearBill(input: any): Promise<any> {
         try {
+
             const { bill_ids, mpesa, cash } = input;
-            console.log(bill_ids, mpesa, cash);
+            let bill_total = 0
+            for (let x of bill_ids) {
+                const qry = `select total_value, status from sales_order_entry where sales_order_entry_id = $1 `
+                const value = [x]
+                const res = await this.client.query(qry, value)
+                bill_total = bill_total + parseFloat(res.rows[0].total_value)
+                if (res.rows[0].status !== 'Posted') {
+                    throw new AppError("Status must be Posted only, bill number " + x + " is not")
+                }
 
+            }
+            if (bill_total > (mpesa + cash)) {
+                throw new AppError("Insufient fund, " + (bill_total - (mpesa + cash)) + " more is required")
+            }
 
+            // more logic here 
+            for (let x of bill_ids) {
+                const sql = `update sales_order_entry set status ='Paid' where sales_order_entry_id = $1`
+                const values = [x]
+                await this.client.query(sql, values)
+            }
         }
         catch (error) {
             throw new AppError(': ' + error, 500);

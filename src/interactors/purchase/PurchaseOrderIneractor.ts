@@ -17,6 +17,8 @@ export class PurchaseOrderInteractor implements IPurchaseOrderInteractor {
             const result = await this.repository.createPurchaseOrder(input);
 
             // Business logic can be added here if needed
+            // send sms to the supplier
+            // print supplier receipt
             return result;
         } catch (error) {
             if (error instanceof AppError) {
