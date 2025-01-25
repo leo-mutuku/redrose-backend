@@ -14,6 +14,14 @@ export class ShiftController {
 
     async onCreateShift(req: Request, res: Response, next: NextFunction) {
         try {
+
+            if (req.body.shift_start == null || req.body.shift_start == undefined) {
+                return res.status(400).json({
+                    status: "failed",
+                    message: "Shift start time is required"
+                })
+            }
+
             const created_by = req.body.user.staff_id
             const body = { ...req.body, created_by };
 
