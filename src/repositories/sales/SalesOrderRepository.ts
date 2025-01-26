@@ -223,6 +223,37 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                 }
             }
 
+            // deduct quantity from kitchen store and restaurant store
+            for (let item of verifiedData) {
+                // if source = KITTCHEN
+                if (item.source === 'KITCHEN') {
+                    // update kitchen store
+                    const qry = `update kitchen_store set quantity = quantity - $1 where store_item_id = $2 returning *`
+                    const values = [item.total_quantity, item.store_item_id]
+                    const res = await this.client.query(qry, values)
+                    // update kitchen tracking table
+                    const qry2 = `select * from kitchen_`
+
+                }
+                if (item.source === 'RESTAURANT') {
+                    // update restaurant store
+                    const qry = `update restaurant_store set quantity = quantity - $1 where store_item_id = $2 returning *`
+                    const values = [item.total_quantity, item.store_item_id]
+                    const res = await this.client.query(qry, values)
+                    // update restaurant tracking table
+                    const qry1 = `select * from restaurant_`
+                }
+            }
+            // update menu count
+            for (let item of menu_details) {
+                // menu_items
+                const qry = `update menu_item set quantity = quantity + $1 where menu_item_id = $2`
+                const values = [item.quantity, item.menu_item_id]
+                const res = await this.client.query(qry, values)
+                //menu tracking 
+
+            }
+
             // actual transaction start here
             // 1 create sales order entry
             // update kitchen store, reestaurant store and tracking tables
