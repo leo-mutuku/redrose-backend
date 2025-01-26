@@ -13,7 +13,6 @@ export class CashierRegisterInteractor implements ICashierRegisterInteractor {
     constructor(@inject(INTERFACE_TYPE.CashierRegisterRepository) repository: ICashierRegisterRepository) {
         this.repository = repository;
     }
-
     async createCashierRegister(input: any): Promise<any> {
         try {
             const result = await this.repository.createCashierRegister(input);

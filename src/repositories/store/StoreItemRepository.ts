@@ -124,13 +124,11 @@ LIMIT 1
       if (result.rows.length === 0) {
         throw new AppError("Store item not found", 404);
       }
-
       return result.rows[0];
     } catch (error) {
       throw new AppError("Error fetching store item: " + error, 500);
     }
   }
-
   async getItemtracking(search: string): Promise<any> {
 
     const conditions: string[] = [];
@@ -140,9 +138,7 @@ LIMIT 1
       conditions.push("ir.item_name ILIKE $1");
       values.push(`%${search}%`);
     }
-
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
-
     const query = `
         SELECT 
             t.store_item_id,
@@ -167,52 +163,34 @@ LIMIT 1
   }
 
   // Update a store item by its ID
-  async updateStoreItem(
-    id: number,
-    item: Partial<StoreItem>
-  ): Promise<StoreItem> {
+  async updateStoreItem(id: number, item: Partial<StoreItem>): Promise<any> {
     try {
-      let query = `UPDATE store_item SET `;
-      const values: any[] = [];
-      let setClauses: string[] = [];
 
-      // Dynamically build the SET clause and values array
-      Object.entries(item).forEach(([key, value], index) => {
-        setClauses.push(`${key} = $${index + 1}`);
-        values.push(value);
-      });
+      const qry = `select * from store_item where store_item_id = $1`;
+      const values = [id];
+      const res = await this.client.query(qry, values);
+      if (res.rows[0].buying_price != item.buying_price) {
+        const updateQuery = `update store_item set buying_price = $1 where store_item_id = $2 returning *`;
+        const updateValues = [item.buying_price, id];
 
-      if (setClauses.length === 0) {
-        throw new AppError("No fields to update", 400);
+
+        const result = await this.client.query(updateQuery, updateValues);
+
+      }
+      console.log(res.rows[0].quantity, item.quantity)
+      console.log(res.rows[0].quantity != item.quantity)
+      if (res.rows[0].quantity != item.quantity) {
+        const updateQuery = `update store_item set quantity = $1 where store_item_id = $2 returning *`;
+        const updateValues = [item.quantity, id];
+        const result = await this.client.query(updateQuery, updateValues);
       }
 
-      query += setClauses.join(", ");
-      query += ` WHERE store_item_id = $${values.length + 1} 
-                   RETURNING 
-      store_item_id,
-      store_id, 
-      item_id, 
-      quantity, 
-      buying_price, 
-      item_unit_id, 
-      item_category,
-      TO_CHAR(created_at, 'DD/MM/YYYY : HH12:MI AM') AS created_at,
-      (SELECT item_name FROM item_register WHERE item_id = store_item.item_id) AS item_name,
-      (SELECT category_name from item_category where category_id = store_item.item_category) As category_name,
-      (SELECT store_name FROM store_register WHERE store_id = store_item.store_id) AS store_name,
-      (SELECT standard_unit_name from item_unit where unit_id = store_item.item_unit_id) AS unit_name
-                    `;
-      values.push(id);
 
-      const result = await this.client.query(query, values);
-      if (result.rows.length === 0) {
-        throw new AppError("Store item not found", 404);
-      }
-
-      return result.rows[0];
+      return "Updated Successfully";
     } catch (error) {
-      throw new AppError("Error updating store item: " + error, 500);
+      throw new AppError('Error updating store item: ' + error, 500);
     }
+
   }
 
   async deleteStoreItem(id: number): Promise<void> {

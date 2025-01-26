@@ -23,11 +23,12 @@ class CustomerReceipt {
         printer.clear();
         printer.drawLine("*");
         printer.leftRight("RED ROSE HOTEL", "CASH RECEIPT");
+        printer.leftRight("KRA PIN: ", `A004868340G`);
         printer.println("Opposite Kensiliver Bus Station Maua Meru");
-        printer.println("Tel: 0720220892/0718147498");
-        printer.leftRight("BILL NO: ", `Date: ${header.date}`);
+        printer.println("Tel: 0718147498");
+        printer.leftRight(`BILL NO: ${header.sales_order_id} `, `Date: ${header.date}`);
 
-        printer.println('Location: MAIN KITCHEN');
+        printer.println('Location: RESTAURANT');
         printer.println("");
 
         printer.println("CUSTOMER ORDER RECEIPT");
@@ -35,32 +36,33 @@ class CustomerReceipt {
         printer.drawLine();
 
         printer.leftRight(
-            `BATCH NO: ${header.batch_number}`,
-            `SALES.ORDER.NO: ${header.sales_order_number}`
+            `BILL NO: ${header.batch_number}`,
+            `DATE: ${header.date}`
         );
         printer.drawLine();
         printer.table([`Qty.`, `@Kshs.`, `Total(Kshs.).`]);
         printer.drawLine();
         body.map((item) => {
-            printer.println(`${item.item_name}`);
+            printer.println(`${item.name}`);
             printer.table([
                 `${item.quantity}`,
-                `${item.cost_per_item}`,
-                `${item.total}`,
+                `${item.price}`,
+                `${item.total_price}`,
             ]);
             printer.println("");
         });
         printer.drawLine();
-        printer.table(["", `VAT `, `${footer.vat_value}`]);
-        printer.table(["", `CAT`, `${footer.sub_total}`]);
-        printer.table(["", `Total (Kshs.)`, `${footer.total}`]);
+        printer.println("BUY GOODS : 952262");
+        printer.drawLine();
+        printer.table(["", `VAT 16% `, `${header.vat}`]);
+        printer.table(["", `CAT 2%`, `${header.cat}`]);
+        printer.table(["", `Total (Kshs.)`, `${header.tv}`]);
 
         printer.drawLine();
         printer.println("");
-        printer.println(`Customer : ${footer.customer_name}`);
         printer.leftRight(
-            `Served By: ${footer.served_by}`,
-            `: ${footer.sales_person}`
+            `Served By: ${header.staff_name}`,
+            ` `
         );
         printer.println("Goods once sold cannot be returned");
         printer.println("");

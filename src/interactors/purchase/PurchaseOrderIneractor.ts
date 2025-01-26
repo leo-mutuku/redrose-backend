@@ -22,7 +22,7 @@ export class PurchaseOrderInteractor implements IPurchaseOrderInteractor {
             return result;
         } catch (error) {
             if (error instanceof AppError) {
-                throw new AppError(`Error occurred in PurchaseOrderInteractor: ${error.message}`, error.statusCode || 500);
+                throw new AppError(` ${error.message}`, error.statusCode || 500);
             }
             throw new Error('Failed to create purchase order. Please try again later.');
         }

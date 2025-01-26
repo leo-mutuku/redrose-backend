@@ -17,13 +17,22 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
 
     // Create a new purchase order record
     async createPurchaseOrder({
-        purchase_date, total, from_, from_id, account_type, pay_mode, bank_id, cash_account_id, order_details
+        purchase_date, total, from_, from_id, account_type, pay_mode, bank_id, cash_account_id, order_details, staff_id, shift_id
 
     }: PurchaseOrder): Promise<any> {
         try {
+            total = Number(total)
+            console.log(total, order_details)
+            let vat_total = 0
+            for (let item of order_details) {
+                if (item.vat_type == "INCLUSIVE") {
+                    vat_total += Number(item.total_price) * 16 / 100
+                }
+            }
             // check if total = to sum of total_price from order_details
-            console.log(total !== order_details.reduce((sum, item) => sum + item.total_price, 0))
-            if (total !== order_details.reduce((sum, item) => sum + item.total_price, 0)) {
+            console.log(total !== order_details.reduce((sum, item) => sum + Number(item.total_price), 0))
+            console.log(typeof (total), order_details.reduce((sum, item) => sum + item.total_price, 0))
+            if (total !== order_details.reduce((sum, item) => sum + Number(item.total_price), 0)) {
                 throw new AppError("Possible error notice, the total value must be exactly equal to sum of item's values ")
             }
             // account status
@@ -61,6 +70,7 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
             let bank_balance = 0
             //cash
             let cash_account_balance = 0
+            console.log("-------------------------   ====")
 
             // update paying account balance
             if (pay_mode == "CASH") {
@@ -71,27 +81,44 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
                     cash_account_balance = cash_account_res.rows[0].balance
                 }
                 if (account_type == "BANK") {
-                    const get_bank = `select * from banks where banks = $1`
+                    const get_bank = `select * from banks where bank_id = $1`
                     const get_values = [bank_id]
                     const bank_res = await this.client.query(get_bank, get_values)
                     bank_balance = bank_res.rows[0].balance
                 }
             }
 
+            // purchase order 
+            console.log("------------------========-")
+            console.log("=======")
+            const insert_purchase_order = ` insert into purchase_order (purchase_date, total, from_, from_id, pay_mode, account_type, bank_id, cash_account_id, purchase_order_total, vat_total, created_by,shift_id) 
+            values($1, $2, $3 , $4,$5, $6,$7,$8, $9, $10, $11, $12) RETURNING *`
+            console.log("=======")
+            const insert_values = [purchase_date, total, from_, from_id, pay_mode, account_type, bank_id, cash_account_id, total, vat_total, staff_id, shift_id]
 
-
-
-
-
-
+            const purchase_order_res = await this.client.query(insert_purchase_order, insert_values)
+            // purchase order details
+            for (let item of order_details) {
+                const insert_purchase_order_details =
+                    ` insert into purchase_order_details (purchase_order_id, store_item_id, buying_price, quantity, total_price, vat_type, vat)
+            values($1, $2, $3 , $4,$5, $6,$7) RETURNING *`
+                const insert_values = [Number(purchase_order_res.rows[0].purchase_order_id), Number(item.store_item_id), Number(item.buying_price), Number(item.quantity), Number(item.total_price), item.vat_type, 0]
+                await this.client.query(insert_purchase_order_details, insert_values)
+            }
 
             // update store items
+            for (let item of order_details) {
+                const update_store_item = `update store_item set quantity = quantity + $1 where store_item_id = $2 RETURNING *`
+                const update_values = [item.quantity, item.store_item_id]
+                await this.client.query(update_store_item, update_values)
+            }
 
 
-            // purchase order --entries
+
+            // order details
 
 
-            // supplier or vendor entries  -- invoicing
+            // supplier or vendor entries  -- credit , debit accounts
 
 
             // payment   
@@ -110,7 +137,7 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
                 SELECT purchase_order_id, order_number, supplier_id, order_date, total_amount, status, created_by, created_at
                 FROM purchase_order
                 LIMIT $1 OFFSET $2z
-            `;
+                `;
             const values = [limit, offset];
             const result = await this.client.query(query, values);
 
@@ -127,7 +154,7 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
                 SELECT purchase_order_id, order_number, supplier_id, order_date, total_amount, status, created_by, created_at
                 FROM purchase_order
                 WHERE purchase_order_id = $1
-            `;
+                `;
             const values = [id];
             const result = await this.client.query(query, values);
 
@@ -150,7 +177,7 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
 
             // Dynamically build the SET clause and values array
             Object.entries(purchaseOrder).forEach(([key, value], index) => {
-                setClauses.push(`${key} = $${index + 1}`);
+                setClauses.push(`${key} = $${index + 1} `);
                 values.push(value);
             });
 
@@ -159,8 +186,8 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
             }
 
             query += setClauses.join(', ');
-            query += ` WHERE purchase_order_id = $${values.length + 1} RETURNING 
-                purchase_order_id, order_number, supplier_id, order_date, total_amount, status, created_by, created_at`;
+            query += ` WHERE purchase_order_id = $${values.length + 1} RETURNING
+            purchase_order_id, order_number, supplier_id, order_date, total_amount, status, created_by, created_at`;
 
             values.push(id);
 
@@ -182,7 +209,7 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
                 DELETE FROM purchase_order
                 WHERE purchase_order_id = $1
                 RETURNING purchase_order_id, order_number, supplier_id, order_date, total_amount, status, created_by, created_at
-            `;
+                `;
             const values = [id];
             const result = await this.client.query(query, values);
 

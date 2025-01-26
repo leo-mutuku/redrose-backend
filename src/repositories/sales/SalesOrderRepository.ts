@@ -181,8 +181,6 @@ export class SalesOrderRepository implements ISalesOrderRepository {
             // Running the function with the provided data
             const verifiedData = groupAndVerifyData(ingredient_details);
 
-            console.log(verifiedData);
-
             // check stock id available or not
             for (let item of verifiedData) {
                 // if source = KITTCHEN
@@ -201,14 +199,9 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                         const values = [item.store_item_id]
                         const res = await this.client.query(qry, values)
                         throw new AppError(`${res.rows[0].item_name} does not have enough quantity!`, 400);
-
-
                     }
-
                 }
                 if (item.source === 'RESTAURANT') {
-
-                    console.log("------------rest")
                     // check stock id available or not
                     const qry = `select * from restaurant_store where store_item_id = $1`
                     const values = [item.store_item_id]
@@ -227,14 +220,15 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                         const res = await this.client.query(qry, values)
                         throw new AppError(`${res.rows[0].item_name} does not have enough quantity!`, 400);
                     }
-
                 }
             }
 
             // actual transaction start here
             // 1 create sales order entry
             // update kitchen store, reestaurant store and tracking tables
-            // update sales order details
+
+
+
 
             // unmanaged menu
             const sales_order_query = `insert into sales_order_entry ( total_value, vat, cat, waitstaff_id, status, shift_id)
@@ -265,10 +259,14 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
 
 
-            console.log(menu_details)
+            const get_staff = `select * from staff where staff_id = $1`
+            const staff_res = await this.client.query(get_staff, [staff_id])
+            const staff = staff_res.rows[0]
+            const staff_name = staff.first_name
+            const date = new Date().toISOString().split('T')[0];
+            const header = { sales_order_id, tv, vat, cat, staff_name, shift_id, date }
 
-
-            return menu_details
+            return { menu_details, header }
         } catch (error) {
             if (error instanceof AppError) {
                 throw new AppError(error.message, error.statusCode);

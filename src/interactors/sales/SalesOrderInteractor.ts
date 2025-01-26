@@ -25,28 +25,12 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
             // logic to prin here 
 
             // Business logic can be added here if needed
+
+            console.log(result, "---------------------------------");
             const print = new SalesReceipt();
             const print2 = new CustomerReceipt();
-            const header = {
-                title: "BILL RECEIPT",
-                date: new Date().toLocaleString(),
-                customer: "customer",
-                order_id: "988",
-                staff_id: 99,
-                total: 9000,
-                payment_method: "cash",
-                payment_status: "paid",
-                status: "paid",
-            }
-            const body = result.map((item: any) => {
-                return {
-                    item_id: item.item_id,
-                    item_name: item.item_name,
-                    quantity: item.quantity,
-                    price: item.price,
-                    total: item.total,
-                }
-            })
+            const header = result.header;
+            const body = result.menu_details
             const footer = {
                 total: 9000,
                 paid: 9000,
