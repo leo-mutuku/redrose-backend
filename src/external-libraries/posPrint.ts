@@ -28,6 +28,7 @@ interface PrintJob {
     header: string;
     body: string;
     footer: string;
+    location: string;
     status: string;
 }
 
@@ -40,6 +41,7 @@ db.run(`CREATE TABLE IF NOT EXISTS print_jobs (
     header TEXT,
     body TEXT,
     footer TEXT,
+    location TEXT,
     status TEXT DEFAULT 'pending'
 )`);
 
@@ -103,14 +105,14 @@ class SalesReceipt {
         } else {
             // If the printer is not connected, save the job to the database
             db.run(
-                `INSERT INTO print_jobs (header, body, footer, status) VALUES (?, ?, ?, ?)`,
-                [JSON.stringify(header), JSON.stringify(body), '', 'pending'],
+                `INSERT INTO print_jobs (header, body, footer,location, status) VALUES (?, ?, ?,?, ?)`,
+                [JSON.stringify(header), JSON.stringify(body), '', 'Customer', 'pending'],
                 function (err) {
                     if (err) {
                         console.error('Error saving print job to database:', err);
                     } else {
                         console.log('Print job queued in the database.');
-                        db.all('SELECT * FROM print_jobs WHERE status = "pending"', [], async (err, rows) => {
+                        db.all('SELECT * FROM print_jobs WHERE status = "pending" AND location="Customer"', [], async (err, rows) => {
                             console.log(rows)
 
                         })
@@ -125,7 +127,7 @@ class SalesReceipt {
         const isConnected = await printer.isPrinterConnected();
 
         if (isConnected) {
-            db.all('SELECT * FROM print_jobs WHERE status = "pending"', [], async (err, rows) => {
+            db.all('SELECT * FROM print_jobs WHERE status = "pending" AND location = "Customer"', [], async (err, rows) => {
                 if (err) {
                     console.error('Error retrieving queued jobs:', err);
                     return;
@@ -140,7 +142,7 @@ class SalesReceipt {
                     await this.receipt(header, body);
 
                     // After printing, update the status of the job to 'printed'
-                    db.run('UPDATE print_jobs SET status = "printed" WHERE id = ?', [job.id], (err) => {
+                    db.run('UPDATE print_jobs SET status = "printed" WHERE id = ? AND location ="Customer"', [job.id], (err) => {
                         if (err) {
                             console.error('Error updating job status:', err);
                         }

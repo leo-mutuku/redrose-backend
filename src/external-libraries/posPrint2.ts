@@ -1,87 +1,157 @@
+import sqlite3 from 'sqlite3';
 import {
     ThermalPrinter,
     PrinterTypes,
     CharacterSet,
     BreakLine,
-} from "node-thermal-printer";
+} from 'node-thermal-printer';
+
+// Define types for the header, body, and footer
+interface Item {
+    quantity: number;
+    name: string;
+    price: number;
+    total_price: number;
+}
+
+interface ReceiptHeader {
+    date: string;
+    sales_order_id: string;
+    total: number;
+    vat: number;
+    cat: number;
+    staff_name: string;
+}
+
+interface PrintJob {
+    id: number;
+    header: string;
+    body: string;
+    footer: string;
+    status: string;
+}
+
+// Open or create the database
+const db = new sqlite3.Database('print_jobs.db');
+
+// Create the print_jobs table if it doesn't exist
+db.run(`CREATE TABLE IF NOT EXISTS print_jobs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    header TEXT,
+    body TEXT,
+    footer TEXT,
+    location TEXT,
+    status TEXT DEFAULT 'pending'
+)`);
 
 const printer = new ThermalPrinter({
-    type: PrinterTypes.STAR, // 'star' or 'epson'
-    interface: "tcp://192.168.88.7", // Printer IP or serial port
-    options: {
-        timeout: 1000,
-    },
-    width: 48, // Number of characters in one line - default: 48
-    characterSet: CharacterSet.PC852_LATIN2, // Character set - default: SLOVENIA
-    breakLine: BreakLine.WORD, // Break line after WORD or CHARACTERS. Disabled with NONE - default: WORD
-    removeSpecialCharacters: false, // Removes special characters - default: false
-    lineCharacter: "-", // Use custom character for drawing lines - default: -
+    type: PrinterTypes.STAR,
+    interface: 'tcp://192.168.88.5', // Printer IP or serial port
+    options: { timeout: 1000 },
+    width: 48,
+    characterSet: CharacterSet.PC852_LATIN2,
+    breakLine: BreakLine.WORD,
+    removeSpecialCharacters: false,
+    lineCharacter: '-',
 });
-class CustomerReceipt {
-    async receipt(header, body, footer) {
-        let isConnected = await printer.isPrinterConnected(); // Check if printer is connected, return bool of status
-        printer.clear();
-        printer.drawLine("*");
-        printer.leftRight("RED ROSE HOTEL", "CASH RECEIPT");
-        printer.leftRight("KRA PIN: ", `A004868340G`);
-        printer.println("Opposite Kensiliver Bus Station Maua Meru");
-        printer.println("Tel: 0718147498");
-        printer.leftRight(`BILL NO: ${header.sales_order_id} `, `Date: ${header.date}`);
 
-        printer.println('Location: RESTAURANT');
-        printer.println("");
+class SalesReceipt {
+    async receipt(header: ReceiptHeader, body: Item[]): Promise<void> {
+        const isConnected = await printer.isPrinterConnected();
 
-        printer.println("CUSTOMER ORDER RECEIPT");
+        if (isConnected) {
+            // If the printer is connected, print the job directly
+            printer.clear();
+            printer.drawLine('*');
+            printer.leftRight('RED ROSE HOTEL', 'CASH RECEIPT');
+            printer.leftRight('KRA PIN: ', 'A004868340G');
+            printer.println('Opposite Kensiliver Bus Station Maua meru');
+            printer.println('Tel: 0718147498');
+            printer.leftRight('BILL NO: ', `Date: ${header.date}`);
+            printer.println('Location: MAIN KITCHEN');
+            printer.println('');
+            printer.println('CAPTAIN ORDER RECEIPT');
+            printer.drawLine();
+            printer.leftRight(`BILL NO: ${header.sales_order_id}`, `DATE: ${header.date}`);
+            printer.table(['Qty.', 'Item', '@Kshs.', 'Total(Kshs.)']);
+            printer.drawLine();
+            body.forEach((item) => {
+                printer.table([`${item.quantity}`, `${item.name}`, `${item.price}`, `${item.total_price}`]);
+                printer.println('');
+            });
+            printer.drawLine();
+            printer.leftRight('BUY GOODS : 952262', `TTL KSHs: ${header.total}`);
+            printer.drawLine();
+            printer.table(['', `VAT 16% `, `${header.vat}`]);
+            printer.table(['', `CAT 2%`, `${header.cat}`]);
+            printer.drawLine();
+            printer.println('');
+            printer.leftRight(`Served By: ${header.staff_name}`, '');
+            printer.println('Goods once sold cannot be returned');
+            printer.println('');
+            printer.println('');
+            printer.println('');
+            printer.println('');
+            printer.println('');
+            printer.println('');
+            printer.setTextNormal();
 
-        printer.drawLine();
+            try {
+                await printer.execute();
+            } catch (error) {
+                console.error('Print error:', error);
+            }
+        } else {
+            // If the printer is not connected, save the job to the database
+            db.run(
+                `INSERT INTO print_jobs (header, body, footer, location, status) VALUES (?, ?, ?, ?)`,
+                [JSON.stringify(header), JSON.stringify(body), '', 'Captain', 'pending'],
+                function (err) {
+                    if (err) {
+                        console.error('Error saving print job to database:', err);
+                    } else {
+                        console.log('Print job queued in the database.');
+                        db.all('SELECT * FROM print_jobs WHERE status = "pending" AND location ="Captain"', [], async (err, rows) => {
+                            console.log(rows)
 
-        printer.leftRight(
-            `BILL NO: ${header.sales_order_id}`,
-            `DATE: ${header.date}`
-        );
-        printer.drawLine();
-        printer.table([`Qty.`, `Item`, `@Kshs.`, `Total(Kshs.).`]);
-        printer.drawLine();
-        body.map((item) => {
-            printer.println(``);
-            printer.table([
-                `${item.quantity}`,
-                `${item.name}`,
-                `${item.price}`,
-                `${item.total_price}`,
-            ]);
-            printer.println("");
-        });
-        printer.drawLine();
-        printer.println("BUY GOODS : 952262");
-        printer.drawLine();
+                        })
+                    }
+                }
+            );
+        }
+    }
 
-        printer.table(["", `VAT 16% `, `${header.vat}`]);
-        printer.table(["", `CAT 2%`, `${header.cat}`]);
-        printer.table(["", `Total (Kshs.)`, `${header.tv}`]);
+    // Function to process queued print jobs
+    async processQueuedJobs(): Promise<void> {
+        const isConnected = await printer.isPrinterConnected();
 
-        printer.drawLine();
-        printer.println("");
-        printer.leftRight(
-            `Served By: ${header.staff_name}`,
-            ` `
-        );
-        printer.println("Goods once sold cannot be returned");
-        printer.println("");
-        printer.println("");
-        printer.println("");
-        printer.println("");
+        if (isConnected) {
+            db.all('SELECT * FROM print_jobs WHERE status = "pending" AND location="Captain"', [], async (err, rows) => {
+                if (err) {
+                    console.error('Error retrieving queued jobs:', err);
+                    return;
+                }
 
-        printer.setTextNormal();
-        try {
-            await printer.execute();
+                // Iterate through the rows as PrintJob[] type
+                for (const job of rows as PrintJob[]) {
+                    const header: ReceiptHeader = JSON.parse(job.header); // Parse header as ReceiptHeader
+                    const body: Item[] = JSON.parse(job.body); // Parse body as Item[]
 
+                    // Print the queued job
+                    await this.receipt(header, body);
 
-            // console.log("Print success.");
-        } catch (error) {
-            // console.error("Print error:", error);
+                    // After printing, update the status of the job to 'printed'
+                    db.run('UPDATE print_jobs SET status = "printed" WHERE id = ?, location=?', [job.id, "Captain"], (err) => {
+                        if (err) {
+                            console.error('Error updating job status:', err);
+                        }
+                    });
+                }
+            });
+        } else {
+            console.log('Printer is not connected. Retrying...');
         }
     }
 }
 
-export default CustomerReceipt;
+export default SalesReceipt;

@@ -31,18 +31,8 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
             const print2 = new CustomerReceipt();
             const header = result.header;
             const body = result.menu_details
-            const footer = {
-                total: 9000,
-                paid: 9000,
-                change: 0,
-                balance: 0,
-            }
-
             print.receipt(header, body)
-            print2.receipt(header, body, footer)
-
-
-
+            print2.receipt(header, body)
             return result;
         } catch (error) {
             if (error instanceof AppError) {
@@ -51,7 +41,6 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
             throw new Error('Failed to create sales order. Please try again later.');
         }
     }
-
     async getSalesOrder(id: number): Promise<any> {
         try {
             const result = await this.repository.getSalesOrder(id);
