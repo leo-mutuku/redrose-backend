@@ -36,16 +36,17 @@ class CustomerReceipt {
         printer.drawLine();
 
         printer.leftRight(
-            `BILL NO: ${header.batch_number}`,
+            `BILL NO: ${header.sales_order_id}`,
             `DATE: ${header.date}`
         );
         printer.drawLine();
-        printer.table([`Qty.`, `@Kshs.`, `Total(Kshs.).`]);
+        printer.table([`Qty.`, `Item`, `@Kshs.`, `Total(Kshs.).`]);
         printer.drawLine();
         body.map((item) => {
-            printer.println(`${item.name}`);
+            printer.println(``);
             printer.table([
                 `${item.quantity}`,
+                `${item.name}`,
                 `${item.price}`,
                 `${item.total_price}`,
             ]);
@@ -54,6 +55,7 @@ class CustomerReceipt {
         printer.drawLine();
         printer.println("BUY GOODS : 952262");
         printer.drawLine();
+
         printer.table(["", `VAT 16% `, `${header.vat}`]);
         printer.table(["", `CAT 2%`, `${header.cat}`]);
         printer.table(["", `Total (Kshs.)`, `${header.tv}`]);
@@ -69,8 +71,7 @@ class CustomerReceipt {
         printer.println("");
         printer.println("");
         printer.println("");
-        printer.println("");
-        printer.println("");
+
         printer.setTextNormal();
         try {
             await printer.execute();

@@ -38,7 +38,7 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
                 balance: 0,
             }
 
-            print.receipt(header, body, footer)
+            print.receipt(header, body)
             print2.receipt(header, body, footer)
 
 
