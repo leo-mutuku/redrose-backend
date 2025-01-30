@@ -165,11 +165,25 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
                 // banks and cash accounts
                 if (account_type == "BANK") {
                     //debit bank
+                    const bank_qry = `update banks set balance = balance - $1 where bank_id = $1 returning *`
+                    const bank_values = [total, bank_id]
+                    const bank_res = await this.client.query(bank_qry, bank_values)
+
+
                     // bamk entries
+                    const bank_entries = `insert into bank_entries () values()`
+                    const bank_entries_values = [bank_id, "Purchase order -DR", total, 0, parseFloat(bank_res.rows[0].balance)]
+                    const bank_enries_res = await this.client.query(bank_entries, bank_entries_values)
                 }
                 if (account_type == "CASH") {
                     // debit cash 
+                    const cash_qry = `update cash_accounts set balance = balance - $1 where cash_account_id = $1 returning *`
+                    const cash_values = [total, cash_account_id]
+                    const cash_res = await this.client.query(cash_qry, cash_values)
                     // cash_entries
+                    const cash_entries = `insert into bank_entries () values()`
+                    const cash_entries_values = [bank_id, "Purchase order -DR", total, 0, parseFloat(cash_res.rows[0].balance)]
+                    const cash_enries_res = await this.client.query(cash_entries, cash_entries_values)
                 }
             }
             // if pay mode = Credit

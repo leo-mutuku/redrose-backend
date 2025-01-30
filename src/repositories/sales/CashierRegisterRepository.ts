@@ -26,9 +26,9 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
         try {
             const query = `
                 INSERT INTO sales_cashiers (staff_id,
-    balance,
-      pin ,
-    created_by)
+                balance,
+                pin ,
+                created_by)
                 VALUES ($1, $2, $3, $4 )
                 RETURNING sales_cashier_id, staff_id,  balance, created_by, created_at
             `;
@@ -52,7 +52,7 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
     async getCashierRegisters(limit: number, offset: number): Promise<CashierRegister[]> {
         try {
             const query = `
-                 SELECT  sc.sales_cashier_id, sc.balance,sc.till, sc.cash, sc.txn_charges, sc.staff_id, sc.created_by, sc.created_at,
+                SELECT  sc.sales_cashier_id, sc.balance,sc.till, sc.cash, sc.txn_charges, sc.staff_id, sc.created_by, sc.created_at,
                 s.first_name || ' '||  s.last_name as cashier_name
                 FROM sales_cashiers sc
                 inner join staff s on s.staff_id = sc.staff_id
@@ -155,7 +155,14 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
     async clearBill(input: any): Promise<any> {
         try {
 
-            const { bill_ids, mpesa, cash } = input;
+            const { bill_ids, mpesa, cash, staff_id } = input;
+            // confirm if user has cashier account
+            const iscashier_qry = `select * from sales_cashiers where staff_id = $`
+            const values_cashier = [staff_id]
+            const cashier_qry_res = await this.client.query(iscashier_qry, values_cashier)
+            if (cashier_qry_res.rowCount) {
+                throw new AppError("Not authorized, only cashiers can clear bills")
+            }
             let bill_total = 0
             for (let x of bill_ids) {
                 const qry = `select total_value, status from sales_order_entry where sales_order_entry_id = $1 `
@@ -165,8 +172,10 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
                 if (res.rows[0].status !== 'Posted') {
                     throw new AppError("Status must be Posted only, bill number " + x + " is not")
                 }
-
             }
+
+
+
             if (bill_total > (mpesa + cash)) {
                 throw new AppError("Insufient fund, " + (bill_total - (mpesa + cash)) + " more is required")
             }
@@ -177,9 +186,36 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
                 const values = [x]
                 await this.client.query(sql, values)
             }
+
+            // cash
+            if (cash > 0) {
+                // update cash account
+            }
+
+
+
+            // till
+            if (mpesa > 0) {
+                // update mpesa balance
+
+            }
+
+
+            //cashier  statement  
+
+
+
         }
         catch (error) {
             throw new AppError(': ' + error, 500);
+        }
+    }
+    async cashierTransfer() {
+        try {
+
+        } catch (error) {
+
+
         }
     }
 }
