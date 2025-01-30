@@ -22,14 +22,14 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
     }: PurchaseOrder): Promise<any> {
         try {
             total = Number(total)
-            console.log(total, order_details)
+
             let vat_total = 0
             for (let item of order_details) {
                 if (item.vat_type == "INCLUSIVE") {
                     vat_total += Number(item.total_price) * 16 / 100
                 }
             }
-            // check if total = to sum of total_price from order_details
+            // check if total = to sum of total_price from order_details  -- for user validation to avoid dirty entries
             console.log(total !== order_details.reduce((sum, item) => sum + Number(item.total_price), 0))
             console.log(typeof (total), order_details.reduce((sum, item) => sum + item.total_price, 0))
             if (total !== order_details.reduce((sum, item) => sum + Number(item.total_price), 0)) {
@@ -89,8 +89,6 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
             }
 
             // purchase order 
-            console.log("------------------========-")
-            console.log("=======")
             const insert_purchase_order = ` insert into purchase_order (purchase_date, total, from_, from_id, pay_mode, account_type, bank_id, cash_account_id, purchase_order_total, vat_total, created_by,shift_id) 
             values($1, $2, $3 , $4,$5, $6,$7,$8, $9, $10, $11, $12) RETURNING *`
             console.log("=======")
@@ -104,24 +102,54 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
             values($1, $2, $3 , $4,$5, $6,$7) RETURNING *`
                 const insert_values = [Number(purchase_order_res.rows[0].purchase_order_id), Number(item.store_item_id), Number(item.buying_price), Number(item.quantity), Number(item.total_price), item.vat_type, 0]
                 await this.client.query(insert_purchase_order_details, insert_values)
+
+                // update current buying pricing - store_item table
+                const update_buying_price = `update store_item set buying_price = $1 where store_item_id = $2`
+                const update_buying_price_values = [item.buying_price, item.store_item_id]
+                const res_buying_price = await this.client.query(update_buying_price, update_buying_price_values)
             }
 
             // update store items
             for (let item of order_details) {
                 const update_store_item = `update store_item set quantity = quantity + $1 where store_item_id = $2 RETURNING *`
                 const update_values = [item.quantity, item.store_item_id]
-                await this.client.query(update_store_item, update_values)
+                const res = await this.client.query(update_store_item, update_values)
+                // update item tracking 
+                const qry = `insert into item_tracking(store_item_id, current_quantity, new_quantity, reason, action_by)
+                values($1, $2,$3,$4,$5) `;
+                const values = [item.store_item_id, parseFloat(res.rows[0].quantity) - item.quantity, parseFloat(res.rows[0].quantity), 'Local Purchase order', staff_id];
+                const res2 = await this.client.query(qry, values)
+            }
+            // if payment mode cash
+            if (pay_mode == "CASH") {
+                // update suppplier balance, supplier entries
+                if (from_ == "SUPPLIER") {
+                    const update_supplier_balnce = `update suppliers set balance = balance + $1 where supplier_id = $2`
+                    const supplier_values = [total, supplier_id]
+                    const supplier_res = await this.client.query(update_supplier_balnce, supplier_values)
+                    // update supplier entries
+                }
+                if (from_ == "VENDOR") {
+                    const update_vendor_balance = `update vendors set balance = balance`
+                    const vendor_values = [total, vendor_id]
+                    const vendor_res = await this.client.query(update_vendor_balance, vendor_values)
+                    // update vendor entries
+
+                }
+
+            }
+
+            // if pay mode = Credit
+            if (pay_mode == "CREDIT") {
+                // update supplier
+                // update vendor
             }
 
 
 
-            // order details
 
 
-            // supplier or vendor entries  -- credit , debit accounts
 
-
-            // payment   
 
 
 

@@ -104,7 +104,7 @@ class SalesReceipt {
         } else {
             // If the printer is not connected, save the job to the database
             db.run(
-                `INSERT INTO print_jobs (header, body, footer, location, status) VALUES (?, ?, ?, ?)`,
+                `INSERT INTO print_jobs (header, body, footer, location, status) VALUES (?, ?, ?, ?, ?)`,
                 [JSON.stringify(header), JSON.stringify(body), '', 'Captain', 'pending'],
                 function (err) {
                     if (err) {

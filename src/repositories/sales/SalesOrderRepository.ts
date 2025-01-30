@@ -144,8 +144,6 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
             }
 
-
-
             function groupAndVerifyData(data: ingredient_detail[]): any[] {
                 // Group the data by store_item_id and source
                 const groupedData: { [key: string]: { quantity: number; total_quantity: number } } = {};
@@ -232,7 +230,10 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                     const values = [item.total_quantity, item.store_item_id]
                     const res = await this.client.query(qry, values)
                     // update kitchen tracking table
-                    const qry2 = `select * from kitchen_`
+                    const qry2 = `insert into hot_kitchen_tracking (store_item_id, current_quantity, new_quantity, reason, action_by)
+                    values($1, $2,$3, $4, $5)  `
+                    const values2 = [item.store_item_id, parseFloat(res.rows[0].quantity) - item.total_quantity, parseFloat(res.rows[0].quantity), "Sales order procesing", staff_id];
+                    const res2 = await this.client.query(qry2, values2)
 
                 }
                 if (item.source === 'RESTAURANT') {
@@ -241,27 +242,31 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                     const values = [item.total_quantity, item.store_item_id]
                     const res = await this.client.query(qry, values)
                     // update restaurant tracking table
-                    const qry1 = `select * from restaurant_`
+                    const qry1 = `insert into restaurant_tracking (store_item_id, current_quantity, new_quantity, reason, action_by)
+                    values ($1, $2,$3, $4, $5)`;
+                    const values2 = [item.store_item_id, parseFloat(res.rows[0].quantity) - item.total_quantity, parseFloat(res.rows[0].quantity), "S order processing", staff_id];
                 }
             }
             // update menu count
             for (let item of menu_details) {
                 // menu_items
-                const qry = `update menu_item set quantity = quantity + $1 where menu_item_id = $2`
+                const qry = `update menu_item set quantity = quantity + $1 where menu_item_id = $2 Returning *`
                 const values = [item.quantity, item.menu_item_id]
                 const res = await this.client.query(qry, values)
                 //menu tracking 
-
+                const qry2 = `insert into menu_tracking (menu_item_id, current_quantity, new_quantity, reason, action_by)
+                values($1, $2, $3, $4,$5)`
+                const values2 = [item.menu_item_id, parseFloat(res.rows[0].quantity) - item.quantity, parseFloat(res.rows[0].quantity), "Sales orser processing", staff_id]
+                const res2 = await this.client.query(qry2, values2)
             }
 
             // actual transaction start here
             // 1 create sales order entry
-            // update kitchen store, reestaurant store and tracking tables
 
 
 
 
-            // unmanaged menu
+
             const sales_order_query = `insert into sales_order_entry ( total_value, vat, cat, waitstaff_id, status, shift_id)
              values ($1, $2, $3, $4, $5, $6) returning sales_order_entry_id`
             let tv = menu_details.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -285,16 +290,24 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
                 await this.client.query(sales_order_details_query, sales_order_details_values)
             }
-            // // update kitchen store
 
+            const d = new Date();
 
+            const day = String(d.getDate()).padStart(2, '0'); // Add leading zero if day is less than 10
+            const month = String(d.getMonth() + 1).padStart(2, '0'); // getMonth() is zero-based, so add 1
+            const year = d.getFullYear();
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+
+            const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
 
 
             const get_staff = `select * from staff where staff_id = $1`
             const staff_res = await this.client.query(get_staff, [staff_id])
             const staff = staff_res.rows[0]
             const staff_name = staff.first_name
-            const date = new Date().toISOString().split('T')[0];
+            const date = formattedDate
             const header = { sales_order_id, tv, vat, cat, staff_name, shift_id, date }
 
             return { menu_details, header }
@@ -477,12 +490,8 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
         } catch (error) {
             throw new AppError(': ' + error, 500);
-
         }
-
     }
-
-
     async printBill(bill_id: any): Promise<any> {
         try {
             console.log(bill_id)
@@ -491,9 +500,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
             if (result.rows.length === 0) {
                 throw new AppError('Sales order not found', 404);
             }
-
             return result.rows[0];
-
         }
         catch (error) {
             throw new AppError('Error fetching sales order: ' + error, 500);
@@ -517,7 +524,6 @@ export class SalesOrderRepository implements ISalesOrderRepository {
         } catch (error) {
             throw new AppError("" + error, 400)
         }
-
     }
     // Delete a sales order by ID
     async deleteSalesOrder(id: number): Promise<SalesOrder> {
