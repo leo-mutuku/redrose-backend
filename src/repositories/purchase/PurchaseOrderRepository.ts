@@ -6,6 +6,7 @@ import { AppError } from "../../utils/AppError";
 import { IPurchaseOrderRepository } from "../../interfaces/purchase/IpurchaseOrderRepository";
 import { PurchaseOrder } from "../../entities/purchase/PurchaseOrder";
 import { Account } from "../../entities/finance/Accounts";
+import { parentPort } from "worker_threads";
 
 @injectable()
 export class PurchaseOrderRepository implements IPurchaseOrderRepository {
@@ -124,40 +125,82 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
             if (pay_mode == "CASH") {
                 // update suppplier balance, supplier entries
                 if (from_ == "SUPPLIER") {
-                    const update_supplier_balnce = `update suppliers set balance = balance + $1 where supplier_id = $2`
-                    const supplier_values = [total, supplier_id]
-                    const supplier_res = await this.client.query(update_supplier_balnce, supplier_values)
-                    // update supplier entries
+                    const update_supplier_balnce_credit = `update suppliers set balance = balance + $1 where supplier_id = $2`
+                    const supplier_values_credit = [total, supplier_id]
+                    const supplier_res_credit = await this.client.query(update_supplier_balnce_credit, supplier_values_credit)
+                    // update supplier entries credit
+                    const update_supplier_entries_credit = `insert into supplier_entries (supplier_id, description, credit, debit, balance)
+                    values($1, $2, $3, $4,$5)`
+                    const supplier_entries_credit_values = [supplier_id, "Purchase Order -CR", total, 0, parseFloat(supplier_res_credit.rows[0].balance), staff_id]
+                    const supplier_entries_res = await this.client.query(update_supplier_entries_credit, supplier_entries_credit_values)
+
+                    // update supplier entries debit
+                    const update_supplier_entries_debit = `insert into supplier_entries (supplier_id, description, credit, debit, balance)
+                    values($1, $2, $3, $4,$5)`
+                    const supplier_entries_debit_values = [supplier_id, "Purchase Order -CR", 0, total, parseFloat(supplier_res_credit.rows[0].balance) - total, staff_id]
+                    const supplier_entries_res_debit = await this.client.query(update_supplier_entries_debit, supplier_entries_debit_values)
+
                 }
                 if (from_ == "VENDOR") {
-                    const update_vendor_balance = `update vendors set balance = balance`
-                    const vendor_values = [total, vendor_id]
-                    const vendor_res = await this.client.query(update_vendor_balance, vendor_values)
-                    // update vendor entries
+                    //credit
+                    const update_vendor_balance_credit = `update vendors set balance = balance + $1 where vendor_id = $2  Returning *`
+                    const vendor_values_credit = [total, vendor_id]
+                    const vendor_res_credit = await this.client.query(update_vendor_balance_credit, vendor_values_credit)
+                    // update vendor entries 
+                    const update_vendor_entries_credit = `insert into vendor_entries (vendor_id, description, credit, debit, balance)
+                    values($1, $2,$3,$4,$5) `
+                    const vendor_entries_values_credit = [vendor_id, "Purchase order - CR", total, 0, parseFloat(vendor_res_credit.rows[0].balance)]
+                    const vendor_res_entries_credit = await this.client.query(update_vendor_entries_credit, vendor_entries_values_credit);
 
+                    // debit
+                    const update_vendor_balance_debit = `update vendors set balance = balance - $1 where vendor_id = $2  Returning *`;
+                    const vendor_values_debit = [total, vendor_id];
+                    const vendor_res_debit = await this.client.query(update_vendor_balance_debit, vendor_values_debit);
+
+                    // update vendor entries 
+                    const update_vendor_entries_debit = `insert into vendor_entries (vendor_id, description, credit, debit, balance)`
+                    const vendor_values_entries_debit = [vendor_id, "Purchase order - DR", 0, total, parseFloat(vendor_res_debit.rows[0].balance) - total]
+                    const vendor_res_entries_debit = await this.client.query(update_vendor_entries_debit, vendor_values_entries_debit)
                 }
-
+                // banks and cash accounts
+                if (account_type == "BANK") {
+                    //debit bank
+                    // bamk entries
+                }
+                if (account_type == "CASH") {
+                    // debit cash 
+                    // cash_entries
+                }
             }
-
             // if pay mode = Credit
             if (pay_mode == "CREDIT") {
+                if (from_ == "SUPPLIER") {
+                    const update_supplier_balnce_credit = `update suppliers set balance = balance + $1 where supplier_id = $2`
+                    const supplier_values_credit = [total, supplier_id]
+                    const supplier_res_credit = await this.client.query(update_supplier_balnce_credit, supplier_values_credit)
+                    // update supplier entries credit
+                    const update_supplier_entries_credit = `insert into supplier_entries (supplier_id, description, credit, debit, balance)
+                    values($1, $2, $3, $4,$5)`
+                    const supplier_entries_credit_values = [supplier_id, "Purchase Order -CR", total, 0, parseFloat(supplier_res_credit.rows[0].balance), staff_id]
+                    const supplier_entries_res = await this.client.query(update_supplier_entries_credit, supplier_entries_credit_values)
+                }
                 // update supplier
-                // update vendor
+                if (from_ == "VENDOR") {
+                    //credit
+                    const update_vendor_balance_credit = `update vendors set balance = balance + $1 where vendor_id = $2  Returning *`
+                    const vendor_values_credit = [total, vendor_id]
+                    const vendor_res_credit = await this.client.query(update_vendor_balance_credit, vendor_values_credit)
+                    // update vendor entries 
+                    const update_vendor_entries_credit = `insert into vendor_entries (vendor_id, description, credit, debit, balance)
+                     values($1, $2,$3,$4,$5) `
+                    const vendor_entries_values_credit = [vendor_id, "Purchase order - CR", total, 0, parseFloat(vendor_res_credit.rows[0].balance)]
+                    const vendor_res_entries_credit = await this.client.query(update_vendor_entries_credit, vendor_entries_values_credit);
+                }
             }
-
-
-
-
-
-
-
-
-
         } catch (error) {
             throw new AppError('Error creating purchase order: ' + error, 500);
         }
     }
-
     // Get a list of purchase orders with pagination
     async getPurchaseOrders(limit: number, offset: number): Promise<PurchaseOrder[]> {
         try {
@@ -168,13 +211,11 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
                 `;
             const values = [limit, offset];
             const result = await this.client.query(query, values);
-
             return result.rows;
         } catch (error) {
             throw new AppError('Error fetching purchase orders: ' + error, 500);
         }
     }
-
     // Get a single purchase order by ID
     async getPurchaseOrder(id: number): Promise<PurchaseOrder> {
         try {
@@ -185,17 +226,14 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
                 `;
             const values = [id];
             const result = await this.client.query(query, values);
-
             if (result.rows.length === 0) {
                 throw new AppError('Purchase order not found', 404);
             }
-
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error fetching purchase order: ' + error, 500);
         }
     }
-
     // Update an existing purchase order
     async updatePurchaseOrder(id: number, purchaseOrder: Partial<PurchaseOrder>): Promise<PurchaseOrder> {
         try {
@@ -208,28 +246,22 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
                 setClauses.push(`${key} = $${index + 1} `);
                 values.push(value);
             });
-
             if (setClauses.length === 0) {
                 throw new AppError('No fields to update', 400);
             }
-
             query += setClauses.join(', ');
             query += ` WHERE purchase_order_id = $${values.length + 1} RETURNING
             purchase_order_id, order_number, supplier_id, order_date, total_amount, status, created_by, created_at`;
-
             values.push(id);
-
             const result = await this.client.query(query, values);
             if (result.rows.length === 0) {
                 throw new AppError('Purchase order not found', 404);
             }
-
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error updating purchase order: ' + error, 500);
         }
     }
-
     // Delete a purchase order by ID
     async deletePurchaseOrder(id: number): Promise<PurchaseOrder> {
         try {
@@ -240,11 +272,9 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
                 `;
             const values = [id];
             const result = await this.client.query(query, values);
-
             if (result.rows.length === 0) {
                 throw new AppError('Purchase order not found', 404);
             }
-
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error deleting purchase order: ' + error, 500);
