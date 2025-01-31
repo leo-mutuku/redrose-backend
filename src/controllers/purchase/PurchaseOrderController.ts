@@ -14,8 +14,14 @@ export class PurchaseOrderController {
             const body = req.body;
             if (!body.purchase_date) {
                 res.status(400).json({ status: 'error', message: 'Purchase date is required, default not allowed' });
+
                 return;
             }
+            console.log(body);
+            // if (!body.vat) {
+            //     res.status(400).json({ status: 'error', message: 'VAT type is required' });
+            //     return;
+            // }
             if (body.pay_mode == 'CASH') {
                 if (!body.account_type) {
                     res.status(400).json({ status: 'error', message: 'Account type is required' });

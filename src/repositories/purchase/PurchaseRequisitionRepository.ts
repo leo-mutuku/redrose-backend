@@ -16,17 +16,54 @@ export class PurchaseRequisitionRepository implements IPurchaseRequisitionReposi
 
     // Create a new purchase requisition
     async createPurchaseRequisition({
-
-    }: PurchaseRequisition): Promise<PurchaseRequisition> {
+        purchase_date, total, account_type, order_details, bank_id, cash_account_id, staff_id, shift_id }: PurchaseRequisition): Promise<PurchaseRequisition> {
         try {
             const query = `
-                INSERT INTO purchase_requisition (requisition_number, requested_by, request_date, total_amount, status, created_by)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING purchase_requisition_id, requisition_number, requested_by, request_date, total_amount, status, created_by, created_at
+                INSERT INTO purchase_requisition (purchase_date, total, account_type, created_by, shift_id)
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING *;
             `;
-            const values = [];
+            const values = [purchase_date, total, account_type, staff_id, shift_id];
             const result = await this.client.query(query, values);
+            // insert into purchase_requisition_details
+            const purchase_requisition_id = result.rows[0].purchase_requisition_id
+            for (let item of order_details) {
+                console.log(item)
+                const query = `
+                    INSERT INTO purchase_requisition_details (purchase_requisition_id, store_item_id, quantity, buying_price, total_price, vat_type, created_by)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
+                `;
+                const values = [purchase_requisition_id, item.store_item_id, item.quantity, item.buying_price, item.total_price, item.vat_type, staff_id];
+                await this.client.query(query, values);
+            }
 
+            if (account_type == "BANK") {
+                //bank account
+                const query2 = `update banks set balance = balance - $1 where bank_id = $2 returning *`;
+                const values2 = [total, bank_id];
+                console.log(values2)
+                const res3 = await this.client.query(query2, values2);
+
+                // bank_entries
+                console.log(res3.rows[0].balance, "bal")
+                const query3 = `insert into bank_entries (bank_id, description, debit, credit, balance) values ($1, $2, $3, $4, $5) returning *`;
+                const values3 = [bank_id, 'Purchase Requisition -DR', total, 0, Number(res3.rows[0].balance)];
+                await this.client.query(query3, values3);
+
+            }
+            if (account_type == "CASH") {
+                //cash account
+                const query2 = `update cash_accounts set balance = balance - $1 where cash_account_id = $2 returning *`;
+                const values2 = [total, cash_account_id];
+                const res3 = await this.client.query(query2, values2);
+                // cash_entries
+                const query3 = `insert into cash_account_entries (cash_account_id, description, debit, credit, balance) values ($1, $2, $3, $4, $5) returning *`;
+                const values3 = [cash_account_id, 'Purchase Requisition -DR', total, 0, Number(res3.rows[0].balance)];
+                await this.client.query(query3, values3);
+            }
+
+            // cash acccount
+            // cash_entries
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error creating purchase requisition: ' + error, 500);
@@ -43,7 +80,6 @@ export class PurchaseRequisitionRepository implements IPurchaseRequisitionReposi
             `;
             const values = [limit, offset];
             const result = await this.client.query(query, values);
-
             return result.rows;
         } catch (error) {
             throw new AppError('Error fetching purchase requisitions: ' + error, 500);

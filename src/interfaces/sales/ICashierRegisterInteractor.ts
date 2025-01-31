@@ -41,5 +41,6 @@ export interface ICashierRegisterInteractor {
     dispose(input: any)
 
     clearBill(input: any)
+    cashierTransfer(input: any)
 
 }

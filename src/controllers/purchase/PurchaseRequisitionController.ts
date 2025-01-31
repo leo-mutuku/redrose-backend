@@ -14,7 +14,10 @@ export class PurchaseRequisitionController {
 
     async onCreatePurchaseRequisition(req: Request, res: Response, next: NextFunction) {
         try {
-            const body = req.body;
+            console.log("req.body", req.body);
+            let body = req.body;
+            req.body.shift_id = req.body.user.shift_id;
+            req.body.staff_id = req.body.user.staff_id;
             // validations
             if (body.account_type == "CASH") {
                 if (!body.cash_account_id) {
@@ -22,11 +25,11 @@ export class PurchaseRequisitionController {
                 }
             }
             if (body.account_type == "BANK") {
-                if (!body.bank_id) {
+                if (body?.bank_id && !body.bank_id) {
                     throw new AppError('Bank id is required');
                 }
             }
-            if (body.total !== body.order_details.reduce((sum, item) => sum + Number(item.total_price), 0)) {
+            if (Number(body.total) !== body.order_details.reduce((sum, item) => sum + Number(item.total_price), 0)) {
                 throw new AppError('Total must be equal to sum of item prices');
             }
 
@@ -35,32 +38,28 @@ export class PurchaseRequisitionController {
 
             }
             for (let x of body.order_details) {
-                if (!x.item_id) {
-                    throw new AppError('Item id is required');
+                if (!x.store_item_id) {
+                    throw new AppError('Item store id is required');
                 }
                 if (!x.quantity) {
                     throw new AppError('Quantity is required');
                 }
-                if (!x.unit_price) {
-                    throw new AppError('Unit price is required');
+                if (!x.buying_price) {
+                    throw new AppError('Buying priceis required');
                 }
-                if (!x.total_price) {
-                    throw new AppError('Total price is required');
+                if (!x.vat_type) {
+                    throw new AppError('Vat type is required');
                 }
             }
-
-
             const data = await this.interactor.createPurchaseRequisition(body);
             res.status(201).json({ status: 'success', data: data, message: 'Purchase requisition created successfully' });
         } catch (error) {
             next(error);
         }
     }
-
     async onGetPurchaseRequisition(req: Request, res: Response, next: NextFunction) {
         try {
             const id = parseInt(req.params.id);
-
             const data = await this.interactor.getPurchaseRequisition(id);
             res.status(200).json({ status: 'success', data: data, message: 'Purchase requisition fetched successfully' });
         } catch (error) {
@@ -92,14 +91,5 @@ export class PurchaseRequisitionController {
         }
     }
 
-    // async onDeletePurchaseRequisition(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const id = parseInt(req.params.id);
 
-    //         await this.interactor.deletePurchaseRequisition(id);
-    //         res.status(200).json({ status: 'success', message: 'Purchase requisition deleted successfully' });
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // }
 }

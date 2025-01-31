@@ -5,6 +5,7 @@ import { globalErrorHandler } from "./middlewares/globalErrorHandler"; // Adjust
 import routers from "./routes";
 import cors from "cors";
 import { pgClient } from "./dbConnection";
+import cron from 'node-cron';
 
 const PORT = process.env.PORT || 9000;
 const app = express();
@@ -70,6 +71,32 @@ app.use(globalErrorHandler);
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
+});
+// Cron job to run every 9:35 AM
+cron.schedule('35 9 * * *', () => {
+  try {
+    console.log('Cron job is running every 9:35 AM');
+  } catch (error) {
+    console.error('Error running cron job:', error);
+  }
+});
+
+// shift close
+cron.schedule('40 9 * * *', () => {
+  try {
+    console.log('logic to end shift');
+  } catch (error) {
+    console.error('Error running cron job:', error);
+  }
+});
+
+// logic logic to check if shift started or not if not start sitch to manual mode
+cron.schedule('40 9 * * *', () => {
+  try {
+    console.log('Cron job is running every 9:35 AM');
+  } catch (error) {
+    console.error('Error running cron job:', error);
+  }
 });
 
 // Graceful shutdown logic
