@@ -64,7 +64,7 @@ const print2 = new SalesReceipt2()
 setInterval(async () => {
   try {
     await print.processQueuedJobs();
-    await print2.processQueuedJobs();
+    // await print2.processQueuedJobs();
   } catch (error) {
     console.error('Error processing print jobs:', error);
   }

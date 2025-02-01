@@ -131,7 +131,6 @@ class SalesReceipt2 {
                     console.error('Error retrieving queued jobs:', err);
                     return;
                 }
-
                 // Iterate through the rows as PrintJob[] type
                 for (const job of rows as PrintJob[]) {
                     const header: ReceiptHeader = JSON.parse(job.header); // Parse header as ReceiptHeader

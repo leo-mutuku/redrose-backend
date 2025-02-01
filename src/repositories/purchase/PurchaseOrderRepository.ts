@@ -99,8 +99,7 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
             // purchase order details
             for (let item of order_details) {
                 const insert_purchase_order_details =
-                    ` insert into purchase_order_details (purchase_order_id, store_item_id, buying_price, quantity, total_price, vat_type, vat)
-            values($1, $2, $3 , $4,$5, $6,$7) RETURNING *`
+                    ` insert into purchase_order_details (purchase_order_id, store_item_id, buying_price, quantity, total_price, vat_type, vat)values($1, $2, $3 , $4,$5, $6,$7) RETURNING *`
                 const insert_values = [Number(purchase_order_res.rows[0].purchase_order_id), Number(item.store_item_id), Number(item.buying_price), Number(item.quantity), Number(item.total_price), item.vat_type, 0]
                 await this.client.query(insert_purchase_order_details, insert_values)
 
@@ -231,9 +230,43 @@ export class PurchaseOrderRepository implements IPurchaseOrderRepository {
     async getPurchaseOrders(limit: number, offset: number): Promise<PurchaseOrder[]> {
         try {
             const query = `
-                SELECT purchase_order_id, order_number, supplier_id, order_date, total_amount, status, created_by, created_at
-                FROM purchase_order
-                LIMIT $1 OFFSET $2z
+               SELECT 
+    po.purchase_order_id,
+    po.purchase_date,
+    -- Conditional logic for 'supplier_name' or 'vendor_name' based on 'from_'
+    CASE 
+        WHEN po.from_ = 'SUPPLIER' THEN MAX(s.supplier_name)
+        WHEN po.from_ = 'VENDOR' THEN MAX(v.vendor_name)
+        ELSE 'Unknown' -- Default case if neither SUPPLIER nor VENDOR
+    END AS from_name,
+    po.from_,
+    po.pay_mode,
+    po.total,
+    json_agg(
+        json_build_object(
+            'store_item_id', pod.store_item_id,
+            'item_name', ir.item_name,  -- Include item_name from item_register
+            'quantity', pod.quantity,
+            'buying_price', pod.buying_price
+        )
+    ) AS purchase_order_details
+FROM 
+    purchase_order po
+-- Join with 'suppliers' table when 'from_' is SUPPLIER
+LEFT JOIN suppliers s ON s.supplier_id = po.from_id AND po.from_ = 'SUPPLIER'
+-- Join with 'vendors' table when 'from_' is VENDOR
+LEFT JOIN vendors v ON v.vendor_id = po.from_id AND po.from_ = 'VENDOR'
+-- Join with 'purchase_order_details' table
+LEFT JOIN purchase_order_details pod ON po.purchase_order_id = pod.purchase_order_id
+-- Join with 'store_item' table to get item details
+LEFT JOIN store_item si ON pod.store_item_id = si.store_item_id
+-- Join with 'item_register' table to get item_name
+LEFT JOIN item_register ir ON si.item_id = ir.item_id
+GROUP BY 
+    po.purchase_order_id, po.purchase_date, po.from_, po.pay_mode, po.total, po.created_at
+ORDER BY 
+    po.created_at DESC
+LIMIT $1 OFFSET $2;  -- Set your desired limit and offset
                 `;
             const values = [limit, offset];
             const result = await this.client.query(query, values);
