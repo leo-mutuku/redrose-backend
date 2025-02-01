@@ -72,9 +72,32 @@ export class PurchaseRequisitionRepository implements IPurchaseRequisitionReposi
     async getPurchaseRequisitions(limit: number, offset: number): Promise<PurchaseRequisition[]> {
         try {
             const query = `
-                SELECT purchase_requisition_id, requisition_number, requested_by, request_date, total_amount, status, created_by, created_at
-                FROM purchase_requisition
-                LIMIT $1 OFFSET $2
+                SELECT 
+    po.purchase_requisition_id,
+    po.purchase_date,
+    po.total,
+    json_agg(
+        json_build_object(
+            'store_item_id', pod.store_item_id,
+            'item_name', ir.item_name,  -- Include item_name from item_register
+            'quantity', pod.quantity,
+            'buying_price', pod.buying_price
+        )
+    ) AS purchase_order_details
+FROM 
+    purchase_requisition po
+
+-- Join with 'purchase_order_details' table
+LEFT JOIN purchase_requisition_details pod ON po.purchase_requisition_id = pod.purchase_requisition_id
+-- Join with 'store_item' table to get item details
+LEFT JOIN store_item si ON pod.store_item_id = si.store_item_id
+-- Join with 'item_register' table to get item_name
+LEFT JOIN item_register ir ON si.item_id = ir.item_id
+GROUP BY 
+    po.purchase_requisition_id, po.purchase_date
+ORDER BY 
+    po.created_at DESC
+LIMIT $1 OFFSET $2;  -- Set your desired limit and offset
             `;
             const values = [limit, offset];
             const result = await this.client.query(query, values);
