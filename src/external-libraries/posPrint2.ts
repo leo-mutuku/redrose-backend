@@ -55,7 +55,7 @@ const printer = new ThermalPrinter({
     lineCharacter: '-',
 });
 
-class SalesReceipt {
+class SalesReceipt2 {
     async receipt(header: ReceiptHeader, body: Item[]): Promise<void> {
         const isConnected = await printer.isPrinterConnected();
 
@@ -154,4 +154,4 @@ class SalesReceipt {
     }
 }
 
-export default SalesReceipt;
+export default SalesReceipt2;

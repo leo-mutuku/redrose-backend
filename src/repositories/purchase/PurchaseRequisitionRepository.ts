@@ -43,9 +43,7 @@ export class PurchaseRequisitionRepository implements IPurchaseRequisitionReposi
                 const values2 = [total, bank_id];
                 console.log(values2)
                 const res3 = await this.client.query(query2, values2);
-
                 // bank_entries
-                console.log(res3.rows[0].balance, "bal")
                 const query3 = `insert into bank_entries (bank_id, description, debit, credit, balance) values ($1, $2, $3, $4, $5) returning *`;
                 const values3 = [bank_id, 'Purchase Requisition -DR', total, 0, Number(res3.rows[0].balance)];
                 await this.client.query(query3, values3);

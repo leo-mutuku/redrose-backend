@@ -27,9 +27,7 @@ export class SalesOrderRepository implements ISalesOrderRepository {
             if (!order_items) {
                 throw new Error(`Cart is empty!`);
             }
-
             // check if waitstaff_id is empty
-
             if (!staff_id) {
                 throw new Error(`Waitstaff id is required!`);
             }
@@ -51,7 +49,6 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                 status: string,
             }
             let menu_details: menu_detail[] = [];
-
             // get menu setup from kitchen_setup
             for (let item of order_items) {
                 const qry = `select * from menu_item as mi inner join menu_register as mr on mi.menu_register_id 
@@ -70,7 +67,6 @@ export class SalesOrderRepository implements ISalesOrderRepository {
                     total_price: item.quantity * res.rows[0].price,
                     status: "pending"
                 })
-
             }
 
             // group managed menu and not managed menu
@@ -272,13 +268,9 @@ export class SalesOrderRepository implements ISalesOrderRepository {
             let tv = menu_details.reduce((acc, item) => acc + item.price * item.quantity, 0);
             let vat = tv * 0.16;
             let cat = tv * 0.05;
-
             const sales_order_values = [tv, vat, cat, staff_id, 'Posted', shift_id]
-            console.log(sales_order_values, sales_order_query)
 
             const sales_order_res = await this.client.query(sales_order_query, sales_order_values)
-
-
             const sales_order_id = parseInt(sales_order_res.rows[0].sales_order_entry_id)
             // create sales order details
             for (let item of menu_details) {
@@ -371,7 +363,41 @@ export class SalesOrderRepository implements ISalesOrderRepository {
 
 
     }
+    async getPostedSalesOrder(): Promise<any> {
+        const query = `  SELECT 
+                    so.sales_order_entry_id,
+					so.created_at,
+                    so.total_value,
+                    s.first_name as waiter,
+                    so.status,
+					so.vat,
+					so.cat,
+                    jsonb_agg(
+                        jsonb_build_object(
+                            'menu_item_id', mi.menu_item_id,
+                            'menu_name', mr.name,
+							'sales_order_entry_id', so.sales_order_entry_id,
+                            'quantity', sod.quantity,
+                            'price', sod.price,
+                            'total', sod.quantity * sod.price
+                        )
+                    ) AS order_details
+                FROM 
+                    sales_order_entry so
+                INNER JOIN 
+                    staff s ON s.staff_id = so.waitstaff_id
+                LEFT JOIN 
+                     sales_order_details sod ON sod.sales_order_entry_id = so.sales_order_entry_id
+                LEFT JOIN 
+                    menu_item mi ON mi.menu_item_id = sod.menu_item_id
+                LEFT JOIN 
+                    menu_register mr ON mr.menu_register_id = mi.menu_register_id
+				        GROUP BY 
+                    so.sales_order_entry_id, so.total_value, s.first_name
+					ORDER BY so.created_at DESC
+					LIMIT $1 OFFSET $2`;
 
+    }
 
     async authWaiter(pin: number, staff_id: number): Promise<any> {
 

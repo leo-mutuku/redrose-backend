@@ -6,6 +6,8 @@ import routers from "./routes";
 import cors from "cors";
 import { pgClient } from "./dbConnection";
 import cron from 'node-cron';
+import SalesReceipt from "./external-libraries/posPrint"
+import SalesReceipt2 from "./external-libraries/posPrint2";
 
 const PORT = process.env.PORT || 9000;
 const app = express();
@@ -55,6 +57,18 @@ app.use(
   })
 );
 
+
+const print = new SalesReceipt()
+const print2 = new SalesReceipt2()
+
+setInterval(async () => {
+  try {
+    await print.processQueuedJobs();
+    await print2.processQueuedJobs();
+  } catch (error) {
+    console.error('Error processing print jobs:', error);
+  }
+}, 60000);  // 60000ms = 1 minute
 
 // Debugging middleware for logging CORS requests (optional)
 app.use((req: Request, res: Response, next: NextFunction) => {

@@ -137,16 +137,17 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
         try {
 
         } catch (error) {
-
+            throw new AppError('Error disposing of cashier register: ' + error, 500);
         }
     }
     async clearBill(input: any): Promise<any> {
         try {
-
-            let { bill_ids, mpesa, cash, staff_id, shift_id } = input;
+            let { bill_ids, mpesa, cash } = input;
             // confirm if user has cashier account
-            const iscashier_qry = `select * from sales_cashiers where staff_id = $`
-            const values_cashier = [staff_id]
+            let shift_id = input.user.shift_id
+            let staff_id = input.user.staff_id
+            const iscashier_qry = `select * from sales_cashiers where staff_id = $1`
+            const values_cashier = [input.user.staff_id]
             const cashier_qry_res = await this.client.query(iscashier_qry, values_cashier)
             if (cashier_qry_res.rowCount) {
                 throw new AppError("Not authorized, only cashiers can clear bills")
@@ -162,9 +163,6 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
                     throw new AppError("Status must be Posted only, bill number " + x + " is not")
                 }
             }
-
-
-
             if (bill_total > (mpesa + cash)) {
                 throw new AppError("Insufient fund, " + (bill_total - (mpesa + cash)) + " more is required")
             }
@@ -177,14 +175,12 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
             }
 
             // cash
-            if (cash > 0) {
-                // update cash account
-                const update_cash = `update sales_cashiers set cash = cash + $1 where staff_id = $2 returning *`
-                const values = [cash, staff_id]
-                await this.client.query(update_cash, values)
-            }
+            let change = bill_total - (mpesa + cash)
+
+
             // till
             if (mpesa > 0) {
+
                 // update mpesa balance
                 if (mpesa > 200) {
                     txn_charges = mpesa * 0.005
@@ -215,7 +211,7 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
             let credit = mpesa + cash
 
             //cashier  statement
-            const cashier_statement = `insert into sales_cahsier_entries (staff_id, credit, debit, till, cash, txt_charges, description, shift_id)
+            const cashier_statement = `insert into sales_cashier_entries (staff_id, credit, debit, till, cash, txt_charge, description, shift_id)
             values($1,$2,$3,$4,$5,$6,$7,$8)`;
             const values_cashier_Statement = [staff_id, credit, 0, mpesa, cash, txn_charges, "Sales order processing", shift_id]
             const res = await this.client.query(cashier_statement, values_cashier_Statement)

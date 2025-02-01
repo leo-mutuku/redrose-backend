@@ -4,7 +4,8 @@ import { AppError } from "../../utils/AppError";
 import { ISalesOrderInteractor } from "../../interfaces/sales/ISalesOrderInteractor";
 import { ISalesOrderRepository } from "../../interfaces/sales/ISalesOrderRepository";
 import SalesReceipt from "../../external-libraries/posPrint";
-import CustomerReceipt from "../../external-libraries/posPrint2";
+
+import SalesReceipt2 from "../../external-libraries/posPrint2";
 
 @injectable()
 export class SalesOrderInteractor implements ISalesOrderInteractor {
@@ -28,7 +29,7 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
 
             console.log(result, "---------------------------------");
             const print = new SalesReceipt();
-            const print2 = new CustomerReceipt();
+            const print2 = new SalesReceipt2();
             const header = result.header;
             const body = result.menu_details
             print.receipt(header, body)
