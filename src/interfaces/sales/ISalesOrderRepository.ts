@@ -39,4 +39,6 @@ export interface ISalesOrderRepository {
      * @returns A promise resolving to a confirmation or an error if the deletion fails.
      */
     deleteSalesOrder(id: number): Promise<any>;
+    getPostedSalesOrder(): Promise<any>
+
 }

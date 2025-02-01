@@ -16,6 +16,14 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
         this.repository = repository;
 
     }
+    async getPostedSalesOrder() {
+        try {
+            const result = await this.repository.getPostedSalesOrder()
+            return result
+        } catch (error) {
+
+        }
+    }
 
     async createSalesOrder(input: any): Promise<any> {
         try {

@@ -30,6 +30,7 @@ router.patch("/updatesalesorder/:id", controller.onUpdateSalesOrder.bind(control
 router.post("/voidedbill", controller.onVoidedBill.bind(controller));
 router.post("/printbill", controller.onPrintBill.bind(controller));
 router.post("/cancelbill", controller.onCancelBill.bind(controller));
+router.get("/getpostedsalesorders", controller.onGetPostedOrders.bind(controller));
 
 // Export the configured router
 export default router;

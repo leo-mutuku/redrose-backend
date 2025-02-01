@@ -139,5 +139,23 @@ export class SalesOrderController {
         }
     }
 
+    //onGetPostedOrders
+    async onGetPostedOrders(req: Request, res: Response, next: NextFunction) {
+        try {
+            const data = await this.interactor.getPostedSalesOrder()
+            res.json({
+                status: "success",
+                data: data,
+                message: "Success"
+            })
+
+
+
+        } catch (error) {
+            next(error)
+
+        }
+    }
+
 
 }
