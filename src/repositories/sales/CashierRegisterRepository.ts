@@ -142,18 +142,21 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
     }
     async clearBill(input: any): Promise<any> {
         try {
+
             let { bill_ids, mpesa, cash } = input;
             // confirm if user has cashier account
             let shift_id = input.user.shift_id
             let staff_id = input.user.staff_id
+            console.log(staff_id)
             const iscashier_qry = `select * from sales_cashiers where staff_id = $1`
             const values_cashier = [input.user.staff_id]
             const cashier_qry_res = await this.client.query(iscashier_qry, values_cashier)
-            if (cashier_qry_res.rowCount) {
+            console.log(!cashier_qry_res.rowCount)
+            if (!cashier_qry_res.rowCount) {
                 throw new AppError("Not authorized, only cashiers can clear bills")
             }
             let bill_total = 0
-            let txn_charges = 0
+
             for (let x of bill_ids) {
                 const qry = `select total_value, status from sales_order_entry where sales_order_entry_id = $1 `
                 const value = [x]
@@ -173,47 +176,45 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
                 const values = [x]
                 await this.client.query(sql, values)
             }
-
+            console.log("here")
             // cash
+
             let change = bill_total - (mpesa + cash)
-
-
-            // till
-            if (mpesa > 0) {
-
-                // update mpesa balance
-                if (mpesa > 200) {
-                    txn_charges = mpesa * 0.005
-                    mpesa = mpesa - txn_charges
-                    const update_till = `update sales_cashiers set till = till + $1 where staff_id = $2 returning *`
-                    const values = [mpesa, staff_id]
-                    await this.client.query(update_till, values)
-
-                    //txn
-
-
-                }
-                else {
-                    const update_till = `update sales_cashiers set till = till + $1 where staff_id = $2 returning *`
-                    const values = [mpesa, staff_id]
-                    await this.client.query(update_till, values)
-                }
-
-            }
-            if (!cash) {
-                cash = 0
-
-            }
-            if (!mpesa) {
-                mpesa = 0
+            if (mpesa + cash == bill_total) {
+                change = 0
             }
 
-            let credit = mpesa + cash
+            // 
 
+            let cashier_cash = cash
+            let cashier_till = 0
+
+            let cashier_txt_charge = 0
+            console.log(mpesa > 199, "txn", mpesa)
+            if (mpesa > 199) {
+                cashier_txt_charge = mpesa * 0.005
+                console.log(cashier_txt_charge, "txn")
+            }
+            cashier_till = mpesa - cashier_txt_charge
+
+            if (bill_total <= mpesa) {
+                cashier_cash = 0
+            }
+            let credit = cashier_cash + cashier_till + cashier_txt_charge
+            // update sales cashier 
+            const cashier_update = `update sales_cashiers set till = till + $1, cash = cash + $2, txn_charges = txn_charges + $3 where staff_id = $4 returning *`
+            const values_cashier1 = [cashier_till, cashier_cash, cashier_txt_charge, staff_id]
+            console.log(values_cashier1)
+
+            const cashier_res1 = await this.client.query(cashier_update, values_cashier1)
+            console.log(cashier_res1.rows[0])
+
+            const c_bal = parseFloat(cashier_res1.rows[0].till) + parseFloat(cashier_res1.rows[0].cash) + parseFloat(cashier_res1.rows[0].txn_charges)
+            console.log(c_bal, "cashier balance")
             //cashier  statement
-            const cashier_statement = `insert into sales_cashier_entries (staff_id, credit, debit, till, cash, txt_charge, description, shift_id)
-            values($1,$2,$3,$4,$5,$6,$7,$8)`;
-            const values_cashier_Statement = [staff_id, credit, 0, mpesa, cash, txn_charges, "Sales order processing", shift_id]
+            const cashier_statement = `insert into sales_cashier_entries(staff_id, credit, debit, till, cash, txn_charge, description, shift_id, cashier_balance)
+                    values($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
+            const values_cashier_Statement = [staff_id, credit, 0, cashier_till, cashier_cash, cashier_txt_charge, "Sales order processing", shift_id, parseFloat(cashier_res1.rows[0].till) + parseFloat(cashier_res1.rows[0].cash) + parseFloat(cashier_res1.rows[0].txn_charges)]
             const res = await this.client.query(cashier_statement, values_cashier_Statement)
         }
         catch (error) {
@@ -233,7 +234,7 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
                 throw new AppError("Not authorized, only cashiers can transfer")
             }
             // query to transfer 
-            const transfer_qry = `update sales_cashiers set till = till - $1, till = till + $2 where staff_id = $3 returning *`
+            const transfer_qry = `update sales_cashiers set till = till - $1, till = till + $2 where staff_id = $3 returning * `
 
             // cashier transfer entry
 

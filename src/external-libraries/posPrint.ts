@@ -21,6 +21,7 @@ interface ReceiptHeader {
     vat: number;
     cat: number;
     staff_name: string;
+    tv: number;
 }
 
 interface PrintJob {
@@ -47,7 +48,7 @@ db.run(`CREATE TABLE IF NOT EXISTS print_jobs (
 
 const printer = new ThermalPrinter({
     type: PrinterTypes.STAR,
-    interface: 'tcp://192.168.88.5', // Printer IP or serial port
+    interface: 'tcp://192.168.88.7', // Printer IP or serial port
     options: { timeout: 1000 },
     width: 48,
     characterSet: CharacterSet.PC852_LATIN2,
@@ -71,7 +72,7 @@ class SalesReceipt {
             printer.leftRight('BILL NO: ', `Date: ${header.date}`);
             printer.println('Location: MAIN KITCHEN');
             printer.println('');
-            printer.println('CAPTAIN ORDER RECEIPT');
+            printer.println('CUSTOMER RECEIPT');
             printer.drawLine();
             printer.leftRight(`BILL NO: ${header.sales_order_id}`, `DATE: ${header.date}`);
             printer.table(['Qty.', 'Item', '@Kshs.', 'Total(Kshs.)']);
@@ -81,7 +82,7 @@ class SalesReceipt {
                 printer.println('');
             });
             printer.drawLine();
-            printer.leftRight('BUY GOODS : 952262', `TTL KSHs: ${header.total}`);
+            printer.leftRight('BUY GOODS : 952262', `TTL KSHs: ${header.tv}`);
             printer.drawLine();
             printer.table(['', `VAT 16% `, `${header.vat}`]);
             printer.table(['', `CAT 2%`, `${header.cat}`]);

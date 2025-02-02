@@ -365,37 +365,41 @@ export class SalesOrderRepository implements ISalesOrderRepository {
     }
     async getPostedSalesOrder(): Promise<any> {
         try {
-            const query = `  SELECT 
-        so.sales_order_entry_id,
-        so.created_at,
-        so.total_value,
-        s.first_name as waiter,
-        so.status,
-        so.vat,
-        so.cat,
-        jsonb_agg(
-            jsonb_build_object(
-                'menu_item_id', mi.menu_item_id,
-                'menu_name', mr.name,
-                'sales_order_entry_id', so.sales_order_entry_id,
-                'quantity', sod.quantity,
-                'price', sod.price,
-                'total', sod.quantity * sod.price
-            )
-        ) AS order_details
-    FROM 
-        sales_order_entry so
-    INNER JOIN 
-        staff s ON s.staff_id = so.waitstaff_id
-    LEFT JOIN 
-         sales_order_details sod ON sod.sales_order_entry_id = so.sales_order_entry_id
-    LEFT JOIN 
-        menu_item mi ON mi.menu_item_id = sod.menu_item_id
-    LEFT JOIN 
-        menu_register mr ON mr.menu_register_id = mi.menu_register_id
-            GROUP BY 
-        so.sales_order_entry_id, so.total_value, s.first_name
-        ORDER BY so.created_at DESC
+            const query = ` SELECT 
+    so.sales_order_entry_id,
+    so.created_at,
+    so.total_value,
+    s.first_name as waiter,
+    so.status,
+    so.vat,
+    so.cat,
+    jsonb_agg(
+        jsonb_build_object(
+            'menu_item_id', mi.menu_item_id,
+            'menu_name', mr.name,
+            'sales_order_entry_id', so.sales_order_entry_id,
+            'quantity', sod.quantity,
+            'price', sod.price,
+            'total', sod.quantity * sod.price
+        )
+    ) AS order_details
+FROM 
+    sales_order_entry so
+INNER JOIN 
+    staff s ON s.staff_id = so.waitstaff_id
+LEFT JOIN 
+    sales_order_details sod ON sod.sales_order_entry_id = so.sales_order_entry_id
+LEFT JOIN 
+    menu_item mi ON mi.menu_item_id = sod.menu_item_id
+LEFT JOIN 
+    menu_register mr ON mr.menu_register_id = mi.menu_register_id
+WHERE 
+    so.status = 'Posted'  -- Add filter for status
+GROUP BY 
+    so.sales_order_entry_id, so.total_value, s.first_name
+ORDER BY 
+    so.created_at DESC;
+
         `;
             const result = await this.client.query(query)
 

@@ -12,7 +12,7 @@ export class SupplierController {
     async onCreateSupplier(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body
-            body.created_by = req.body.user.created_by
+            body.created_by = req.body.user.staff_id
             const data = await this.interactor.createSupplier(body)
             res.status(201).json({ status: 'success', data: data, message: 'Supplier created successfully' });
         }

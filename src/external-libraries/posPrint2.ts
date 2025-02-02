@@ -16,6 +16,7 @@ interface Item {
 
 interface ReceiptHeader {
     date: string;
+    tv: number;
     sales_order_id: string;
     total: number;
     vat: number;
@@ -80,7 +81,7 @@ class SalesReceipt2 {
                 printer.println('');
             });
             printer.drawLine();
-            printer.leftRight('BUY GOODS : 952262', `TTL KSHs: ${header.total}`);
+            printer.leftRight('BUY GOODS : 952262', `TTL KSHs: ${header.tv}`);
             printer.drawLine();
             printer.table(['', `VAT 16% `, `${header.vat}`]);
             printer.table(['', `CAT 2%`, `${header.cat}`]);

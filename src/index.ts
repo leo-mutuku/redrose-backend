@@ -61,20 +61,20 @@ app.use(
 const print = new SalesReceipt()
 const print2 = new SalesReceipt2()
 
-setInterval(async () => {
-  try {
-    await print.processQueuedJobs();
-    // await print2.processQueuedJobs();
-  } catch (error) {
-    console.error('Error processing print jobs:', error);
-  }
-}, 60000);  // 60000ms = 1 minute
+// setInterval(async () => {
+//   try {
+//     await print.processQueuedJobs();
+//     // await print2.processQueuedJobs();
+//   } catch (error) {
+//     console.error('Error processing print jobs:', error);
+//   }
+// }, 60000);  // 60000ms = 1 minute
 
-// Debugging middleware for logging CORS requests (optional)
-app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(`Request from origin: ${req.headers.origin}`);
-  next();
-});
+// // Debugging middleware for logging CORS requests (optional)
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//   console.log(`Request from origin: ${req.headers.origin}`);
+//   next();
+// });
 
 // Route handling
 app.use("/api/v1", routers);

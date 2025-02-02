@@ -19,6 +19,8 @@ export class SupplierRepository implements ISupplierRepository {
     }
     async createSupplier(supplier: Supplier): Promise<Supplier> {
         try {
+
+            console.log(supplier)
             const query =
                 `INSERT INTO suppliers(supplier_name,phone, created_by) VALUES($1, $2, $3)
               RETURNING *`
