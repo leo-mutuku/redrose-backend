@@ -701,3 +701,34 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+SELECT 
+    JSONB_BUILD_OBJECT(
+        'staff', JSONB_BUILD_OBJECT(
+            'staff_id', s.staff_id,
+            'name', s.first_name
+        ),
+        'summary', JSONB_BUILD_OBJECT(
+            'total_credit', COALESCE(SUM(sce.credit), 0),
+            'total_debit', COALESCE(SUM(sce.debit), 0),
+            'final_balance', COALESCE(MAX(sce.cashier_balance), 0)
+        ),
+        'entries', COALESCE(
+            JSONB_AGG(
+                JSONB_BUILD_OBJECT(
+                    'created_at', sce.created_at,
+                    'description', sce.description,
+                    'credit', sce.credit,
+                    'debit', sce.debit,
+                    'cashier_balance', sce.cashier_balance
+                )
+            ) FILTER (WHERE sce.created_at IS NOT NULL), '[]'::JSONB
+        )
+    ) AS result_json
+FROM sales_cashier_entries sce
+INNER JOIN staff s ON sce.staff_id = s.staff_id
+WHERE 
+    sce.staff_id = 21 
+    AND sce.created_at BETWEEN '2025-02-02' AND '2025-02-03'
+GROUP BY s.staff_id, s.first_name; 
+

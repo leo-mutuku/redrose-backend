@@ -8,6 +8,7 @@ import { pgClient } from "./dbConnection";
 import cron from 'node-cron';
 import SalesReceipt from "./external-libraries/posPrint"
 import SalesReceipt2 from "./external-libraries/posPrint2";
+import rateLimit from 'express-rate-limit';
 
 const PORT = process.env.PORT || 9000;
 const app = express();
@@ -57,24 +58,20 @@ app.use(
   })
 );
 
-
 const print = new SalesReceipt()
 const print2 = new SalesReceipt2()
 
-// setInterval(async () => {
-//   try {
-//     await print.processQueuedJobs();
-//     // await print2.processQueuedJobs();
-//   } catch (error) {
-//     console.error('Error processing print jobs:', error);
-//   }
-// }, 60000);  // 60000ms = 1 minute
+// Rate Limiting Middleware (e.g., 1 request per second per IP)
+const limiter = rateLimit({
+  windowMs: 1000,  // 1 second
+  max: 1,          // Allow only 1 request per second per IP
+  message: 'Too many requests. Please try again in a second.',
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false,  // Disable the `X-RateLimit-*` headers
+});
 
-// // Debugging middleware for logging CORS requests (optional)
-// app.use((req: Request, res: Response, next: NextFunction) => {
-//   console.log(`Request from origin: ${req.headers.origin}`);
-//   next();
-// });
+// Apply rate limiter to all routes
+app.use(limiter);
 
 // Route handling
 app.use("/api/v1", routers);
@@ -86,6 +83,7 @@ app.use(globalErrorHandler);
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
 });
+
 // Cron job to run every 9:35 AM
 cron.schedule('35 9 * * *', () => {
   try {
@@ -95,16 +93,16 @@ cron.schedule('35 9 * * *', () => {
   }
 });
 
-// shift close
+// Shift close logic
 cron.schedule('40 9 * * *', () => {
   try {
-    console.log('logic to end shift');
+    console.log('Logic to end shift');
   } catch (error) {
     console.error('Error running cron job:', error);
   }
 });
 
-// logic logic to check if shift started or not if not start sitch to manual mode
+// Logic to check if shift started or not, if not start shift in manual mode
 cron.schedule('40 9 * * *', () => {
   try {
     console.log('Cron job is running every 9:35 AM');
