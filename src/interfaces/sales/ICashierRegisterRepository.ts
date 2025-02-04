@@ -39,4 +39,5 @@ export interface ICashierRegisterRepository {
     dispose(input: any): Promise<any>;
     clearBill(input: any): Promise<any>;
     cashierTransfer(input: any): Promise<any>;
+    cashierReport(input: any): Promise<any>;
 }

@@ -32,6 +32,7 @@ export interface ISalesOrderRepository {
     voidedBill(input: any): Promise<any>
     printBill(input: any): Promise<any>
     cancelBill(input: any): Promise<any>
+    getSalesReport(input: any): Promise<any>
 
     /**
      * Deletes a specific sales order.

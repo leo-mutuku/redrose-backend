@@ -156,6 +156,26 @@ export class SalesOrderController {
 
         }
     }
+    async onGetSalesReport(req: Request, res: Response, next: NextFunction) {
+        try {
+            if (!req.body.start_date || !req.body.end_date) {
+                res.status(400).json({
+                    status: "error",
+                    message: "Please provide start and end date"
+                })
+            }
+            const body = req.body
+            const data = await this.interactor.getSalesReport(body)
+            res.json({
+                status: "success",
+                data: data,
+                message: "Sales report generated successfully"
+            })
+        } catch (error) {
+            next(error)
+
+        }
+    }
 
 
 }

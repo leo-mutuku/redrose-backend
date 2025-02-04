@@ -578,10 +578,44 @@ ORDER BY
             if (result.rows.length === 0) {
                 throw new AppError('Sales order not found', 404);
             }
-
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error deleting sales order: ' + error, 500);
+        }
+    }
+
+    async getSalesReport(input: any): Promise<any> {
+        try {
+            console.log(input)
+            // summary
+            const query1 = `select sum(total_value) as total_sales from sales_order_entry where created_at between $1 and $2`
+            const values1 = [input.start_date, input.end_date]
+
+            const res1 = await this.client.query(query1, values1)
+            console.log(res1.rows)
+            const result1 = res1.rows[0]
+            // waiters entries
+            const query2 = `SELECT staff.first_name, 
+       staff.last_name, 
+       SUM(sales_order_entry.total_value) AS total_sales
+FROM sales_order_entry
+INNER JOIN staff 
+  ON staff.staff_id = sales_order_entry.waitstaff_id
+WHERE sales_order_entry.created_at BETWEEN $1 AND $2
+GROUP BY staff.first_name, staff.last_name
+ORDER BY total_sales ASC;`
+            const values2 = [input.start_date, input.end_date]
+            const res2 = await this.client.query(query2, values2)
+            const result2 = res2.rows
+            // sales orders entries
+            const query3 = ``
+            const values3 = []
+            const res3 = await this.client.query(query3, values3)
+            const result3 = res3.rows
+            const result_object = { total: result1, waiter: result2 }
+            return result_object
+        } catch (error) {
+            throw new AppError("Error", 400)
         }
     }
 }

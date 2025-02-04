@@ -42,5 +42,6 @@ export interface ICashierRegisterInteractor {
 
     clearBill(input: any)
     cashierTransfer(input: any)
+    cashierReport(input: any)
 
 }

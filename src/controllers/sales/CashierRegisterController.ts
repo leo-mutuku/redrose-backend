@@ -89,4 +89,18 @@ export class CashierRegisterController {
 
         }
     }
+    async onCashierReport(req: Request, res: Response, next: NextFunction) {
+        try {
+            const body = req.body
+            const data = await this.interactor.cashierReport(body)
+            res.status(200).json({
+                status: "success",
+                data: data,
+                messages: "Cashier report generated successfully"
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 }
+

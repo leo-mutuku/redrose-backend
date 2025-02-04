@@ -250,7 +250,7 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
         }
     }
 
-    async cashierReport() {
+    async cashierReport(input: any): Promise<any> {
         try {
             const qry = `SELECT 
     JSONB_BUILD_OBJECT(
@@ -274,14 +274,14 @@ export class CashierRegisterRepository implements ICashierRegisterRepository {
                 )
             ) FILTER (WHERE sce.created_at IS NOT NULL), '[]'::JSONB
         )
-    ) AS result_json
+    )
 FROM sales_cashier_entries sce
 INNER JOIN staff s ON sce.staff_id = s.staff_id
 WHERE 
-    sce.staff_id = 21 
-    AND sce.created_at BETWEEN '2025-02-02' AND '2025-02-03'
+    sce.staff_id = $1 
+    AND sce.created_at BETWEEN $2 AND $3
 GROUP BY s.staff_id, s.first_name;`
-            const values = []
+            const values = [input.staff_id, input.start_date, input.end_date]
             const res = await this.client.query(qry, values)
             return res.rows
         } catch (error) {

@@ -37,6 +37,7 @@ export interface ISalesOrderInteractor {
     printBill(input: any)
     cancelBill(input: any)
     getPostedSalesOrder()
+    getSalesReport(input: any)
 
     /**
      * Deletes a specific sales order.

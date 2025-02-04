@@ -132,5 +132,14 @@ export class SalesOrderInteractor implements ISalesOrderInteractor {
 
         }
     }
+    async getSalesReport(input) {
+        try {
+            const result = await this.repository.getSalesReport(input)
+            return result
+        } catch (error) {
+            throw new AppError(`: ${error}`, 400)
+
+        }
+    }
 }
 

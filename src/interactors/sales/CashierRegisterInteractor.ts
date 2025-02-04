@@ -14,6 +14,7 @@ export class CashierRegisterInteractor implements ICashierRegisterInteractor {
         this.repository = repository;
     }
 
+
     async createCashierRegister(input: any): Promise<any> {
         try {
             const result = await this.repository.createCashierRegister(input);
@@ -92,5 +93,18 @@ export class CashierRegisterInteractor implements ICashierRegisterInteractor {
 
     async cashierTransfer(input: any) {
         throw new Error("Method not implemented.");
+    }
+
+    cashierReport(input: any) {
+        try {
+            const result = this.repository.cashierReport(input);
+            return result;
+        } catch (error) {
+            if (error instanceof AppError) {
+                throw new AppError(`: ${error.message}`, error.statusCode || 500);
+            }
+            throw new Error('Failed to create cashier register. Please try again later.');
+
+        }
     }
 }
