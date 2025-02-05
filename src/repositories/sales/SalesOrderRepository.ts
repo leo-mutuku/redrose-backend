@@ -517,15 +517,10 @@ ORDER BY
             }
 
             //  menu items 
-            console.log(Items)
 
             const qry2 = `update sales_order_entry set status = 'Voided' where sales_order_entry_id = $1`;
             const result2 = await this.client.query(qry2, [bill_id]);
-
             return { message: 'Bill voided successfully', rowCount: result2.rowCount };
-
-
-
 
         } catch (error) {
             throw new AppError(': ' + error, 500);

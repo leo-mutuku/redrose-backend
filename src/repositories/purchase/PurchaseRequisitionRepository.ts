@@ -18,6 +18,7 @@ export class PurchaseRequisitionRepository implements IPurchaseRequisitionReposi
     async createPurchaseRequisition({
         purchase_date, total, account_type, order_details, bank_id, cash_account_id, staff_id, shift_id }: PurchaseRequisition): Promise<PurchaseRequisition> {
         try {
+            console.log("order_details", order_details)
             const query = `
                 INSERT INTO purchase_requisition (purchase_date, total, account_type, created_by, shift_id)
                 VALUES ($1, $2, $3, $4, $5)
@@ -60,8 +61,17 @@ export class PurchaseRequisitionRepository implements IPurchaseRequisitionReposi
                 await this.client.query(query3, values3);
             }
 
-            // cash acccount
-            // cash_entries
+            //main store - store_item
+
+            for (let item of order_details) {
+                const query4 = `update store_item set quantity = quantity - $1 where store_item_id = $2 returning *`;
+                const values4 = [item.quantity, item.store_item_id];
+                const store_bal = await this.client.query(query4, values4);
+                // item_tracking
+                const query5 = `insert into item_tracking (store_item_id, current_quantity,new_quantity, reason, action_by) values ($1, $2, $3, $4, $5) returning *`;
+                const values5 = [item.store_item_id, parseFloat(store_bal.rows[0].quantity) - item.quantity, parseFloat(store_bal.rows[0].quantity), 'Purchase Requisition', staff_id];
+                await this.client.query(query5, values5);
+            }
             return result.rows[0];
         } catch (error) {
             throw new AppError('Error creating purchase requisition: ' + error, 500);
@@ -72,7 +82,7 @@ export class PurchaseRequisitionRepository implements IPurchaseRequisitionReposi
     async getPurchaseRequisitions(limit: number, offset: number): Promise<PurchaseRequisition[]> {
         try {
             const query = `
-                SELECT 
+    SELECT 
     po.purchase_requisition_id,
     po.purchase_date,
     po.total,

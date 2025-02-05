@@ -69,7 +69,7 @@ class SalesReceipt {
             printer.leftRight('KRA PIN: ', 'A004868340G');
             printer.println('Opposite Kensiliver Bus Station Maua meru');
             printer.println('Tel: 0718147498');
-            printer.leftRight('BILL NO: ', `Date: ${header.date}`);
+            printer.leftRight(`BILL NO: ${header.sales_order_id} `, `Date: ${header.date}`);
             printer.println('Location: MAIN KITCHEN');
             printer.println('');
             printer.println('CUSTOMER RECEIPT');
